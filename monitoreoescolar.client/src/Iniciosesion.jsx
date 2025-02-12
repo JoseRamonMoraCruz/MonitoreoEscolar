@@ -1,7 +1,8 @@
-import { useState } from 'react'; 
+﻿import { useState } from 'react'; 
 import './Iniciosesion.css';
+import { Link } from 'react-router-dom';
 
-const Login = () => {
+const Login = () => { 
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
@@ -51,7 +52,7 @@ const Login = () => {
                 </form>
                 <div className="register-link">
                     <p>
-                        <a href="/registro">No tengo cuenta</a>
+                        <Link to="/registro">No tengo cuenta</Link> {/* Enlace correcto con Link */}
                     </p>
                 </div>
             </div>

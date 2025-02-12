@@ -1,12 +1,14 @@
-import Iniciosesion from './Iniciosesion';
+import { Routes, Route } from 'react-router-dom';
+import Login from './Iniciosesion';
+import Registro from './Registro';
 
 function App() {
-    return (
-        <div>
-            <Iniciosesion />
-        </div>
+    return (   
+            <Routes>
+                <Route path="/" element={<Login />} />
+                <Route path="/registro" element={<Registro />} />
+            </Routes>
     );
 }
-
 
 export default App;

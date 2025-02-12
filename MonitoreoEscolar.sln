@@ -1,0 +1,30 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.12.35707.178 d17.12
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MonitoreoEscolar.Server", "MonitoreoEscolar.Server\MonitoreoEscolar.Server.csproj", "{CFF0DDCB-679D-4AFC-B3B5-B3E875DBD9E8}"
+EndProject
+Project("{54A90642-561A-4BB1-A94E-469ADEE60C69}") = "monitoreoescolar.client", "monitoreoescolar.client\monitoreoescolar.client.esproj", "{58F18E64-7B86-4E9D-A9A2-6C51E84EEEB1}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{CFF0DDCB-679D-4AFC-B3B5-B3E875DBD9E8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CFF0DDCB-679D-4AFC-B3B5-B3E875DBD9E8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CFF0DDCB-679D-4AFC-B3B5-B3E875DBD9E8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CFF0DDCB-679D-4AFC-B3B5-B3E875DBD9E8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{58F18E64-7B86-4E9D-A9A2-6C51E84EEEB1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{58F18E64-7B86-4E9D-A9A2-6C51E84EEEB1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{58F18E64-7B86-4E9D-A9A2-6C51E84EEEB1}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{58F18E64-7B86-4E9D-A9A2-6C51E84EEEB1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{58F18E64-7B86-4E9D-A9A2-6C51E84EEEB1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{58F18E64-7B86-4E9D-A9A2-6C51E84EEEB1}.Release|Any CPU.Deploy.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

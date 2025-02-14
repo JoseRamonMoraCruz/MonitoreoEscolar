@@ -60,6 +60,9 @@ button {
     transition: background-color 0.3s ease-in-out;
     margin-top: 15px;
 }
+        .button:hover {
+            background-color: #D32F2F;
+        }
 
 label {
     color: wheat;

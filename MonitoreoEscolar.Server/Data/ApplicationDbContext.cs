@@ -1,23 +1,24 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using MonitoreoEscolar.Server.Models;
 
 namespace MonitoreoEscolar.Server.Data
 {
     public class ApplicationDbContext : DbContext
     {
-        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
+        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
+            : base(options)
         {
         }
 
         public DbSet<Usuario> Usuarios { get; set; }
-    }
 
-    public class Usuario
-    {
-        public int Id_Usuario { get; set; }
-        public string Nombre { get; set; }
-        public string Apellidos { get; set; }
-        public string Contrasena { get; set; }
-        public string Correo { get; set; }
-        public string Tipo_Usuario { get; set; }
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+
+            // 🔹 Asegurar que Id_Usuario es clave primaria
+            modelBuilder.Entity<Usuario>()
+                .HasKey(u => u.Id_Usuario);
+        }
     }
 }

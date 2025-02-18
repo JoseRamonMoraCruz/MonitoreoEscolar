@@ -16,7 +16,7 @@ namespace MonitoreoEscolar.Server.Data
         {
             base.OnModelCreating(modelBuilder);
 
-            //  Asegurar que Id_Usuario es clave primaria
+            //  Asegurar que Id_Usuario es clave primaria en la base de datos
             modelBuilder.Entity<Usuario>()
                 .HasKey(u => u.Id_Usuario);
         }

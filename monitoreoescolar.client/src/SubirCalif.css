@@ -1,0 +1,75 @@
+﻿:root {
+    background-color: #9AD3FE;
+}
+
+.page-container {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    width: 100vw;
+}
+
+/* ✅ Contenedor centrado */
+.container {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* ✅ Caja principal */
+.content-box {
+    background-color: #004080;
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 10px 10px 20px rgba(0, 0, 0, 1);
+    text-align: center;
+    width: 500px;
+    color: white;
+}
+
+/* ✅ Estilo del encabezado */
+.title {
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 400px; /* 🔹 Aumenta la separación del título */
+}
+
+/* ✅ Contenedor de botones con más espacio */
+.button-container {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 400px; /* 🔹 Aumenta la separación entre el contenido y los botones */
+}
+
+/* ✅ Estilo de los botones */
+.btn {
+    padding: 12px 20px;
+    font-size: 16px;
+    font-weight: bold;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: background-color 0.3s ease-in-out;
+    width: 45%;
+}
+
+/* Botón de "Elegir Archivo" */
+.choose-file {
+    background-color: #8800ff;
+    color: white;
+}
+
+    .choose-file:hover {
+        background-color: #6a00cc;
+    }
+
+/* Botón de "Cargar Datos" */
+.upload-data {
+    background-color: #0066ff;
+    color: white;
+}
+
+    .upload-data:hover {
+        background-color: #004fcc;
+    }

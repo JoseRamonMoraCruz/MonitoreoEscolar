@@ -2,35 +2,36 @@ import { useState, useEffect } from "react";
 import "./Padre.css";
 
 const Padre = () => {
-    // Estado para almacenar los datos de la base de datos
     const [calificaciones, setCalificaciones] = useState([]);
     const [asistencias, setAsistencias] = useState([]);
     const [malaConducta, setMalaConducta] = useState("");
 
-    // Simulación de carga de datos (más adelante se puede conectar a una API real)
     useEffect(() => {
-        // Datos corregidos con codificación correcta
         setCalificaciones([
-            { materia: "Matemáticas", calificacion: 10, grupo: "1° A", parcial: "Primera" },
-            { materia: "Español", calificacion: 9, grupo: "1° A", parcial: "Primera" }
+            { materia: "Matematicas", calificacion: 10, grupo: "1 A", parcial: "Primera" },
+            { materia: "Ciencias Naturales", calificacion: 9, grupo: "1 A", parcial: "Primera" },
+            { materia: "Fisica", calificacion: 9, grupo: "1 A", parcial: "Primera" }
         ]);
 
         setAsistencias([
-            { fecha: "26/03/2025", nombre: "Juan Manuel Márquez Márquez", asistencia: "Presente", grupo: "A" }
+            { fecha: "26/03/2025", nombre: "Juan Manuel Marquez Marquez", asistencia: "Presente", grupo: "A" }
         ]);
 
-        setMalaConducta("Agresión a docente escolar");
+        setMalaConducta("Agresion a docente escolar");
     }, []);
 
     return (
-        <div className="padre-container">
-            <h3 className="titulo-seccion">Vista padre-alumno</h3>
+        <>
+            {/* Línea negra tipo menú */}
+            <div className="menu-bar"></div>
 
-            {/* Sección de Calificaciones */}
-            {calificaciones.length > 0 ? (
+            <div className="padre-container">
+                <h1 className="titulo-seccion">Reportes Escolares</h1>
+
+                {/* Calificaciones */}
                 <div className="seccion">
                     <h2>Calificaciones</h2>
-                    <table>
+                    <table className="styled-table">
                         <thead>
                             <tr>
                                 <th>Materia</th>
@@ -51,15 +52,11 @@ const Padre = () => {
                         </tbody>
                     </table>
                 </div>
-            ) : (
-                <p className="mensaje-vacio">No hay calificaciones registradas.</p>
-            )}
 
-            {/* Sección de Reportes de Asistencias */}
-            {asistencias.length > 0 ? (
+                {/* Reportes de Asistencia */}
                 <div className="seccion">
-                    <h2>Reportes de asistencias</h2>
-                    <table>
+                    <h2>Reportes de Asistencia</h2>
+                    <table className="styled-table">
                         <thead>
                             <tr>
                                 <th>Fecha</th>
@@ -80,20 +77,14 @@ const Padre = () => {
                         </tbody>
                     </table>
                 </div>
-            ) : (
-                <p className="mensaje-vacio">No hay registros de asistencia.</p>
-            )}
 
-            {/* Sección de Reporte de mala conducta */}
-            {malaConducta ? (
+                {/* Reporte de Mala Conducta */}
                 <div className="seccion">
-                    <h2>Reporte de mala conducta</h2>
-                    <p><strong>Situación:</strong> {malaConducta}</p>
+                    <h2>Reporte de Mala Conducta</h2>
+                    <p><strong>Situacion:</strong> {malaConducta}</p>
                 </div>
-            ) : (
-                <p className="mensaje-vacio">No hay reportes de mala conducta.</p>
-            )}
-        </div>
+            </div>
+        </>
     );
 };
 

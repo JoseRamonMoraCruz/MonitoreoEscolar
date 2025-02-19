@@ -25,6 +25,7 @@ function App() {
                 <Route path="/generar-reportes" element={<GenerarReportes />} />
                 <Route path="/agregar-alumno" element={<AgregarAlumno />} />
                 <Route path="/notificaciones" element={<Notificaciones />} />
+                <Route path= "/padre" element={<Padre />} />"
             </Routes> */}
         </>
     );

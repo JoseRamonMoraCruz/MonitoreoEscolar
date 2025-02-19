@@ -11,7 +11,7 @@ import Notificaciones from "./Notificaciones"; */}
 function App() {
     return (
         <>
-            {/* Rutas para Login y Registro (Inicialmente estas serán las únicas visibles) */}
+            {/* Rutas  para Login y Registro (Inicialmente estas serán las únicas visibles) */}
             <Routes>
                 <Route path="/" element={<Login />} />
                 <Route path="/registro" element={<Registro />} />

@@ -1,6 +1,4 @@
-﻿using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using MonitoreoEscolar.Server.Models;
 
 namespace MonitoreoEscolar.Server.Data
@@ -13,10 +11,6 @@ namespace MonitoreoEscolar.Server.Data
         }
 
         public DbSet<Usuario> Usuarios { get; set; }
-        public DbSet<PersonalEscolar> PersonalEscolar { get; set; }
-        public DbSet<Alumno> Alumnos { get; set; }
-        public DbSet<Padre> Padres { get; set; }
-    }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -26,13 +20,5 @@ namespace MonitoreoEscolar.Server.Data
             modelBuilder.Entity<Usuario>()
                 .HasKey(u => u.Id_Usuario);
         }
-
-    public class Padre
-    {
-        public int Id { get; set; }
-        public int IdUsuario { get; set; }
-        public int IdAlumno { get; set; }
-        public Usuario Usuario { get; set; }
-        public Alumno Alumno { get; set; }
     }
 }

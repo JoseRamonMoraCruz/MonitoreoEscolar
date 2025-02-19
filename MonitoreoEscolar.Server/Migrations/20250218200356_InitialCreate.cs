@@ -5,7 +5,7 @@
 namespace MonitoreoEscolar.Server.Migrations
 {
     /// <inheritdoc />
-    public partial class FixUsuarioPrimaryKey : Migration
+    public partial class InitialCreate : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)

@@ -7,7 +7,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"), sqlServerOptions =>
     {
-        sqlServerOptions.EnableRetryOnFailure(); // 🔥 Maneja errores de conexión
+        sqlServerOptions.EnableRetryOnFailure(); //  Maneja errores de conexión
     })
     .EnableSensitiveDataLogging() //  Logs detallados
 );
@@ -28,7 +28,6 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-//  Verificar conexión con SQL Server antes de iniciar la API
 //  Verificar conexión con SQL Server antes de iniciar la API
 using (var scope = app.Services.CreateScope())
 {

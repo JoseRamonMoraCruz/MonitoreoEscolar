@@ -11,7 +11,7 @@ using MonitoreoEscolar.Server.Data;
 namespace MonitoreoEscolar.Server.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250217200001_InitialCreate")]
+    [Migration("20250218200356_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />

@@ -7,11 +7,21 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"), sqlServerOptions =>
     {
-        sqlServerOptions.EnableRetryOnFailure(); //  Maneja errores de conexión
+        sqlServerOptions.EnableRetryOnFailure(); // Maneja errores de conexión
     })
     .EnableSensitiveDataLogging() //  Logs detallados
 );
 
+//  Agregar política CORS para permitir conexiones desde el frontend
+var corsPolicyName = "AllowFrontend";
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(corsPolicyName, policy =>
+        policy.WithOrigins("https://localhost:55052") //  URL del frontend
+              .AllowAnyMethod()
+              .AllowAnyHeader()
+              .AllowCredentials());
+});
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
@@ -65,9 +75,11 @@ using (var scope = app.Services.CreateScope())
     }
 }
 
+// 🔹 Agregar CORS antes de Authorization
+app.UseCors(corsPolicyName);
 
-// Middleware y configuración de API
 app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
+

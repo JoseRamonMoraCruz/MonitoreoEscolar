@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using MonitoreoEscolar.Server.Data;
 
@@ -10,9 +11,19 @@ using MonitoreoEscolar.Server.Data;
 namespace MonitoreoEscolar.Server.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+<<<<<<< HEAD:MonitoreoEscolar.Server/Migrations/20250218183223_InitialCreate.Designer.cs
+<<<<<<<< HEAD:MonitoreoEscolar.Server/Migrations/20250218200356_InitialCreate.Designer.cs
+    [Migration("20250218200356_InitialCreate")]
+========
+    [Migration("20250218183223_InitialCreate")]
+>>>>>>>> Rama_hector:MonitoreoEscolar.Server/Migrations/20250218183223_InitialCreate.Designer.cs
+=======
+    [Migration("20250219175949_InitialCreate")]
+>>>>>>> Rama_hector:MonitoreoEscolar.Server/Migrations/20250219175949_InitialCreate.Designer.cs
+    partial class InitialCreate
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

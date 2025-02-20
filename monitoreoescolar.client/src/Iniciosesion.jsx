@@ -1,26 +1,36 @@
 ﻿import { useState } from 'react';
+import axios from 'axios';
+import { useNavigate, Link } from 'react-router-dom';
 import './Iniciosesion.css';
-import { Link } from 'react-router-dom';
 
 const Login = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
-    const [showPassword, setShowPassword] = useState(false); // Estado para mostrar/ocultar contraseña
+    const navigate = useNavigate();
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
 
-        if (!email || !password) {
-            setError('Por favor, ingrese ambos campos');
-            return;
+        try {
+            const response = await axios.post("/api/usuarios/login", {
+                correo: email,
+                contrasena: password
+            });
+
+
+            const usuario = response.data.usuario;
+
+            alert(response.data.mensaje);
+
+            if (usuario.tipo_Usuario === "personal") {
+                navigate("/menu"); // Redirige al menú si es Personal Escolar
+            } else {
+                navigate("/dashboard-padre"); // Para padres en el futuro
+            }
+        } catch (error) {
+            setError(error.response?.data?.mensaje || "❌ Error en el inicio de sesión.");
         }
-
-        console.log('Email:', email);
-        console.log('Password:', password);
-
-        setEmail('');
-        setPassword('');
     };
 
     return (
@@ -29,40 +39,14 @@ const Login = () => {
                 <h2>Iniciar sesión</h2>
                 {error && <p style={{ color: 'red' }}>{error}</p>}
                 <form onSubmit={handleSubmit}>
-                    <div>
-                        <label>Email</label>
-                        <input
-                            type="email"
-                            placeholder="Ingrese su correo"
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                            required
-                        />
-                    </div>
-                    <div className="container-label">
-                        <label>Password</label>
-                        <div className="password-container">
-                            <input
-                                type={showPassword ? "text" : "password"}
-                                placeholder="Ingrese su password"
-                                value={password}
-                                onChange={(e) => setPassword(e.target.value)}
-                                required
-                            />
-                            <span
-                                className="toggle-password"
-                                onClick={() => setShowPassword(!showPassword)}
-                            >
-                                {showPassword ? "👁️" : "🔒"}
-                            </span>
-                        </div>
-                    </div>
+                    <input type="email" placeholder="Ingrese su correo" value={email} onChange={(e) => setEmail(e.target.value)} required />
+                    <input type="password" placeholder="Ingrese su password" value={password} onChange={(e) => setPassword(e.target.value)} required />
                     <button type="submit">Iniciar sesión</button>
                 </form>
+
+                {/* Agregamos el link al registro */}
                 <div className="register-link">
-                    <p>
-                        <Link to="/registro">No tengo cuenta</Link>
-                    </p>
+                    <p>¿No tienes cuenta? <Link to="/registro">Regístrate aquí</Link></p>
                 </div>
             </div>
         </div>
@@ -70,3 +54,7 @@ const Login = () => {
 };
 
 export default Login;
+
+
+
+                

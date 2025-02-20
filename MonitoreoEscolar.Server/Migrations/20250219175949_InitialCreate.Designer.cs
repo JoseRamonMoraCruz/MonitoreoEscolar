@@ -11,7 +11,7 @@ using MonitoreoEscolar.Server.Data;
 namespace MonitoreoEscolar.Server.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250218183223_InitialCreate")]
+    [Migration("20250219175949_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -47,6 +47,9 @@ namespace MonitoreoEscolar.Server.Migrations
                     b.Property<string>("Nombre")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Telefono")
+                        .HasColumnType("int");
 
                     b.Property<string>("Tipo_Usuario")
                         .IsRequired()

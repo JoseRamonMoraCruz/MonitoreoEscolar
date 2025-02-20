@@ -25,8 +25,8 @@ const Login = () => {
 
             if (usuario.tipo_Usuario === "personal") {
                 navigate("/menu"); // Redirige al menú si es Personal Escolar
-            } else {
-                navigate("/dashboard-padre"); // Para padres en el futuro
+            } else if (usuario.tipo_Usuario === "padre") {
+                navigate("/padre"); // Para padres 
             }
         } catch (error) {
             setError(error.response?.data?.mensaje || "❌ Error en el inicio de sesión.");

@@ -45,8 +45,12 @@ namespace MonitoreoEscolar.Server.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("Telefono")
-                        .HasColumnType("int");
+                    b.Property<string>("NombreAlumno")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Telefono")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Tipo_Usuario")
                         .IsRequired()

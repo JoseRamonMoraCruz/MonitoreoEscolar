@@ -15,6 +15,7 @@ function App() {
             <Routes>
                 <Route path="/" element={<Login />} />
                 <Route path="/registro" element={<Registro />} />
+                <Route path="/padre" element={<Padre />} />
 
                 {/*  Rutas privadas con el menú persistente */}
                 <Route path="/*" element={<DashboardLayout />} />
@@ -33,8 +34,7 @@ function DashboardLayout() {
                 <Route path="/generar-reportes" element={<GenerarReportes />} />
                 <Route path="/agregar-alumno" element={<AgregarAlumno />} />
                 <Route path="/notificaciones" element={<Notificaciones />} />
-                <Route path="/padre" element={<Padre />} /> 
-            </Routes>
+            </Routes> 
         </>
     );
 }

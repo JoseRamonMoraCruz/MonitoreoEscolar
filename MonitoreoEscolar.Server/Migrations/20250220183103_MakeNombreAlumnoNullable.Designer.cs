@@ -11,16 +11,8 @@ using MonitoreoEscolar.Server.Data;
 namespace MonitoreoEscolar.Server.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-<<<<<<< HEAD:MonitoreoEscolar.Server/Migrations/20250218183223_InitialCreate.Designer.cs
-<<<<<<<< HEAD:MonitoreoEscolar.Server/Migrations/20250218200356_InitialCreate.Designer.cs
-    [Migration("20250218200356_InitialCreate")]
-========
-    [Migration("20250218183223_InitialCreate")]
->>>>>>>> Rama_hector:MonitoreoEscolar.Server/Migrations/20250218183223_InitialCreate.Designer.cs
-=======
-    [Migration("20250219175949_InitialCreate")]
->>>>>>> Rama_hector:MonitoreoEscolar.Server/Migrations/20250219175949_InitialCreate.Designer.cs
-    partial class InitialCreate
+    [Migration("20250220183103_MakeNombreAlumnoNullable")]
+    partial class MakeNombreAlumnoNullable
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -56,8 +48,12 @@ namespace MonitoreoEscolar.Server.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("Telefono")
-                        .HasColumnType("int");
+                    b.Property<string>("NombreAlumno")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Telefono")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Tipo_Usuario")
                         .IsRequired()

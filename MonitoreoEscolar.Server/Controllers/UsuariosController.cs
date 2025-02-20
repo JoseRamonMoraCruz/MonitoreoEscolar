@@ -21,22 +21,21 @@ namespace MonitoreoEscolar.Server.Controllers
         [HttpPost("registro")]
         public async Task<IActionResult> Registro([FromBody] Usuario request)
         {
-            // Verificar si el correo ya está registrado
             var usuarioExistente = await _context.Usuarios.FirstOrDefaultAsync(u => u.Correo == request.Correo);
             if (usuarioExistente != null)
             {
                 return BadRequest(new { mensaje = "❌ El correo ya está registrado." });
             }
 
-            // Crear el nuevo usuario
             var nuevoUsuario = new Usuario
             {
                 Nombre = request.Nombre,
                 Apellidos = request.Apellidos,
-                Contrasena = request.Contrasena, // 📌 Aquí se debe encriptar en el futuro
+                Contrasena = request.Contrasena,
                 Correo = request.Correo,
                 Telefono = request.Telefono,
-                Tipo_Usuario = request.Tipo_Usuario
+                Tipo_Usuario = request.Tipo_Usuario,
+                NombreAlumno = request.Tipo_Usuario == "padre" ? request.NombreAlumno : null // ✅ Solo se guarda si es Padre
             };
 
             _context.Usuarios.Add(nuevoUsuario);
@@ -44,6 +43,19 @@ namespace MonitoreoEscolar.Server.Controllers
 
             return Ok(new { mensaje = "✅ Usuario registrado exitosamente", usuario = nuevoUsuario });
         }
+
+        // 📌 Nuevo DTO para el registro de usuario( Se agrega NombreAlumno)
+        public class UsuarioRequest
+        {
+            public string Nombre { get; set; }
+            public string Apellidos { get; set; }
+            public string Correo { get; set; }
+            public string Telefono { get; set; }
+            public string Contrasena { get; set; }
+            public string Tipo_Usuario { get; set; }
+            public string NombreAlumno { get; set; } // Solo si es Padre
+        }
+
 
         //LOGIN    
 

@@ -75,7 +75,7 @@ using (var scope = app.Services.CreateScope())
     }
 }
 
-// 🔹 Agregar CORS antes de Authorization
+//  Agregar CORS antes de Authorization
 app.UseCors(corsPolicyName);
 
 app.UseAuthorization();

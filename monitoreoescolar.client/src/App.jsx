@@ -1,4 +1,4 @@
-﻿import { Routes, Route } from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
 import Login from "./Iniciosesion";
 import Registro from "./Registro";
 import SubirCalif from "./SubirCalif";
@@ -6,6 +6,7 @@ import GenerarReportes from "./GenerarReportes";
 import Menu from "./Menu";
 import AgregarAlumno from "./AgregarAlumno";
 import Notificaciones from "./Notificaciones";
+import Padre from "./Padre";
 
 function App() {
     return (
@@ -32,7 +33,8 @@ function DashboardLayout() {
                 <Route path="/generar-reportes" element={<GenerarReportes />} />
                 <Route path="/agregar-alumno" element={<AgregarAlumno />} />
                 <Route path="/notificaciones" element={<Notificaciones />} />
-            </Routes>
+                <Route path= "/padre" element={<Padre />} />
+            </Routes> 
         </>
     );
 }

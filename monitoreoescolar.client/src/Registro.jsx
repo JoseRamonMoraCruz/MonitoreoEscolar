@@ -9,6 +9,7 @@ export default function Registro() {
     const [correo, setCorreo] = useState("");
     const [telefono, setTelefono] = useState("");
     const [contrasena, setContrasena] = useState("");
+    const [nombreAlumno, setNombreAlumno] = useState(""); //  Nuevo campo para Padres
     const [error, setError] = useState("");
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
@@ -16,13 +17,18 @@ export default function Registro() {
     const handleRegistro = async (e) => {
         e.preventDefault();
 
-        if (!nombre || !apellidos || !telefono ||!correo || !contrasena) {
+        if (!nombre || !apellidos || !telefono || !correo || !contrasena) {
             setError("❌ Todos los campos son obligatorios.");
             return;
         }
 
         if (!correo.includes("@")) {
             setError("❌ Ingresa un correo válido.");
+            return;
+        }
+
+        if (tipoUsuario === "padre" && !nombreAlumno) {
+            setError("❌ Ingresa el nombre del alumno.");
             return;
         }
 
@@ -34,13 +40,14 @@ export default function Registro() {
             correo,
             telefono,
             contrasena,
-            tipo_Usuario: tipoUsuario
+            tipo_Usuario: tipoUsuario,
+            nombreAlumno: tipoUsuario === "padre" ? nombreAlumno : null // 🔹 Solo si es Padre
         };
 
         try {
             const response = await axios.post("/api/usuarios/registro", usuario);
             alert(response.data.mensaje);
-            navigate("/"); //Redirige al login tras el registro
+            navigate("/"); // Redirige al login tras el registro
         } catch (error) {
             console.error("Error en el registro:", error.response?.data || error.message);
             setError(error.response?.data?.mensaje || "❌ Error en el registro.");
@@ -82,9 +89,9 @@ export default function Registro() {
                     <input type="tel" placeholder="Telefono" className="input-field" value={telefono} onChange={(e) => setTelefono(e.target.value)} />
                     <input type="email" placeholder="Correo" className="input-field" value={correo} onChange={(e) => setCorreo(e.target.value)} required />
 
-                    {/* Este campo solo se muestra si el usuario es "Padre", pero aún no lo registramos en el backend */}
+                    {/* Este campo solo se muestra si el usuario es "Padre" */}
                     {tipoUsuario === "padre" && (
-                        <input type="text" placeholder="Nombre del Alumn@" className="input-field" />
+                        <input type="text" placeholder="Nombre del Alumn@" className="input-field" value={nombreAlumno} onChange={(e) => setNombreAlumno(e.target.value)} required />
                     )}
 
                     <button type="submit" className="submit-button" disabled={loading}>
@@ -95,4 +102,3 @@ export default function Registro() {
         </div>
     );
 }
-

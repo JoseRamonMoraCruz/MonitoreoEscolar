@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import "./Padre.css";
 
 const Padre = () => {
@@ -23,7 +24,11 @@ const Padre = () => {
     return (
         <>
             {/* Línea negra tipo menú */}
-            <div className="menu-bar"></div>
+            <nav className="menu-bar">
+                <ul className="menu-list">
+                    <li><Link to="/" className="logout-link">Cerrar Sesion</Link></li>
+                </ul>
+            </nav>
 
             <div className="padre-container">
                 <h1 className="titulo-seccion">Reportes Escolares</h1>

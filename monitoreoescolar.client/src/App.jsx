@@ -6,6 +6,7 @@ import GenerarReportes from "./GenerarReportes";
 import Menu from "./Menu";
 import AgregarAlumno from "./AgregarAlumno";
 import Notificaciones from "./Notificaciones";
+import Padre from "./Padre";
 
 function App() {
     return (
@@ -32,6 +33,7 @@ function DashboardLayout() {
                 <Route path="/generar-reportes" element={<GenerarReportes />} />
                 <Route path="/agregar-alumno" element={<AgregarAlumno />} />
                 <Route path="/notificaciones" element={<Notificaciones />} />
+                <Route path="/padre" element={<Padre />} /> 
             </Routes>
         </>
     );

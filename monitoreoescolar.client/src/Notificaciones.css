@@ -1,46 +1,33 @@
-﻿.page-container {
+﻿.notificaciones-container {
     display: flex;
     flex-direction: column;
     height: 100vh;
     width: 100vw;
-}
-
-.container {
-    flex: 1;
-    display: flex;
-    justify-content: center;
     align-items: center;
+    justify-content: center;
+    padding-left: 20px;
 }
 
-.content-box {
-    background-color: #004080;
+.notificaciones-content {
+    background-color: #384147;
     padding: 30px;
     border-radius: 15px;
     box-shadow: 10px 10px 20px rgba(0, 0, 0, 1);
-    text-align: center;
-    width: 500px;
     color: white;
+    width: 500px;
+    text-align: left;
 }
 
-/* ✅ Estilo del título */
-.title {
-    font-size: 24px;
-    font-weight: bold;
-    margin-bottom: 20px;
-}
-
-/* ✅ Contenedor del buscador */
-.search-container {
+.notificaciones-search-container {
     display: flex;
     align-items: center;
     background-color: white;
-    border-radius: 20px;
-    padding: 10px;
-    margin-bottom: 20px;
+    border-radius: 30px;
+    padding: 8px;
+    width: 100%;
 }
 
-    /* ✅ Input de búsqueda */
-    .search-container input {
+    .notificaciones-search-container input {
         border: none;
         width: 100%;
         font-size: 16px;
@@ -49,27 +36,30 @@
         border-radius: 20px;
     }
 
-/* ✅ Botón de búsqueda (icono de lupa) */
-.search-button {
+.notificaciones-search-button {
     background-color: #0066ff;
     color: white;
     border: none;
     border-radius: 50%;
-    font-size: 18px;
-    padding: 8px 12px;
+    font-size: 16px;
+    padding: 8px;
     cursor: pointer;
     transition: 0.3s;
-    margin-left: 10px;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
-    .search-button:hover {
+    .notificaciones-search-button:hover {
         background-color: #004fcc;
     }
 
-/* ✅ Resultado de búsqueda */
-.result-container {
+.notificaciones-result-container {
     background-color: #002B55;
     padding: 15px;
     border-radius: 10px;
     font-size: 18px;
+    margin-top: 10px;
 }

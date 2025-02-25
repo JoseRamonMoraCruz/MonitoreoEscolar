@@ -2,21 +2,17 @@
 
 const Notificaciones = () => {
     return (
-        <div className="page-container">
-            <div className="container">
-                <div className="content-box">
-                    <h2 className="title">Notificaciones</h2>
+        <div className="notificaciones-container">
+            <div className="notificaciones-content">
+                <h2 className="notificaciones-title">Notificaciones</h2>
 
-                    {/* Campo de búsqueda con botón */}
-                    <div className="search-container">
-                        <input type="text" placeholder="Buscar padre de familia" />
-                        <button className="search-button">🔍</button>
-                    </div>
+                <div className="notificaciones-search-container">
+                    <input type="text" placeholder="Buscar padre de familia" />
+                    <button className="notificaciones-search-button">🔍</button>
+                </div>
 
-                    {/* Resultado de búsqueda (simulado) */}
-                    <div className="result-container">
-                        <p><strong>Julia Marquez Martines</strong> -------------- <strong>443 ***</strong></p>
-                    </div>
+                <div className="notificaciones-result-container">
+                    <p><strong>Julia Marquez Martines</strong> -------------- <strong>443 ***</strong></p>
                 </div>
             </div>
         </div>

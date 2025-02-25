@@ -1,41 +1,53 @@
-﻿.page-container {
-    display: flex;
-    flex-direction: column;
-    height: 100vh;
-    width: 100vw;
-}
-
-.container {
-    flex: 1;
+﻿.agregar-alumno-container {
     display: flex;
     justify-content: center;
     align-items: center;
+    height: 100vh;
+    width: 100vw;
+    background-color: #B3D9FF; /* Fondo */
 }
 
-.content-box {
-    background-color: #004080;
+.agregar-alumno-content {
+    background-color: #384147;
     padding: 30px;
     border-radius: 15px;
     box-shadow: 10px 10px 20px rgba(0, 0, 0, 1);
-    text-align: center;
-    width: 500px;
     color: white;
+    width: 550px; /* Ancho ajustado */
+    text-align: left;
+}
+
+/* ✅ Título */
+.agregar-alumno-title {
+    font-size: 22px;
+    font-weight: bold;
+    margin-bottom: 15px;
 }
 
 /* ✅ Formulario */
-.form-group {
+.agregar-alumno-form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+/* ✅ Contenedor de cada input alineado */
+.agregar-alumno-group {
     display: flex;
     flex-direction: column;
     text-align: left;
-    margin-bottom: 20px;
+    margin-bottom: 10px;
 }
 
-    .form-group label {
+    .agregar-alumno-group label {
         font-weight: bold;
+        font-size: 16px;
+        color: #F4E4BA; /* Color del texto */
         margin-bottom: 5px;
     }
 
-    .form-group input {
+    /* ✅ Inputs */
+    .agregar-alumno-group input {
         width: 100%;
         padding: 10px;
         border-radius: 8px;
@@ -44,19 +56,21 @@
         font-size: 16px;
     }
 
-/* ✅ Botón de guardar */
-.save-btn {
-    background-color: #0066ff;
-    color: white;
+/* ✅ Botón de guardar alineado */
+.agregar-alumno-btn {
     padding: 12px;
+    font-size: 16px;
     font-weight: bold;
-    border-radius: 8px;
     border: none;
+    border-radius: 8px;
     cursor: pointer;
-    transition: 0.3s;
-    width: 100%;
+    background-color: #8800ff;
+    color: white;
+    transition: background-color 0.3s ease-in-out;
+    width: 130px;
+    align-self: flex-end;
 }
 
-    .save-btn:hover {
-        background-color: #004fcc;
+    .agregar-alumno-btn:hover {
+        background-color: #6a00cc;
     }

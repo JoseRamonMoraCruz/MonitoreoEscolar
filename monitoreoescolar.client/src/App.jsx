@@ -1,4 +1,4 @@
-﻿import { Routes, Route } from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
 import Login from "./Iniciosesion";
 import Registro from "./Registro";
 import SubirCalif from "./SubirCalif";

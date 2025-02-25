@@ -11,11 +11,7 @@ using MonitoreoEscolar.Server.Data;
 namespace MonitoreoEscolar.Server.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-<<<<<<<< HEAD:MonitoreoEscolar.Server/Migrations/20250218200356_InitialCreate.Designer.cs
-    [Migration("20250218200356_InitialCreate")]
-========
-    [Migration("20250218183223_InitialCreate")]
->>>>>>>> Rama_hector:MonitoreoEscolar.Server/Migrations/20250218183223_InitialCreate.Designer.cs
+    [Migration("20250220175206_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -49,6 +45,14 @@ namespace MonitoreoEscolar.Server.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Nombre")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("NombreAlumno")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Telefono")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 

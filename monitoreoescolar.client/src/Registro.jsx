@@ -1,6 +1,8 @@
 ﻿import { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import familiaIcon from "./assets/familia.png"; // Imagen para "Padre"
+import escuelaIcon from "./assets/edificio-escolar.png"; // Imagen para "Personal Escolar"
 
 export default function Registro() {
     const [tipoUsuario, setTipoUsuario] = useState("personal"); // Por defecto en "Personal Escolar"
@@ -9,7 +11,7 @@ export default function Registro() {
     const [correo, setCorreo] = useState("");
     const [telefono, setTelefono] = useState("");
     const [contrasena, setContrasena] = useState("");
-    const [nombreAlumno, setNombreAlumno] = useState(""); //  Nuevo campo para Padres
+    const [nombreAlumno, setNombreAlumno] = useState(""); // Nuevo campo para Padres
     const [error, setError] = useState("");
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
@@ -58,8 +60,15 @@ export default function Registro() {
 
     return (
         <div className="container">
-            <div className="register-container">
-                <h2 className="register-title">Registra tus datos</h2>
+            <div className={`register-container ${tipoUsuario === "padre" ? "padre" : ""}`}>
+                <h2 className="register-title">Regístrate</h2>
+
+                {/* Imagen dinámica */}
+                <img
+                    src={tipoUsuario === "padre" ? familiaIcon : escuelaIcon}
+                    alt="Tipo de usuario"
+                    className="user-icon"
+                />
 
                 {error && <p style={{ color: 'red' }}>{error}</p>}
 
@@ -85,8 +94,8 @@ export default function Registro() {
                 <form onSubmit={handleRegistro}>
                     <input type="text" placeholder="Nombre" className="input-field" value={nombre} onChange={(e) => setNombre(e.target.value)} required />
                     <input type="text" placeholder="Apellidos" className="input-field" value={apellidos} onChange={(e) => setApellidos(e.target.value)} required />
-                    <input type="password" placeholder="Password" className="input-field" value={contrasena} onChange={(e) => setContrasena(e.target.value)} required />
-                    <input type="tel" placeholder="Telefono" className="input-field" value={telefono} onChange={(e) => setTelefono(e.target.value)} />
+                    <input type="password" placeholder="Contraseña" className="input-field" value={contrasena} onChange={(e) => setContrasena(e.target.value)} required />
+                    <input type="tel" placeholder="Teléfono" className="input-field" value={telefono} onChange={(e) => setTelefono(e.target.value)} />
                     <input type="email" placeholder="Correo" className="input-field" value={correo} onChange={(e) => setCorreo(e.target.value)} required />
 
                     {/* Este campo solo se muestra si el usuario es "Padre" */}
@@ -95,7 +104,7 @@ export default function Registro() {
                     )}
 
                     <button type="submit" className="submit-button" disabled={loading}>
-                        {loading ? "Creando cuenta..." : "CREAR CUENTA"}
+                        {loading ? "Creando cuenta..." : "CREAR UNA CUENTA"}
                     </button>
                 </form>
             </div>

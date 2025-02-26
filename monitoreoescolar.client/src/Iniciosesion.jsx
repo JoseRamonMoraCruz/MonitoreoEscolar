@@ -2,6 +2,7 @@
 import axios from 'axios';
 import { useNavigate, Link } from 'react-router-dom';
 import './Iniciosesion.css';
+import birreteIcon from './assets/sombrero-de-graduado.png'; // Asegúrate de que la imagen esté en la carpeta correcta
 
 const Login = () => {
     const [email, setEmail] = useState('');
@@ -18,7 +19,6 @@ const Login = () => {
                 contrasena: password
             });
 
-
             const usuario = response.data.usuario;
 
             alert(response.data.mensaje);
@@ -34,19 +34,40 @@ const Login = () => {
     };
 
     return (
-        <div className="container">
-            <div className="login-container">
-                <h2>Iniciar sesión</h2>
-                {error && <p style={{ color: 'red' }}>{error}</p>}
+        <div className="login-container-wrapper">
+            <div className="login-box">
+                <h2>Iniciar Sesión</h2>
+
+                {/* Imagen del birrete */}
+                <img src={birreteIcon} alt="Birrete" className="birrete-icon" />
+
+                {error && <p className="error-message">{error}</p>}
+
                 <form onSubmit={handleSubmit}>
-                    <input type="email" placeholder="Ingrese su correo" value={email} onChange={(e) => setEmail(e.target.value)} required />
-                    <input type="password" placeholder="Ingrese su password" value={password} onChange={(e) => setPassword(e.target.value)} required />
-                    <button type="submit">Iniciar sesión</button>
+                    <input
+                        type="email"
+                        placeholder="Usuario"
+                        className="login-input"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        required
+                    />
+                    <input
+                        type="password"
+                        placeholder="Contraseña"
+                        className="login-input"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        required
+                    />
+                    <button type="submit" className="login-button">Iniciar sesión</button>
                 </form>
 
-                {/* Agregamos el link al registro */}
+                {/* Línea divisoria */}
+                <div className="separator"></div>
+
                 <div className="register-link">
-                    <p>¿No tienes cuenta? <Link to="/registro">Regístrate aquí</Link></p>
+                    <span>No tengo cuenta</span> <Link to="/registro">Registrarse</Link>
                 </div>
             </div>
         </div>
@@ -54,7 +75,3 @@ const Login = () => {
 };
 
 export default Login;
-
-
-
-                

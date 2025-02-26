@@ -11,26 +11,41 @@
 }
 
 .register-container {
-    background-color: #004080;
+    background-color: #2E2E38;
     padding: 30px;
     border-radius: 15px;
-    box-shadow: 10px 10px 20px rgba(0, 0, 0, 1); /* Sombra más pronunciada */
+    box-shadow: 10px 10px 20px rgba(0, 0, 0, 1);
     text-align: center;
-    width: 450px;
+    width: 450px; /* Tamaño base */
+    transition: all 0.3s ease-in-out; /* Animación suave */
+}
+
+    /* Si el usuario es Padre, reducimos un poco el tamaño */
+    .register-container.padre {
+        width: 420px; /* Reducido un poco */
+        padding: 25px; /* Un poco menos de padding */
+    }
+
+/* Imagen de usuario */
+.user-icon {
+    width: 60px;
+    height: 60px;
+    margin-bottom: 15px;
 }
 
 .register-title {
-    font-size: 22px;
+    font-size: 24px;
     font-weight: bold;
     color: white;
     text-align: center;
-    margin-bottom: 20px;
+    margin-bottom: 15px;
 }
 
 /* Botones de selección */
 .selector-container {
     display: flex;
-    justify-content: space-between;
+    justify-content: center;
+    gap: 10px;
     width: 100%;
     margin-bottom: 20px;
 }
@@ -50,16 +65,10 @@
 }
 
     .selector-button.selected {
-        background-color: #D32F2F;
+        background-color: #4A90E2;
     }
 
 /* Formulario */
-form {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
-
 .input-field {
     width: calc(100% - 10px);
     padding: 12px;
@@ -69,15 +78,9 @@ form {
     text-align: center;
     font-size: 18px;
     outline: none;
-    transition: background-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
     margin: 7px 0;
     box-sizing: border-box;
 }
-
-    .input-field:focus {
-        background-color: #ececec;
-        box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
-    }
 
 /* Botón de envío */
 .submit-button {

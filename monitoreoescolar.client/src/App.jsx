@@ -27,18 +27,18 @@ function App() {
 //Funcion para que el menu sea visible en todas las pestañas
 function DashboardLayout() {
     return (
-        <>
-            <Menu /> {/* Este menú siempre estará visible */}
-            <Routes>
-                <Route path="/subir-calif" element={<SubirCalif />} />
-                <Route path="/generar-reportes" element={<GenerarReportes />} />
-                <Route path="/agregar-alumno" element={<AgregarAlumno />} />
-                <Route path="/notificaciones" element={<Notificaciones />} />
-            </Routes> 
-        </>
+        <div className="dashboard-container">
+            <Menu /> {/* ✅ Asegura que el menú siempre esté presente */}
+            <div className="content">
+                <Routes>
+                    <Route path="/subir-calif" element={<SubirCalif />} />
+                    <Route path="/generar-reportes" element={<GenerarReportes />} />
+                    <Route path="/agregar-alumno" element={<AgregarAlumno />} />
+                    <Route path="/notificaciones" element={<Notificaciones />} />
+                </Routes>
+            </div>
+        </div>
     );
 }
 
 export default App;
-
-

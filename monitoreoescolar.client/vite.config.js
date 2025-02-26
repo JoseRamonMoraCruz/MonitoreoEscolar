@@ -45,6 +45,7 @@ export default defineConfig({
         }
     },
     server: {
+        //strictPort: true,   //forzamos a que se ejecute fronend en esa url(dara error si esta ocupado)
         proxy: {
             '^/weatherforecast': {
                 target,

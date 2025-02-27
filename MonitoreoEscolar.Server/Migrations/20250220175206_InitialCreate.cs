@@ -5,7 +5,7 @@
 namespace MonitoreoEscolar.Server.Migrations
 {
     /// <inheritdoc />
-    public partial class FixUsuarioPrimaryKey : Migration
+    public partial class InitialCreate : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -20,7 +20,9 @@ namespace MonitoreoEscolar.Server.Migrations
                     Apellidos = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Contrasena = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Correo = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Tipo_Usuario = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                    Telefono = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Tipo_Usuario = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    NombreAlumno = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
                 {

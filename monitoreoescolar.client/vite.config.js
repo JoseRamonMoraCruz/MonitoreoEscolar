@@ -1,5 +1,4 @@
 import { fileURLToPath, URL } from 'node:url';
-
 import { defineConfig } from 'vite';
 import plugin from '@vitejs/plugin-react';
 import fs from 'fs';
@@ -46,9 +45,16 @@ export default defineConfig({
         }
     },
     server: {
+        //strictPort: true,   //forzamos a que se ejecute fronend en esa url(dara error si esta ocupado)
         proxy: {
             '^/weatherforecast': {
                 target,
+                secure: false
+            },
+            // Agregamos el proxy para la API del backend
+            "/api": {
+                target,
+                changeOrigin: true,
                 secure: false
             }
         },
@@ -58,4 +64,4 @@ export default defineConfig({
             cert: fs.readFileSync(certFilePath),
         }
     }
-})
+});

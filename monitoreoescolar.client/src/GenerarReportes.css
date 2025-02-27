@@ -1,0 +1,83 @@
+﻿.generar-reportes-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    width: 100vw;
+    background-color: #B3D9FF; /* Fondo */
+}
+
+.generar-reportes-content {
+    background-color: #384147;
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 10px 10px 20px rgba(0, 0, 0, 1);
+    color: white;
+    width: 550px; /* Ancho ajustado */
+    text-align: left;
+}
+
+/* ✅ Título */
+.generar-reportes-title {
+    font-size: 22px;
+    font-weight: bold;
+    margin-bottom: 15px;
+}
+
+/* ✅ Formulario */
+.generar-reportes-form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+/* ✅ Contenedor de cada input alineado */
+.generar-reportes-group {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    text-align: left;
+    margin-bottom: 10px;
+}
+
+    .generar-reportes-group label {
+        font-weight: bold;
+        font-size: 16px;
+        color: #F4E4BA; /* Color del texto */
+        margin-bottom: 5px;
+    }
+
+    /* ✅ Inputs y Textarea */
+    .generar-reportes-group input,
+    .generar-reportes-group textarea {
+        width: 100%;
+        padding: 10px;
+        border-radius: 8px;
+        border: none;
+        background-color: #D9D9D9;
+        font-size: 16px;
+    }
+
+    .generar-reportes-group textarea {
+        height: 100px;
+        resize: none;
+    }
+
+/* ✅ Botón de generar alineado */
+.generar-reportes-btn {
+    padding: 12px;
+    font-size: 16px;
+    font-weight: bold;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    background-color: #8800ff;
+    color: white;
+    transition: background-color 0.3s ease-in-out;
+    width: 130px;
+    align-self: flex-end;
+}
+
+    .generar-reportes-btn:hover {
+        background-color: #6a00cc;
+    }

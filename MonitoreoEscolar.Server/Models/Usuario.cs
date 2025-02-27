@@ -21,6 +21,12 @@ namespace MonitoreoEscolar.Server.Models
         public string Correo { get; set; } = string.Empty;
 
         [Required]
+        public string Telefono { get; set; } = string.Empty;
+
+        [Required]
         public string Tipo_Usuario { get; set; } = string.Empty;
+
+        // Solo se usa si el usuario es Padre
+        public string? NombreAlumno { get; set; } 
     }
 }

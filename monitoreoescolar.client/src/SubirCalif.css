@@ -2,7 +2,7 @@
     background-color: #9AD3FE;
 }
 
-.page-container {
+.subir-page-container {
     display: flex;
     flex-direction: column;
     height: 100vh;
@@ -10,7 +10,7 @@
 }
 
 /* ✅ Contenedor centrado */
-.container {
+.subir-container {
     flex: 1;
     display: flex;
     justify-content: center;
@@ -18,7 +18,7 @@
 }
 
 /* ✅ Caja principal */
-.content-box {
+.subir-content-box {
     background-color: #384147;
     padding: 30px;
     border-radius: 15px;
@@ -29,17 +29,17 @@
 }
 
 /* ✅ Estilo del encabezado */
-.title {
+subir-title {
     font-size: 24px;
     font-weight: bold;
-    margin-bottom: 400px; /* 🔹 Aumenta la separación del título */
+    margin-bottom: 100px; /*  Aumenta la separación del título */
 }
 
 /* ✅ Contenedor de botones con más espacio */
-.button-container {
+.subir-button-container {
     display: flex;
     justify-content: space-between;
-    margin-top: 400px; /* 🔹 Aumenta la separación entre el contenido y los botones */
+    margin-top: 100px; /*  Aumenta la separación entre el contenido y los botones */
 }
 
 /* ✅ Estilo de los botones */
@@ -66,10 +66,10 @@
 
 /* Botón de "Cargar Datos" */
 .upload-data {
-    background-color: #0066ff;
+    background-color: #8800ff;
     color: white;
 }
 
     .upload-data:hover {
-        background-color: #004fcc;
+        background-color: #6a00cc;
     }

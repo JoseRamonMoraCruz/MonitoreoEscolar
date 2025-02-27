@@ -7,6 +7,7 @@ import Menu from "./Menu";
 import AgregarAlumno from "./AgregarAlumno";
 import Notificaciones from "./Notificaciones";
 import Padre from "./Padre";
+import ActualizarPassword from './ActualizarPassword';
 
 function App() {
     return (
@@ -16,6 +17,7 @@ function App() {
                 <Route path="/" element={<Login />} />
                 <Route path="/registro" element={<Registro />} />
                 <Route path="/padre" element={<Padre />} />
+                <Route path="/actualizar-password" element={<ActualizarPassword />} />
 
                 {/*  Rutas privadas con el menú persistente */}
                 <Route path="/*" element={<DashboardLayout />} />

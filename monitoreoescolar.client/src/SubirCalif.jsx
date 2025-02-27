@@ -2,18 +2,18 @@
 
 const SubirCalif = () => {
     return (
-        <div className="page-container">
+        <div className="subir-page-container">
 
             {/* Contenido principal */}
-            <div className="container">
-                <div className="content-box">
+            <div className="subir-container">
+                <div className="subir-content-box">
                     {/* ✅ Encabezado */}
-                    <h2 className="title">Subir Calificaciones</h2>
+                    <h2 className="subir-title">Subir Calificaciones</h2>
 
                     {/* ✅ Botones en la parte inferior */}
-                    <div className="button-container">
-                        <button className="btn choose-file">Elegir Archivo</button>
-                        <button className="btn upload-data">Cargar Datos</button>
+                    <div className="subir-button-container">
+                        <button className="btn choose-file">Elegir Archivo Excel</button>
+                        <button className="btn upload-data">Subir Datos</button>
                     </div>
                 </div>
             </div>

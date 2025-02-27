@@ -58,7 +58,7 @@ namespace MonitoreoEscolar.Server.Migrations
 
                     b.HasKey("Id_Usuario");
 
-                    b.ToTable("Usuarios");
+                    b.ToTable("Usuarios", (string)null);
                 });
 #pragma warning restore 612, 618
         }

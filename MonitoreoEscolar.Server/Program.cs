@@ -3,6 +3,7 @@ using MonitoreoEscolar.Server.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 
+
 //  Configurar la conexión a SQL Server desde appsettings.json con logs detallados
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"), sqlServerOptions =>
@@ -77,7 +78,6 @@ using (var scope = app.Services.CreateScope())
 
 //  Agregar CORS antes de Authorization
 app.UseCors(corsPolicyName);
-
 app.UseAuthorization();
 app.MapControllers();
 

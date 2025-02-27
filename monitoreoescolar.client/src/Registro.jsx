@@ -47,7 +47,7 @@ export default function Registro() {
         };
 
         try {
-            const response = await axios.post("/api/usuarios/registro", usuario);
+            const response = await axios.post("http://localhost:5099/api/usuarios/login", usuario);
             alert(response.data.mensaje);
             navigate("/"); // Redirige al login tras el registro
         } catch (error) {

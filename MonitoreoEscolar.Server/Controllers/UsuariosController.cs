@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using MonitoreoEscolar.Server.Data;
 using MonitoreoEscolar.Server.Models;
-using System.Threading.Tasks;
+
 
 namespace MonitoreoEscolar.Server.Controllers
 {
@@ -17,7 +17,7 @@ namespace MonitoreoEscolar.Server.Controllers
             _context = context;
         }
 
-        //  REGISTRO DE USUARIOS
+        //   REGISTRO DE USUARIOS
         [HttpPost("registro")]
         public async Task<IActionResult> Registro([FromBody] Usuario request)
         {
@@ -35,7 +35,7 @@ namespace MonitoreoEscolar.Server.Controllers
                 Correo = request.Correo,
                 Telefono = request.Telefono,
                 Tipo_Usuario = request.Tipo_Usuario,
-                NombreAlumno = request.Tipo_Usuario == "padre" ? request.NombreAlumno : null // ✅ Solo se guarda si es Padre
+                NombreAlumno = request.Tipo_Usuario == "padre" ? request.NombreAlumno : null // ✅ Solo si es Padre
             };
 
             _context.Usuarios.Add(nuevoUsuario);
@@ -44,21 +44,7 @@ namespace MonitoreoEscolar.Server.Controllers
             return Ok(new { mensaje = "✅ Usuario registrado exitosamente", usuario = nuevoUsuario });
         }
 
-        // 📌 Nuevo DTO para el registro de usuario( Se agrega NombreAlumno)
-        public class UsuarioRequest
-        {
-            public string Nombre { get; set; }
-            public string Apellidos { get; set; }
-            public string Correo { get; set; }
-            public string Telefono { get; set; }
-            public string Contrasena { get; set; }
-            public string Tipo_Usuario { get; set; }
-            public string NombreAlumno { get; set; } // Solo si es Padre
-        }
-
-
-        //LOGIN    
-
+        //   LOGIN DE USUARIOS
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginRequest request)
         {
@@ -72,6 +58,47 @@ namespace MonitoreoEscolar.Server.Controllers
 
             return Ok(new { mensaje = "✅ Inicio de sesión exitoso", usuario });
         }
+
+        // BUSCAR PADRE POR NOMBRE
+        [HttpGet("buscarPadre")]
+        public async Task<IActionResult> BuscarPadre([FromQuery] string nombre)
+        {
+            if (string.IsNullOrWhiteSpace(nombre))
+            {
+                return BadRequest(new { mensaje = "El nombre no puede estar vacío." });
+            }
+
+            var padres = await _context.Usuarios
+        .Where(u => u.Tipo_Usuario == "padre" &&
+                    (EF.Functions.Like(u.Nombre, $"%{nombre}%") || EF.Functions.Like(u.Apellidos, $"%{nombre}%") ||
+                     EF.Functions.Like((u.Nombre + " " + u.Apellidos), $"%{nombre}%")))
+                .Select(u => new
+                {
+                    Nombre = u.Nombre,
+                    Apellidos = u.Apellidos,
+                    Telefono = u.Telefono
+                })
+                .ToListAsync();
+
+            if (!padres.Any())
+                return NotFound(new { mensaje = "No se encontraron padres con ese nombre." });
+
+            return Ok(padres);
+        }
+
+    }
+
+
+    // DTOs para Registro y Login
+    public class UsuarioRequest
+    {
+        public string Nombre { get; set; }
+        public string Apellidos { get; set; }
+        public string Correo { get; set; }
+        public string Telefono { get; set; }
+        public string Contrasena { get; set; }
+        public string Tipo_Usuario { get; set; }
+        public string NombreAlumno { get; set; } // Solo si es Padre
     }
 
     public class LoginRequest

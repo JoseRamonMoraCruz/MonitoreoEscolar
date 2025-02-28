@@ -8,8 +8,8 @@ const SubirCalif = () => {
             <div className="subir-container">
                 <div className="subir-content-box">
                     {/* ✅ Encabezado */}
-                    <h2 className="subir-title">Subir Calificaciones</h2>
-
+                    <h2 className="subir-title">Subir Calificaciones</h2> 
+                    
                     {/* ✅ Botones en la parte inferior */}
                     <div className="subir-button-container">
                         <button className="btn choose-file">Elegir Archivo Excel</button>

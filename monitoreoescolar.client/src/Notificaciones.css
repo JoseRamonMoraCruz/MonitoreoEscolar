@@ -4,9 +4,11 @@
     height: 100vh;
     width: 100vw;
     align-items: center;
-    justify-content: center;
-    padding-left: 20px;
+    justify-content: flex-start; /* Esto sube el contenido */
+    padding-left: 10px;
+    padding-top: 20px; /* Agrega espacio arriba */
 }
+
 
 .notificaciones-content {
     background-color: #384147;

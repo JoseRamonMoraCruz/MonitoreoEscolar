@@ -18,7 +18,8 @@ const Notificaciones = () => {
         setResultados([]);
 
         try {
-            const response = await fetch(`http://localhost:5099/api/usuarios/buscarPadre?nombre=${encodeURIComponent(nombre)}`);
+            const nombreBusqueda = nombre.trim();
+            const response = await fetch(`http://localhost:5099/api/usuarios/buscarPadre?nombre=${encodeURIComponent(nombreBusqueda)}`);
 
             if (!response.ok) {
                 throw new Error("No se encontraron resultados.");

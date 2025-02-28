@@ -2,8 +2,10 @@
 using Microsoft.EntityFrameworkCore;
 using MonitoreoEscolar.Server.Data;
 using MonitoreoEscolar.Server.Models;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
+using System.Globalization;
+using System.Text;
+using System.Text.RegularExpressions;
 
 namespace MonitoreoEscolar.Server.Controllers
 {
@@ -18,8 +20,16 @@ namespace MonitoreoEscolar.Server.Controllers
         {
             _context = context;
         }
+        // Función para normalizar una cadena: quita espacios al inicio y final y reemplaza múltiples espacios por uno solo.
+        private string NormalizarCadena(string input)
+        {
+            if (string.IsNullOrWhiteSpace(input))
+                return string.Empty;
+            // Primero recorta y luego reemplaza secuencias de espacios con un solo espacio
+            return Regex.Replace(input.Trim(), @"\s+", " ");
+        }
 
-        // REGISTRO DE USUARIOS
+        // 🔹 REGISTRO DE USUARIOS
         [HttpPost("registro")]
         public async Task<IActionResult> Registro([FromBody] Usuario request)
         {
@@ -39,7 +49,7 @@ namespace MonitoreoEscolar.Server.Controllers
                 NombreAlumno = request.Tipo_Usuario == "padre" ? request.NombreAlumno : null
             };
 
-            // Hashear la contraseña antes de almacenarla
+            // 🔹 Hashear la contraseña antes de almacenarla
             nuevoUsuario.Contrasena = _passwordHasher.HashPassword(nuevoUsuario, request.Contrasena);
 
             _context.Usuarios.Add(nuevoUsuario);
@@ -48,7 +58,7 @@ namespace MonitoreoEscolar.Server.Controllers
             return Ok(new { mensaje = "✅ Usuario registrado exitosamente", usuario = nuevoUsuario });
         }
 
-        // LOGIN
+        // 🔹 LOGIN
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginRequest request)
         {
@@ -67,49 +77,7 @@ namespace MonitoreoEscolar.Server.Controllers
             return Ok(new { mensaje = "✅ Inicio de sesión exitoso", usuario });
         }
 
-        // BUSCAR PADRE POR NOMBRE
-        [HttpGet("buscarPadre")]
-        public async Task<IActionResult> BuscarPadre([FromQuery] string nombre)
-        {
-            if (string.IsNullOrWhiteSpace(nombre))
-            {
-                return BadRequest(new { mensaje = "El nombre no puede estar vacío." });
-            }
-
-            var padres = await _context.Usuarios
-        .Where(u => u.Tipo_Usuario == "padre" &&
-                    (EF.Functions.Like(u.Nombre, $"%{nombre}%") || EF.Functions.Like(u.Apellidos, $"%{nombre}%") ||
-                     EF.Functions.Like((u.Nombre + " " + u.Apellidos), $"%{nombre}%")))
-                .Select(u => new
-                {
-                    Nombre = u.Nombre,
-                    Apellidos = u.Apellidos,
-                    Telefono = u.Telefono
-                })
-                .ToListAsync();
-
-            if (!padres.Any())
-                return NotFound(new { mensaje = "No se encontraron padres con ese nombre." });
-
-            return Ok(padres);
-        }
-
-    }
-
-
-    // DTOs para Registro y Login
-    public class UsuarioRequest
-    {
-        public string Nombre { get; set; }
-        public string Apellidos { get; set; }
-        public string Correo { get; set; }
-        public string Telefono { get; set; }
-        public string Contrasena { get; set; }
-        public string Tipo_Usuario { get; set; }
-        public string NombreAlumno { get; set; } // Solo si es Padre
-    }
-
-        // Endpoint para actualizar la contraseña directamente (sin token)
+        // 🔹 ACTUALIZAR CONTRASEÑA
         [HttpPost("actualizar-password")]
         public async Task<IActionResult> ActualizarPassword([FromBody] ActualizarPasswordRequest request)
         {
@@ -119,25 +87,69 @@ namespace MonitoreoEscolar.Server.Controllers
                 return BadRequest(new { mensaje = "Usuario no encontrado." });
             }
 
-            // Hashea la nueva contraseña y actualiza el registro
             usuario.Contrasena = _passwordHasher.HashPassword(usuario, request.NewPassword);
             await _context.SaveChangesAsync();
 
             return Ok(new { mensaje = "Contraseña actualizada exitosamente." });
         }
 
-        // Clases auxiliares para solicitudes
-        public class LoginRequest
+        // 🔹 NORMALIZACIÓN DE TEXTO (Eliminar tildes y convertir a minúsculas)
+        private string NormalizarTexto(string input)
         {
-            public string Correo { get; set; }
-            public string Contrasena { get; set; }
+            if (string.IsNullOrWhiteSpace(input)) return "";
+
+            return string.Concat(input.Normalize(NormalizationForm.FormD)
+                .Where(c => CharUnicodeInfo.GetUnicodeCategory(c) != UnicodeCategory.NonSpacingMark))
+                .ToLower();
         }
 
-        public class ActualizarPasswordRequest
+        // 🔹 BUSCAR PADRE POR NOMBRE O APELLIDOS (Sin importar acentos ni mayúsculas/minúsculas)
+        [HttpGet("buscarPadre")]
+        public async Task<IActionResult> BuscarPadre([FromQuery] string nombre)
         {
-            public string Correo { get; set; }
-            public string NewPassword { get; set; }
+            if (string.IsNullOrWhiteSpace(nombre))
+            {
+                return BadRequest(new { mensaje = "El nombre no puede estar vacío." });
+            }
+
+            // Normalizar el término de búsqueda
+            var searchTerm = NormalizarTexto(nombre.Trim());
+
+            var padres = await _context.Usuarios
+                .Where(u => u.Tipo_Usuario == "padre")
+                .Select(u => new
+                {
+                    Nombre = u.Nombre,
+                    Apellidos = u.Apellidos,
+                    Telefono = u.Telefono,
+                    NombreCompleto = u.Nombre + " " + u.Apellidos
+                })
+                .ToListAsync();
+
+            // Aplicar normalización y filtrado en memoria
+            var resultados = padres.Where(u =>
+                NormalizarTexto(u.Nombre).Contains(searchTerm) ||
+                NormalizarTexto(u.Apellidos).Contains(searchTerm) ||
+                NormalizarTexto(u.NombreCompleto).Contains(searchTerm)
+            ).ToList();
+
+            if (!resultados.Any())
+                return NotFound(new { mensaje = "No se encontraron padres con ese nombre." });
+
+            return Ok(resultados);
         }
     }
-}
 
+    // 📌 Clases auxiliares para solicitudes
+    public class LoginRequest
+    {
+        public string Correo { get; set; }
+        public string Contrasena { get; set; }
+    }
+
+    public class ActualizarPasswordRequest
+    {
+        public string Correo { get; set; }
+        public string NewPassword { get; set; }
+    }
+}

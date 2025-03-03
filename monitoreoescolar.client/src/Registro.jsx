@@ -43,7 +43,7 @@ export default function Registro() {
             telefono,
             contrasena,
             tipo_Usuario: tipoUsuario,
-            nombreAlumno: tipoUsuario === "padre" ? nombreAlumno : null // 🔹 Solo si es Padre
+            nombreAlumno: tipoUsuario === "padre" ? nombreAlumno : null //  Solo si es Padre
         };
 
         try {
@@ -61,6 +61,9 @@ export default function Registro() {
     return (
         <div className="container">
             <div className={`register-container ${tipoUsuario === "padre" ? "padre" : ""}`}>
+                {/*  Botón para regresar al login */}
+                <button className="back-button" onClick={() => navigate("/")}>⬅️</button>
+
                 <h2 className="register-title">Regístrate</h2>
 
                 {/* Imagen dinámica */}

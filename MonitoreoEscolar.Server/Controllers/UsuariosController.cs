@@ -46,7 +46,7 @@ namespace MonitoreoEscolar.Server.Controllers
             return Regex.Replace(stringBuilder.ToString().Trim().ToLower(), @"\s+", " ");
         }
 
-        // 🔹 REGISTRO DE USUARIOS (normalizando nombre, apellidos y nombreAlumno)
+        //  REGISTRO DE USUARIOS (normalizando nombre, apellidos y nombreAlumno)
         [HttpPost("registro")]
         public async Task<IActionResult> Registro([FromBody] Usuario request)
         {
@@ -75,7 +75,7 @@ namespace MonitoreoEscolar.Server.Controllers
             return Ok(new { mensaje = "✅ Usuario registrado exitosamente", usuario = nuevoUsuario });
         }
 
-        // 🔹 LOGIN
+        //  LOGIN
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginRequest request)
         {
@@ -94,7 +94,7 @@ namespace MonitoreoEscolar.Server.Controllers
             return Ok(new { mensaje = "✅ Inicio de sesión exitoso", usuario });
         }
 
-        // 🔹 ACTUALIZAR CONTRASEÑA (método directo)
+        //  ACTUALIZAR CONTRASEÑA (método directo)
         [HttpPost("actualizar-password")]
         public async Task<IActionResult> ActualizarPassword([FromBody] ActualizarPasswordRequest request)
         {
@@ -110,7 +110,7 @@ namespace MonitoreoEscolar.Server.Controllers
             return Ok(new { mensaje = "Contraseña actualizada exitosamente." });
         }
 
-        // 🔹 BUSCAR PADRE POR NOMBRE O APELLIDOS (sin importar acentos ni mayúsculas/minúsculas)
+        // BUSCAR PADRE POR NOMBRE O APELLIDOS (sin importar acentos ni mayúsculas/minúsculas)
         [HttpGet("buscarPadre")]
         public async Task<IActionResult> BuscarPadre([FromQuery] string nombre)
         {

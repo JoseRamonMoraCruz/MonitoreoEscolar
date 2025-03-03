@@ -1,4 +1,4 @@
-:root {
+ï»¿:root {
     background-color: #9AD3FE;
 }
 
@@ -16,14 +16,32 @@
     border-radius: 15px;
     box-shadow: 10px 10px 20px rgba(0, 0, 0, 1);
     text-align: center;
-    width: 450px; /* Tamaño base */
-    transition: all 0.3s ease-in-out; /* Animación suave */
+    width: 450px; /* TamaÃ±o base */
+    position: relative; /* Para posicionar la flecha */
+    transition: all 0.3s ease-in-out; /* AnimaciÃ³n suave */
 }
 
-    /* Si el usuario es Padre, reducimos un poco el tamaño */
+    /* Si el usuario es Padre, reducimos un poco el tamaÃ±o */
     .register-container.padre {
         width: 420px; /* Reducido un poco */
         padding: 25px; /* Un poco menos de padding */
+    }
+
+/* ðŸ”¹ Flecha para regresar */
+.back-button {
+    position: absolute;
+    top: 15px;
+    left: 15px;
+    background: none;
+    border: none;
+    font-size: 24px;
+    color: white;
+    cursor: pointer;
+    transition: transform 0.2s ease-in-out;
+}
+
+    .back-button:hover {
+        transform: scale(1.2);
     }
 
 /* Imagen de usuario */
@@ -41,7 +59,7 @@
     margin-bottom: 15px;
 }
 
-/* Botones de selección */
+/* Botones de selecciÃ³n */
 .selector-container {
     display: flex;
     justify-content: center;
@@ -82,7 +100,7 @@
     box-sizing: border-box;
 }
 
-/* Botón de envío */
+/* BotÃ³n de envÃ­o */
 .submit-button {
     width: 100%;
     padding: 14px;

@@ -9,7 +9,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
     {
         sqlServerOptions.EnableRetryOnFailure(); // Maneja errores de conexión
     })
-    .EnableSensitiveDataLogging() //  Logs detallados
+    .EnableSensitiveDataLogging() // Logs detallados
 );
 
 //  Agregar política CORS para permitir conexiones desde el frontend

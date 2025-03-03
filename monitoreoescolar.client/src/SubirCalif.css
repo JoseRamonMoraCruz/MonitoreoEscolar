@@ -9,7 +9,7 @@
     width: 100vw;
 }
 
-/* ✅ Contenedor centrado */
+/*  Contenedor centrado */
 .subir-container {
     flex: 1;
     display: flex;
@@ -17,33 +17,45 @@
     align-items: center;
 }
 
-/* ✅ Caja principal */
+/*  Caja principal */
 .subir-content-box {
     background-color: #384147;
     padding: 30px;
     border-radius: 15px;
     box-shadow: 10px 10px 20px rgba(0, 0, 0, 1);
     text-align: center;
-    width: 500px;
+    width: 450px;
     color: white;
 }
 
-/* ✅ Estilo del encabezado */
-subir-title {
+/*  Estilo del encabezado */
+.subir-title {
     font-size: 24px;
     font-weight: bold;
-    margin-bottom: 100px; /*  Aumenta la separación del título */
+    margin-bottom: 15px;
 }
 
-/* ✅ Contenedor de botones con más espacio */
+/*  Estilo de la descripción */
+.subir-description {
+    font-size: 16px;
+    margin-bottom: 25px;
+    color: #cfcfcf;
+}
+
+/*  Contenedor de botones */
 .subir-button-container {
     display: flex;
-    justify-content: space-between;
-    margin-top: 100px; /*  Aumenta la separación entre el contenido y los botones */
+    flex-direction: column;
+    gap: 15px;
+    margin-top: 20px;
 }
 
-/* ✅ Estilo de los botones */
+/*  Estilo de los botones */
 .btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
     padding: 12px 20px;
     font-size: 16px;
     font-weight: bold;
@@ -51,25 +63,30 @@ subir-title {
     border-radius: 10px;
     cursor: pointer;
     transition: background-color 0.3s ease-in-out;
-    width: 45%;
+    width: 100%;
 }
 
-/* Botón de "Elegir Archivo" */
+/*  Botón de "Elegir Archivo" */
 .choose-file {
-    background-color: #8800ff;
+    background-color: #34A853;
     color: white;
 }
 
     .choose-file:hover {
-        background-color: #6a00cc;
+        background-color: #2c8a44;
     }
 
-/* Botón de "Cargar Datos" */
+/*  Botón de "Subir Datos" */
 .upload-data {
-    background-color: #8800ff;
+    background-color: #4285F4;
     color: white;
 }
 
     .upload-data:hover {
-        background-color: #6a00cc;
+        background-color: #3367d6;
     }
+
+/*  Estilos para los iconos */
+.icon {
+    font-size: 20px;
+}

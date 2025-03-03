@@ -21,7 +21,7 @@
 .generar-reportes-title {
     font-size: 22px;
     font-weight: bold;
-    margin-bottom: 15px;
+    margin-bottom: 34px;
 }
 
 /* ✅ Formulario */
@@ -37,7 +37,7 @@
     flex-direction: column;
     align-items: flex-start;
     text-align: left;
-    margin-bottom: 10px;
+    margin-bottom: 20px;
 }
 
     .generar-reportes-group label {
@@ -45,6 +45,9 @@
         font-size: 16px;
         color: #F4E4BA; /* Color del texto */
         margin-bottom: 5px;
+        display: flex;
+        align-items: center;
+        gap: 8px; /* Espaciado entre icono y texto */
     }
 
     /* ✅ Inputs y Textarea */
@@ -76,6 +79,10 @@
     transition: background-color 0.3s ease-in-out;
     width: 130px;
     align-self: flex-end;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
 }
 
     .generar-reportes-btn:hover {

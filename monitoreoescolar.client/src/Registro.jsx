@@ -5,7 +5,6 @@ import familiaIcon from "./assets/familia.png"; // Imagen para "Padre"
 import escuelaIcon from "./assets/edificio-escolar.png"; // Imagen para "Personal Escolar"
 import AtrasIcon from './assets/hacia-atras.png'; 
 
-
 export default function Registro() {
     const [tipoUsuario, setTipoUsuario] = useState("personal"); // Por defecto en "Personal Escolar"
     const [nombre, setNombre] = useState("");
@@ -70,6 +69,12 @@ export default function Registro() {
 
 
                 <h2 className="register-title">Regístrate</h2>
+
+                {/* Botón para regresar al login con imagen personalizada */}
+                <button className="back-button" onClick={() => navigate("/")}>
+                    <img src={AtrasIcon} alt="Volver" className="back-icon" />
+                </button>
+
 
                 {/* Imagen dinámica */}
                 <img

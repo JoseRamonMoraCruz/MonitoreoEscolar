@@ -1,6 +1,7 @@
 ﻿import { useState } from "react";
 import "./Notificaciones.css";
 import axios from "axios";
+import WhatsappIcon from "./assets/whatsapp.png"; // Ícono de WhatsApp
 
 const Notificaciones = () => {
     const [nombre, setNombre] = useState("");
@@ -32,6 +33,13 @@ const Notificaciones = () => {
         }
     };
 
+    // Función para abrir WhatsApp con el número
+    const enviarWhatsApp = (telefono) => {
+        window.open(`https://wa.me/${telefono}`, "_blank");
+    };
+
+    // Función para simular el envío de SMS (se puede conectar a una API real)
+
     return (
         <div className="notificaciones-container">
             <div className="notificaciones-content">
@@ -54,9 +62,20 @@ const Notificaciones = () => {
                 {resultados.length > 0 && (
                     <div className="notificaciones-result-container">
                         {resultados.map((padre, index) => (
-                            <p key={index}>
-                                <strong>{padre.nombre}{padre.apellidos ? ` ${padre.apellidos}` : ""}</strong> -------------- <strong>{padre.telefono}</strong>
-                            </p>
+                            <div key={index} className="notificaciones-item">
+                                <span>
+                                    <strong>{padre.nombre}{padre.apellidos ? ` ${padre.apellidos}` : ""}</strong>
+                                </span>
+                                <div className="notificaciones-icons">
+                                   
+                                    <img
+                                        src={WhatsappIcon}
+                                        alt="WhatsApp"
+                                        className="icono-notificacion"
+                                        onClick={() => enviarWhatsApp(padre.telefono)}
+                                    />
+                                </div>
+                            </div>
                         ))}
                     </div>
                 )}

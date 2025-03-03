@@ -1,17 +1,18 @@
-﻿.notificaciones-container {
+﻿/* 🔹 Contenedor principal */
+.notificaciones-container {
     display: flex;
     flex-direction: column;
     height: 100vh;
     width: 100vw;
     align-items: center;
-    justify-content: flex-start; /* Esto sube el contenido */
+    justify-content: flex-start;
     padding-left: 10px;
-    padding-top: 20px; /* Agrega espacio arriba */
+    padding-top: 20px;
 }
 
-
+/* 🔹 Caja del contenido */
 .notificaciones-content {
-    background-color: #384147;
+    background-color: #384147; /* Gris oscuro */
     padding: 30px;
     border-radius: 15px;
     box-shadow: 10px 10px 20px rgba(0, 0, 0, 1);
@@ -20,6 +21,14 @@
     text-align: left;
 }
 
+/* 🔹 Estilo del título */
+.notificaciones-title {
+    font-size: 22px;
+    font-weight: bold;
+    margin-bottom: 15px;
+}
+
+/* 🔹 Barra de búsqueda */
 .notificaciones-search-container {
     display: flex;
     align-items: center;
@@ -27,6 +36,7 @@
     border-radius: 30px;
     padding: 8px;
     width: 100%;
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
 }
 
     .notificaciones-search-container input {
@@ -34,12 +44,12 @@
         width: 100%;
         font-size: 16px;
         outline: none;
-        padding: 8px;
+        padding: 10px;
         border-radius: 20px;
     }
 
 .notificaciones-search-button {
-    background-color: #0066ff;
+    background-color: #48cae4; /* Color azulado */
     color: white;
     border: none;
     border-radius: 50%;
@@ -55,13 +65,46 @@
 }
 
     .notificaciones-search-button:hover {
-        background-color: #004fcc;
+        background-color: #1F7765;
     }
 
+/* 🔹 Contenedor de resultados */
 .notificaciones-result-container {
-    background-color: #002B55;
+    background-color: #F0F0F0; /* Colo gris humo */
     padding: 15px;
     border-radius: 10px;
     font-size: 18px;
     margin-top: 10px;
+    color: black;
 }
+
+/* 🔹 Cada elemento de la lista */
+.notificaciones-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #8d99ae; /* Gris mas claro */
+    padding: 12px;
+    border-radius: 8px;
+    margin-top: 8px;
+    font-size: 16px;
+    font-weight: bold;
+}
+
+/* 🔹 Contenedor de los iconos */
+.notificaciones-icons {
+    display: flex;
+    gap: 10px;
+}
+
+/* 🔹 Tamaño y estilo de los iconos */
+.icono-notificacion {
+    width: 40px;
+    height: 40px;
+    cursor: pointer;
+    transition: transform 0.2s ease-in-out;
+}
+
+    .icono-notificacion:hover {
+        transform: scale(1.1);
+    }

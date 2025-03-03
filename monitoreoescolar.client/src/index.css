@@ -27,8 +27,8 @@
         padding: 25px; /* Un poco menos de padding */
     }
 
-/* 🔹 Flecha para regresar */
-/* 🔹 Botón de retroceso con imagen */
+
+/* Flecha para regresar el botón de retroceso con imagen */
 .back-button {
     position: absolute;
     top: 15px;

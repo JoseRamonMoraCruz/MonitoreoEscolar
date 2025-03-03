@@ -3,6 +3,8 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import familiaIcon from "./assets/familia.png"; // Imagen para "Padre"
 import escuelaIcon from "./assets/edificio-escolar.png"; // Imagen para "Personal Escolar"
+import AtrasIcon from './assets/hacia-atras.png'; 
+
 
 export default function Registro() {
     const [tipoUsuario, setTipoUsuario] = useState("personal"); // Por defecto en "Personal Escolar"
@@ -61,8 +63,11 @@ export default function Registro() {
     return (
         <div className="container">
             <div className={`register-container ${tipoUsuario === "padre" ? "padre" : ""}`}>
-                {/*  Botón para regresar al login */}
-                <button className="back-button" onClick={() => navigate("/")}>⬅️</button>
+                {/* Botón para regresar al login con imagen personalizada */}
+                <button className="back-button" onClick={() => navigate("/")}>
+                    <img src={AtrasIcon} alt="Volver" className="back-icon" />
+                </button>
+
 
                 <h2 className="register-title">Regístrate</h2>
 
@@ -107,7 +112,7 @@ export default function Registro() {
                     )}
 
                     <button type="submit" className="submit-button" disabled={loading}>
-                        {loading ? "Creando cuenta..." : "CREAR UNA CUENTA"}
+                        {loading ? "Creando cuenta..." : "CREAR CUENTA"}
                     </button>
                 </form>
             </div>

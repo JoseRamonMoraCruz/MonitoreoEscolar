@@ -1,8 +1,4 @@
-﻿:root {
-    background-color: #9AD3FE;
-}
-
-.subir-page-container {
+﻿.subir-page-container {
     display: flex;
     flex-direction: column;
     height: 100vh;
@@ -13,7 +9,7 @@
 .subir-container {
     flex: 1;
     display: flex;
-    justify-content: center;
+    justify-content: center; 
     align-items: center;
 }
 

@@ -1,13 +1,10 @@
-﻿:root {
-    background-color: #9AD3FE;
-}
-
-.container {
+﻿.container {
     display: flex;
     justify-content: center;
     align-items: center;
     height: 100vh;
     width: 100vw;
+    background-color: #9AD3FE; /* Fondo */
 }
 
 .register-container {
@@ -16,26 +13,25 @@
     border-radius: 15px;
     box-shadow: 10px 10px 20px rgba(0, 0, 0, 1);
     text-align: center;
-    width: 450px; /* Tamaño base */
+    width: 450px; /* Tamaño base */
     position: relative; /* Para posicionar la flecha */
-    transition: all 0.3s ease-in-out; /* Animación suave */
+    transition: all 0.3s ease-in-out; /* Animación suave */
 }
 
-    /* Si el usuario es Padre, reducimos un poco el tamaño */
+    /* Si el usuario es Padre, reducimos un poco el tamaño */
     .register-container.padre {
         width: 420px; /* Reducido un poco */
         padding: 25px; /* Un poco menos de padding */
     }
 
 /* 🔹 Flecha para regresar */
+/* 🔹 Botón de retroceso con imagen */
 .back-button {
     position: absolute;
     top: 15px;
     left: 15px;
     background: none;
     border: none;
-    font-size: 24px;
-    color: white;
     cursor: pointer;
     transition: transform 0.2s ease-in-out;
 }
@@ -43,6 +39,13 @@
     .back-button:hover {
         transform: scale(1.2);
     }
+
+/* 🔹 Estilo de la imagen del botón */
+.back-icon {
+    width: 35px; /* Ajusta el tamaño según sea necesario */
+    height: 35px;
+}
+
 
 /* Imagen de usuario */
 .user-icon {
@@ -59,7 +62,7 @@
     margin-bottom: 15px;
 }
 
-/* Botones de selección */
+/* Botones de selección */
 .selector-container {
     display: flex;
     justify-content: center;
@@ -100,7 +103,7 @@
     box-sizing: border-box;
 }
 
-/* Botón de envío */
+/* Botón de envío */
 .submit-button {
     width: 100%;
     padding: 14px;

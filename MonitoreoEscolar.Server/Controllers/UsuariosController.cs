@@ -20,16 +20,33 @@ namespace MonitoreoEscolar.Server.Controllers
         {
             _context = context;
         }
-        // Función para normalizar una cadena: quita espacios al inicio y final y reemplaza múltiples espacios por uno solo.
+
+        // Función para normalizar una cadena: quita espacios al inicio/final y reemplaza múltiples espacios por uno solo.
         private string NormalizarCadena(string input)
         {
             if (string.IsNullOrWhiteSpace(input))
                 return string.Empty;
-            // Primero recorta y luego reemplaza secuencias de espacios con un solo espacio
             return Regex.Replace(input.Trim(), @"\s+", " ");
         }
 
-        // 🔹 REGISTRO DE USUARIOS
+        // Función para normalizar texto: elimina acentos, convierte a minúsculas y normaliza espacios.
+        private string NormalizarTexto(string input)
+        {
+            if (string.IsNullOrWhiteSpace(input)) return "";
+            var normalizedString = input.Normalize(NormalizationForm.FormD);
+            var stringBuilder = new StringBuilder();
+            foreach (var c in normalizedString)
+            {
+                if (CharUnicodeInfo.GetUnicodeCategory(c) != UnicodeCategory.NonSpacingMark)
+                {
+                    stringBuilder.Append(c);
+                }
+            }
+            // Normalizamos espacios y convertimos a minúsculas.
+            return Regex.Replace(stringBuilder.ToString().Trim().ToLower(), @"\s+", " ");
+        }
+
+        //  REGISTRO DE USUARIOS (normalizando nombre, apellidos y nombreAlumno)
         [HttpPost("registro")]
         public async Task<IActionResult> Registro([FromBody] Usuario request)
         {
@@ -41,15 +58,15 @@ namespace MonitoreoEscolar.Server.Controllers
 
             var nuevoUsuario = new Usuario
             {
-                Nombre = request.Nombre,
-                Apellidos = request.Apellidos,
+                Nombre = NormalizarCadena(request.Nombre),
+                Apellidos = NormalizarCadena(request.Apellidos),
                 Correo = request.Correo,
                 Telefono = request.Telefono,
                 Tipo_Usuario = request.Tipo_Usuario,
-                NombreAlumno = request.Tipo_Usuario == "padre" ? request.NombreAlumno : null
+                NombreAlumno = request.Tipo_Usuario == "padre" ? NormalizarCadena(request.NombreAlumno) : null
             };
 
-            // 🔹 Hashear la contraseña antes de almacenarla
+            // Hashear la contraseña antes de almacenarla
             nuevoUsuario.Contrasena = _passwordHasher.HashPassword(nuevoUsuario, request.Contrasena);
 
             _context.Usuarios.Add(nuevoUsuario);
@@ -58,7 +75,7 @@ namespace MonitoreoEscolar.Server.Controllers
             return Ok(new { mensaje = "✅ Usuario registrado exitosamente", usuario = nuevoUsuario });
         }
 
-        // 🔹 LOGIN
+        //  LOGIN
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginRequest request)
         {
@@ -77,7 +94,7 @@ namespace MonitoreoEscolar.Server.Controllers
             return Ok(new { mensaje = "✅ Inicio de sesión exitoso", usuario });
         }
 
-        // 🔹 ACTUALIZAR CONTRASEÑA
+        //  ACTUALIZAR CONTRASEÑA (método directo)
         [HttpPost("actualizar-password")]
         public async Task<IActionResult> ActualizarPassword([FromBody] ActualizarPasswordRequest request)
         {
@@ -93,17 +110,7 @@ namespace MonitoreoEscolar.Server.Controllers
             return Ok(new { mensaje = "Contraseña actualizada exitosamente." });
         }
 
-        // 🔹 NORMALIZACIÓN DE TEXTO (Eliminar tildes y convertir a minúsculas)
-        private string NormalizarTexto(string input)
-        {
-            if (string.IsNullOrWhiteSpace(input)) return "";
-
-            return string.Concat(input.Normalize(NormalizationForm.FormD)
-                .Where(c => CharUnicodeInfo.GetUnicodeCategory(c) != UnicodeCategory.NonSpacingMark))
-                .ToLower();
-        }
-
-        // 🔹 BUSCAR PADRE POR NOMBRE O APELLIDOS (Sin importar acentos ni mayúsculas/minúsculas)
+        // BUSCAR PADRE POR NOMBRE O APELLIDOS (sin importar acentos ni mayúsculas/minúsculas)
         [HttpGet("buscarPadre")]
         public async Task<IActionResult> BuscarPadre([FromQuery] string nombre)
         {
@@ -113,7 +120,7 @@ namespace MonitoreoEscolar.Server.Controllers
             }
 
             // Normalizar el término de búsqueda
-            var searchTerm = NormalizarTexto(nombre.Trim());
+            var searchTerm = NormalizarTexto(nombre);
 
             var padres = await _context.Usuarios
                 .Where(u => u.Tipo_Usuario == "padre")
@@ -126,7 +133,7 @@ namespace MonitoreoEscolar.Server.Controllers
                 })
                 .ToListAsync();
 
-            // Aplicar normalización y filtrado en memoria
+            // Filtrar en memoria usando la normalización de texto
             var resultados = padres.Where(u =>
                 NormalizarTexto(u.Nombre).Contains(searchTerm) ||
                 NormalizarTexto(u.Apellidos).Contains(searchTerm) ||
@@ -140,7 +147,6 @@ namespace MonitoreoEscolar.Server.Controllers
         }
     }
 
-    // 📌 Clases auxiliares para solicitudes
     public class LoginRequest
     {
         public string Correo { get; set; }

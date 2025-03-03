@@ -1,5 +1,6 @@
 ﻿import { useState } from "react";
 import "./Notificaciones.css";
+import axios from "axios";
 
 const Notificaciones = () => {
     const [nombre, setNombre] = useState("");
@@ -19,19 +20,13 @@ const Notificaciones = () => {
 
         try {
             const nombreBusqueda = nombre.trim();
-            const response = await fetch(`http://localhost:5099/api/usuarios/buscarPadre?nombre=${encodeURIComponent(nombreBusqueda)}`);
+            const response = await axios.get("/api/usuarios/buscarPadre", { params: { nombre: nombreBusqueda } });
+            console.log("Respuesta de la API:", response.data);
 
-            if (!response.ok) {
-                throw new Error("No se encontraron resultados.");
-            }
-
-            const data = await response.json();
-            console.log("Respuesta de la API:", data);
-
-            setResultados(data);
+            setResultados(response.data);
         } catch (error) {
             console.error("Error al buscar:", error);
-            setMensaje(error.message);
+            setMensaje(error.response?.data?.mensaje || "Error al buscar.");
         } finally {
             setCargando(false);
         }

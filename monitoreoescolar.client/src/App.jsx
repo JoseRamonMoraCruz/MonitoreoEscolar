@@ -8,6 +8,7 @@ import AgregarAlumno from "./AgregarAlumno";
 import Notificaciones from "./Notificaciones";
 import Padre from "./Padre";
 import ActualizarPassword from './ActualizarPassword';
+import ListaAlumnos from "./ListaAlumnos";
 
 function App() {
     return (
@@ -36,6 +37,7 @@ function DashboardLayout() {
                     <Route path="/subir-calif" element={<SubirCalif />} />
                     <Route path="/generar-reportes" element={<GenerarReportes />} />
                     <Route path="/agregar-alumno" element={<AgregarAlumno />} />
+                    <Route path="/lista-alumnos" element={<ListaAlumnos />} />
                     <Route path="/notificaciones" element={<Notificaciones />} />
                 </Routes>
             </div>

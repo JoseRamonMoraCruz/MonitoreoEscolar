@@ -4,7 +4,7 @@
     align-items: center;
     height: 100vh;
     width: 100vw;
-    background-color: #B3D9FF; /* Fondo */
+    background-color: #9AD3FE; /* Fondo */
 }
 
 .agregar-alumno-content {
@@ -21,7 +21,7 @@
 .agregar-alumno-title {
     font-size: 22px;
     font-weight: bold;
-    margin-bottom: 15px;
+    margin-bottom: 25px;
 }
 
 /* ✅ Formulario */
@@ -36,7 +36,7 @@
     display: flex;
     flex-direction: column;
     text-align: left;
-    margin-bottom: 10px;
+    margin-bottom: 25px;
 }
 
     .agregar-alumno-group label {
@@ -56,9 +56,17 @@
         font-size: 16px;
     }
 
-/* ✅ Botón de guardar alineado */
+/* ✅ Contenedor de botones alineados */
+.button-container {
+    display: flex;
+    justify-content: space-between; /* 🔹 Un botón a la izquierda y otro a la derecha */
+    width: 100%; /*  Ocupa todo el ancho */
+    margin-top: 15px; /*  Espaciado opcional */
+}
+
+/* ✅ Botón de "Agregar Alumno" alineado a la izquierda */
 .agregar-alumno-btn {
-    padding: 12px;
+    padding: 20px;
     font-size: 16px;
     font-weight: bold;
     border: none;
@@ -68,9 +76,26 @@
     color: white;
     transition: background-color 0.3s ease-in-out;
     width: 130px;
-    align-self: flex-end;
 }
 
     .agregar-alumno-btn:hover {
         background-color: #6a00cc;
+    }
+
+/*  Botón de "Capturar Huella" alineado a la derecha */
+.capturar-huella-btn {
+    padding: 15px;
+    font-size: 16px;
+    font-weight: bold;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    background-color: red;
+    color: white;
+    transition: background-color 0.3s ease-in-out;
+    width: 130px;
+}
+
+    .capturar-huella-btn:hover {
+        background-color: #cc5200;
     }

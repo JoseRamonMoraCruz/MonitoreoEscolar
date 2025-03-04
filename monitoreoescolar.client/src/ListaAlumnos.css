@@ -1,0 +1,124 @@
+﻿/* 🔹 Contenedor principal */
+.lista-container {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    width: 100vw;
+    align-items: center;
+    justify-content: flex-start;
+    padding-left: 10px;
+    padding-top: 20px;
+}
+
+/* 🔹 Caja del contenido */
+.lista-content {
+    background-color: #384147;
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 10px 10px 20px rgba(0, 0, 0, 1);
+    color: white;
+    width: 800px;
+    text-align: left;
+}
+
+/* 🔹 Estilo del título */
+.lista-title {
+    font-size: 22px;
+    font-weight: bold;
+    margin-bottom: 15px;
+}
+
+/* 🔹 Barra de búsqueda */
+.lista-search-container {
+    display: flex;
+    align-items: center;
+    background-color: white;
+    border-radius: 30px;
+    padding: 8px;
+    width: 100%;
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+    .lista-search-container input {
+        border: none;
+        width: 100%;
+        font-size: 16px;
+        outline: none;
+        padding: 10px;
+        border-radius: 20px;
+    }
+
+.lista-search-button {
+    background-color: #48cae4;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    font-size: 16px;
+    padding: 8px;
+    cursor: pointer;
+    transition: 0.3s;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+    .lista-search-button:hover {
+        background-color: #1F7765;
+    }
+
+/* 🔹 Tabla */
+.lista-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 15px;
+    background: white;
+    color: black;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+    .lista-table th,
+    .lista-table td {
+        padding: 12px;
+        text-align: left;
+        border-bottom: 1px solid #ddd;
+    }
+
+    .lista-table th {
+        background-color: #8d99ae;
+        color: white;
+    }
+
+    .lista-table tr:hover {
+        background-color: #f1f1f1;
+    }
+
+/* 🔹 Contenedor de los iconos */
+.lista-icons {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+}
+
+/* 🔹 Tamaño y estilo de los iconos */
+.icono-accion {
+    width: 35px;
+    height: 35px;
+    cursor: pointer;
+    transition: transform 0.2s ease-in-out;
+}
+
+    .icono-accion:hover {
+        transform: scale(1.2);
+    }
+
+    /* 🔹 Colores específicos para los íconos */
+    .icono-accion.edit {
+        filter: invert(29%) sepia(96%) saturate(1371%) hue-rotate(176deg) brightness(97%) contrast(97%);
+    }
+
+    .icono-accion.delete {
+        filter: invert(27%) sepia(97%) saturate(2196%) hue-rotate(342deg) brightness(92%) contrast(90%);
+    }

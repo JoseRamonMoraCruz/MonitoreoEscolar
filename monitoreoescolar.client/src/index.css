@@ -1,13 +1,10 @@
-﻿:root {
-    background-color: #9AD3FE;
-}
-
-.container {
+﻿.container {
     display: flex;
     justify-content: center;
     align-items: center;
     height: 100vh;
     width: 100vw;
+    background-color: #9AD3FE; /* Fondo */
 }
 
 .register-container {

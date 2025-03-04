@@ -1,4 +1,6 @@
 ﻿import "./AgregarAlumno.css";
+import huellaIcon from "./assets/huella-dactilar.png";
+import agregarIcon from "./assets/agregar-alumno.png";
 
 const AgregarAlumno = () => {
     return (
@@ -7,17 +9,17 @@ const AgregarAlumno = () => {
                 <h2 className="agregar-alumno-title">📑 Registra un Alumno</h2>
                 <form>
                     <div className="agregar-alumno-group">
-                        <label>👨🏻‍🎓Nombre:</label>
+                        <label>👨🏻‍🎓 Nombre:</label>
                         <input type="text" placeholder="Ingrese el nombre" />
                     </div>
 
                     <div className="agregar-alumno-group">
-                        <label>👨🏻‍🎓Apellidos:</label>
+                        <label>👨🏻‍🎓 Apellidos:</label>
                         <input type="text" placeholder="Ingrese los apellidos" />
                     </div>
 
                     <div className="agregar-alumno-group">
-                        <label>📚Grupo:</label>
+                        <label>📚 Grupo:</label>
                         <input type="text" placeholder="Ingrese el grupo" />
                     </div>
 
@@ -26,15 +28,22 @@ const AgregarAlumno = () => {
                         <input type="text" placeholder="Ingrese el nombre del tutor" />
                     </div>
 
+                    {/* 🔹 Nuevo campo de domicilio */}
                     <div className="agregar-alumno-group">
-                        <label className="nota">
-                            NOTA: Registra su huella dactilar en el sensor antes de guardar.👍🏻
-                        </label>
+                        <label>🏠 Domicilio:</label>
+                        <input type="text" placeholder="Ingrese el domicilio" />
                     </div>
 
-                    <button type="button" className="agregar-alumno-btn">
-                        ➕ Guardar
-                    </button>
+                    <div className="button-container">
+                        <button className="agregar-alumno-btn">
+                            <img src={agregarIcon} alt="Agregar" className="back-icon" />
+                            Agregar Alumno
+                        </button>
+                        <button className="capturar-huella-btn">
+                            <img src={huellaIcon} alt="Huella" className="back-icon" />
+                            Registrar Huella
+                        </button>
+                    </div>
                 </form>
             </div>
         </div>

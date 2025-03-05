@@ -1,52 +1,60 @@
-﻿import { useState } from "react";
-import "./ListaAlumnos.css"; // Estilos
+﻿import { useState, useEffect } from "react";
 import axios from "axios";
+import "./ListaAlumnos.css"; // Estilos
 import editIcon from "./assets/editar-informacion.png"; // Ícono de editar (azul)
 import deleteIcon from "./assets/eliminar-informacion.png"; // Ícono de eliminar (rojo)
 
 const ListaAlumnos = () => {
     const [nombre, setNombre] = useState("");
-    const [resultados, setResultados] = useState([]);
+    const [alumnos, setAlumnos] = useState([]);
     const [cargando, setCargando] = useState(false);
     const [mensaje, setMensaje] = useState("");
 
-    const buscarAlumno = async () => {
-        if (nombre.trim() === "") {
-            alert("Por favor ingrese un nombre para buscar.");
-            return;
-        }
+    //  Obtener lista de alumnos al cargar la página
+    useEffect(() => {
+        obtenerAlumnos();
+    }, []);
 
+    const obtenerAlumnos = async () => {
         setCargando(true);
-        setMensaje("");
-        setResultados([]);
-
         try {
-            const response = await axios.get("http://localhost:5099/api/alumnos/buscar", {
-                params: { nombre: nombre.trim() }
-            });
-
-            setResultados(response.data);
+            const response = await axios.get("http://localhost:5099/api/alumnos/lista");
+            setAlumnos(response.data);
+            setMensaje(response.data.length === 0 ? "No hay alumnos registrados." : "");
         } catch (error) {
-            console.error("Error al buscar:", error);
-            setMensaje(error.response?.data?.mensaje || "Error al buscar.");
+            console.error("Error al obtener alumnos:", error);
+            setMensaje("No se pudo obtener la lista de alumnos.");
         } finally {
             setCargando(false);
         }
     };
 
-    //  Función para Editar Alumno (simulación)
-    const editarAlumno = (id) => {
-        alert(`Editar alumno con ID: ${id}`);
-        // Aquí puedes redirigir a una página de edición o abrir un modal
+    //  Función para buscar alumnos
+    const buscarAlumno = () => {
+        if (nombre.trim() === "") {
+            obtenerAlumnos();
+            return;
+        }
+
+        const alumnosFiltrados = alumnos.filter(alumno =>
+            alumno.nombreCompleto.toLowerCase().includes(nombre.toLowerCase())
+        );
+        setAlumnos(alumnosFiltrados);
+        setMensaje(alumnosFiltrados.length === 0 ? "No se encontraron coincidencias." : "");
     };
 
-    //  Función para Eliminar Alumno
+    //  Función para Editar Alumno (simulación)
+    const editarAlumno = (id) => {
+        alert(Editar alumno con ID: ${ id });
+    };
+
+    // 🔹 Función para Eliminar Alumno
     const eliminarAlumno = async (id) => {
         if (window.confirm("¿Estás seguro de eliminar este alumno?")) {
             try {
-                await axios.delete(`http://localhost:5099/api/alumnos/eliminar/${id}`);
+                await axios.delete(/api/alumnos / eliminar / ${ id });
                 alert("Alumno eliminado correctamente.");
-                buscarAlumno(); // Actualizar la lista después de eliminar
+                obtenerAlumnos(); // Actualizar la lista después de eliminar
             } catch (error) {
                 console.error("Error al eliminar:", error);
                 alert("No se pudo eliminar el alumno.");
@@ -63,7 +71,7 @@ const ListaAlumnos = () => {
                 <div className="lista-search-container">
                     <input
                         type="text"
-                        placeholder="Buscar alumno"
+                        placeholder="Buscar alumno por nombre completo"
                         value={nombre}
                         onChange={(e) => setNombre(e.target.value)}
                     />
@@ -73,23 +81,27 @@ const ListaAlumnos = () => {
                 {cargando && <p>Cargando...</p>}
                 {mensaje && <p>{mensaje}</p>}
 
-                {/* Tabla de alumnos */}
-                {resultados.length > 0 && (
+                {/* Tabla de alumnos con todos los datos */}
+                {alumnos.length > 0 && (
                     <table className="lista-table">
                         <thead>
                             <tr>
-                                <th>Nombre</th>
+                                <th>ID</th>
+                                <th>Nombre Completo</th>
                                 <th>Grupo</th>
                                 <th>Tutor</th>
+                                <th>Domicilio</th>
                                 <th>Acciones</th>
                             </tr>
                         </thead>
                         <tbody>
-                            {resultados.map((alumno, index) => (
-                                <tr key={index}>
-                                    <td>{alumno.nombre} {alumno.primerApellido} {alumno.segundoApellido}</td>
+                            {alumnos.map((alumno) => (
+                                <tr key={alumno.id}>
+                                    <td>{alumno.id}</td>
+                                    <td>{alumno.nombreCompleto}</td>
                                     <td>{alumno.grupo}</td>
                                     <td>{alumno.tutor}</td>
+                                    <td>{alumno.domicilio}</td>
                                     <td className="lista-icons">
                                         <img src={editIcon} alt="Editar" className="icono-accion edit" onClick={() => editarAlumno(alumno.id)} />
                                         <img src={deleteIcon} alt="Eliminar" className="icono-accion delete" onClick={() => eliminarAlumno(alumno.id)} />

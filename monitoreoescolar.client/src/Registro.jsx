@@ -44,11 +44,11 @@ export default function Registro() {
             telefono,
             contrasena,
             tipo_Usuario: tipoUsuario,
-            nombreAlumno: tipoUsuario === "padre" ? nombreAlumno : null // 🔹 Solo si es Padre
+            nombreAlumno: tipoUsuario === "padre" ? nombreAlumno : null //  Solo si es Padre
         };
 
         try {
-            const response = await axios.post("http://localhost:5099/api/usuarios/registro", usuario);
+            const response = await axios.post("/api/usuarios/registro", usuario);
             alert(response.data.mensaje);
             navigate("/"); // Redirige al login tras el registro
         } catch (error) {
@@ -62,6 +62,12 @@ export default function Registro() {
     return (
         <div className="container">
             <div className={`register-container ${tipoUsuario === "padre" ? "padre" : ""}`}>
+                {/* Botón para regresar al login con imagen personalizada */}
+                <button className="back-button" onClick={() => navigate("/")}>
+                    <img src={AtrasIcon} alt="Volver" className="back-icon" />
+                </button>
+
+
                 <h2 className="register-title">Regístrate</h2>
 
                 {/* Botón para regresar al login con imagen personalizada */}
@@ -111,7 +117,7 @@ export default function Registro() {
                     )}
 
                     <button type="submit" className="submit-button" disabled={loading}>
-                        {loading ? "Creando cuenta..." : "CREAR UNA CUENTA"}
+                        {loading ? "Creando cuenta..." : "CREAR CUENTA"}
                     </button>
                 </form>
             </div>

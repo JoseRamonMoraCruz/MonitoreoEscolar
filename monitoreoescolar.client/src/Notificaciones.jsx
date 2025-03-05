@@ -21,7 +21,7 @@ const Notificaciones = () => {
 
         try {
             const nombreBusqueda = nombre.trim();
-            const response = await axios.get("http://localhost:5099/api/usuarios/buscarPadre", { params: { nombre: nombreBusqueda } });
+            const response = await axios.get("/api/usuarios/buscarPadre", { params: { nombre: nombreBusqueda } });
             console.log("Respuesta de la API:", response.data);
 
             setResultados(response.data);

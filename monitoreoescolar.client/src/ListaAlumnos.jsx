@@ -45,14 +45,14 @@ const ListaAlumnos = () => {
 
     //  Función para Editar Alumno (simulación)
     const editarAlumno = (id) => {
-        alert(Editar alumno con ID: ${ id });
+        alert(`Editar alumno con ID: ${id}`);
     };
 
     // 🔹 Función para Eliminar Alumno
     const eliminarAlumno = async (id) => {
         if (window.confirm("¿Estás seguro de eliminar este alumno?")) {
             try {
-                await axios.delete(/api/alumnos / eliminar / ${ id });
+                await axios.delete(`/api/alumnos/eliminar/${id}`);
                 alert("Alumno eliminado correctamente.");
                 obtenerAlumnos(); // Actualizar la lista después de eliminar
             } catch (error) {

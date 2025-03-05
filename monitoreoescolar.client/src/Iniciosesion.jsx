@@ -14,7 +14,7 @@ const Login = () => {
         e.preventDefault();
 
         try {
-            const response = await axios.post("http://localhost:5099/api/usuarios/login", {//NOTA: Cuando se suba a un servidor se debe cambiar la url
+            const response = await axios.post("/api/usuarios/login", {//NOTA: Cuando se suba a un servidor se debe cambiar la url
                 correo: email,
                 contrasena: password
             });
@@ -46,7 +46,7 @@ const Login = () => {
                 <form onSubmit={handleSubmit}>
                     <input
                         type="email"
-                        placeholder="Usuario"
+                        placeholder="Correo"
                         className="login-input"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}

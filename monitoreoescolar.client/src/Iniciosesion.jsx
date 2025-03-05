@@ -2,7 +2,7 @@
 import axios from 'axios';
 import { useNavigate, Link } from 'react-router-dom';
 import './Iniciosesion.css';
-import birreteIcon from './assets/sombrero-de-graduado.png'; // Asegúrate de que la imagen esté en la carpeta correcta
+import birreteIcon from './assets/sombrero-de-graduado.png'; //Carpeta de las imagenes con su icono
 
 const Login = () => {
     const [email, setEmail] = useState('');
@@ -14,7 +14,7 @@ const Login = () => {
         e.preventDefault();
 
         try {
-            const response = await axios.post("http://localhost:5099/api/usuarios/login", {
+            const response = await axios.post("/api/usuarios/login", {//NOTA: Cuando se suba a un servidor se debe cambiar la url
                 correo: email,
                 contrasena: password
             });
@@ -46,7 +46,7 @@ const Login = () => {
                 <form onSubmit={handleSubmit}>
                     <input
                         type="email"
-                        placeholder="Usuario"
+                        placeholder="Correo"
                         className="login-input"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
@@ -68,6 +68,11 @@ const Login = () => {
 
                 <div className="register-link">
                     <span>No tengo cuenta</span> <Link to="/registro">Registrarse</Link>
+                </div>
+
+                {/* Link para recuperar contraseña */}
+                <div className="forgot-password">
+                    <Link to="/actualizar-password">¿Olvidaste tu contraseña?</Link>
                 </div>
             </div>
         </div>

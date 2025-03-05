@@ -40,9 +40,9 @@ const Padre = () => {
                         <thead>
                             <tr>
                                 <th>Materia</th>
-                                <th>Calificación</th>
+                                <th>Calificacion</th>
                                 <th>Grupo</th>
-                                <th>Parcial/Unidad</th>
+                                <th>Parcial</th>
                             </tr>
                         </thead>
                         <tbody>

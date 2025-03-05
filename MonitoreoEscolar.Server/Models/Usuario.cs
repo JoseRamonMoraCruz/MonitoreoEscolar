@@ -27,6 +27,7 @@ namespace MonitoreoEscolar.Server.Models
         public string Tipo_Usuario { get; set; } = string.Empty;
 
         // Solo se usa si el usuario es Padre
-        public string? NombreAlumno { get; set; } 
+        public string? NombreAlumno { get; set; }
+
     }
 }

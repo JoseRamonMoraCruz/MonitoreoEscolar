@@ -10,6 +10,7 @@ const Menu = () => {
                     <li><Link to="/generar-reportes">Reporte de Conducta</Link></li>
                     <li><Link to="/notificaciones">Envío de notificaciones</Link></li>
                     <li><Link to="/agregar-alumno">Agregar Alumno</Link></li>
+                    <li><Link to="/lista-alumnos">Lista de Alumnos</Link></li>
                     <li><Link to="/">Cerrar Sesión</Link></li> 
                 </ul>
             </nav>

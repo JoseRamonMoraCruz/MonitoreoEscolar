@@ -28,7 +28,7 @@ const AgregarAlumno = () => {
 
         try {
             //  Enviar datos a la API
-            const response = await axios.post("/api/alumnos/registro", alumno);
+            const response = await axios.post(" http://localhost:5099/api/alumnos/registro", alumno);
 
             alert(response.data.mensaje); // Mostrar mensaje de éxito
             setAlumno({ nombre: "", apellidos: "", grupo: "", tutor: "", domicilio: "" }); // Limpiar formulario

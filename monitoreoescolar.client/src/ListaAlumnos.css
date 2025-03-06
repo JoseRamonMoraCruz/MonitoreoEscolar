@@ -122,3 +122,144 @@
     .icono-accion.delete {
         filter: invert(27%) sepia(97%) saturate(2196%) hue-rotate(342deg) brightness(92%) contrast(90%);
     }
+
+/* 🔹 🔥 Ventana emergente (Modal) */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    backdrop-filter: blur(3px);
+}
+
+.modal-content {
+    background: white;
+    padding: 25px;
+    border-radius: 12px;
+    width: 420px;
+    text-align: center;
+    position: relative;
+    box-shadow: 0px 5px 20px rgba(0, 0, 0, 0.3);
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from {
+        transform: scale(0.8);
+        opacity: 0;
+    }
+
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+/* 🔹 Botón de cerrar (X) */
+.close-button {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    background: none;
+    border: none;
+    font-size: 22px;
+    cursor: pointer;
+    color: #ff4d4d;
+    font-weight: bold;
+    transition: transform 0.2s ease-in-out;
+}
+
+    .close-button:hover {
+        transform: scale(1.2);
+    }
+
+/* 🔹 Texto de confirmación */
+.modal-content h2 {
+    font-size: 20px;
+    color: #333;
+    margin-bottom: 15px;
+    font-weight: bold;
+}
+
+/* 🔹 Contenedor de los botones */
+.modal-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    margin-top: 20px;
+}
+
+/* 🔹 Botón de confirmar eliminación */
+.confirm-button,
+.cancel-button {
+    border: none;
+    cursor: pointer;
+    padding: 12px;
+    border-radius: 10px;
+    font-size: 16px;
+    font-weight: bold;
+    width: 80px;
+    height: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.2s ease-in-out;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.confirm-button {
+    background: #28a745;
+}
+
+    .confirm-button img {
+        width: 40px;
+        height: 40px;
+    }
+
+.cancel-button {
+    background: #dc3545;
+}
+
+    .cancel-button img {
+        width: 40px;
+        height: 40px;
+    }
+
+    .confirm-button:hover,
+    .cancel-button:hover {
+        transform: scale(1.1);
+    }
+
+/* 🔹 Campos de entrada dentro del modal */
+.modal-content input {
+    width: 100%;
+    padding: 8px;
+    margin: 5px 0;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 16px;
+}
+
+/* 🔹 Botón "Guardar" dentro del modal */
+.save-button {
+    margin-top: 10px;
+    background: blue;
+    color: white;
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    width: 100%;
+    font-size: 16px;
+    transition: 0.3s;
+}
+
+    .save-button:hover {
+        background: darkblue;
+    }

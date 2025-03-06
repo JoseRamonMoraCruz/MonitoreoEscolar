@@ -4,7 +4,6 @@ using MonitoreoEscolar.Server.Data;
 using MonitoreoEscolar.Server.Models;
 using System.Globalization;
 using System.Text;
-using System.Text.RegularExpressions;
 
 namespace MonitoreoEscolar.Server.Controllers
 {
@@ -17,25 +16,19 @@ namespace MonitoreoEscolar.Server.Controllers
         public AlumnosController(ApplicationDbContext context)
         {
             _context = context;
-        }
+            Console.WriteLine("✔ AlumnosController CARGADO");
 
-        //  Función para normalizar texto (quita acentos y convierte a minúsculas)
-        private string NormalizarTexto(string input)
-        {
-            if (string.IsNullOrWhiteSpace(input)) return "";
-            var normalizedString = input.Normalize(NormalizationForm.FormD);
-            var stringBuilder = new StringBuilder();
-            foreach (var c in normalizedString)
+            if (_context == null)
             {
-                if (CharUnicodeInfo.GetUnicodeCategory(c) != UnicodeCategory.NonSpacingMark)
-                {
-                    stringBuilder.Append(c);
-                }
+                Console.WriteLine("❌ ERROR: _context es NULL");
             }
-            return Regex.Replace(stringBuilder.ToString().Trim().ToLower(), @"\s+", " ");
+            else
+            {
+                Console.WriteLine("✔ _context CARGADO correctamente");
+            }
         }
 
-        //  REGISTRAR ALUMNO
+        // 🔹 REGISTRAR ALUMNO
         [HttpPost("registro")]
         public async Task<IActionResult> RegistrarAlumno([FromBody] Alumno request)
         {
@@ -47,9 +40,9 @@ namespace MonitoreoEscolar.Server.Controllers
                 if (string.IsNullOrWhiteSpace(request.Nombre) || string.IsNullOrWhiteSpace(request.Apellidos))
                     return BadRequest(new { mensaje = "❌ Nombre y Apellidos son obligatorios." });
 
-                // 🔹 Generar NombreCompleto y NombreCompletoNormalizado automáticamente
-                var nombreCompleto = $"{request.Nombre.Trim()} {request.Apellidos.Trim()}";
-                var nombreNormalizado = NormalizarTexto(nombreCompleto);
+                // 🔹 Generar Nombre Completo y su versión normalizada
+                var nombreCompleto = $"{request.Nombre.Trim()} {request.Apellidos.Trim()}".Trim();
+                var nombreNormalizado = RemoveDiacritics(nombreCompleto.ToLower());
 
                 var alumno = new Alumno
                 {
@@ -71,6 +64,81 @@ namespace MonitoreoEscolar.Server.Controllers
             {
                 return StatusCode(500, new { mensaje = "❌ Error interno del servidor.", error = ex.Message });
             }
+        }
+
+        // 🔹 OBTENER TODOS LOS ALUMNOS
+        [HttpGet]
+        public async Task<IActionResult> ObtenerAlumnos()
+        {
+            try
+            {
+                var alumnos = await _context.Alumnos
+                    .OrderBy(a => a.NombreCompleto)
+                    .ToListAsync();
+
+                return Ok(alumnos);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { mensaje = "❌ Error al obtener alumnos.", error = ex.Message });
+            }
+        }
+
+        // 🔹 EDITAR ALUMNO (ACTUALIZA TODOS LOS CAMPOS)
+        [HttpPut("editar/{id}")]
+        public async Task<IActionResult> EditarAlumno(int id, [FromBody] Alumno request)
+        {
+            var alumno = await _context.Alumnos.FindAsync(id);
+            if (alumno == null) return NotFound("Alumno no encontrado.");
+
+            // 🔹 Actualizar los datos individuales
+            alumno.Nombre = request.Nombre.Trim();
+            alumno.Apellidos = request.Apellidos.Trim();
+            alumno.Grupo = request.Grupo.Trim();
+            alumno.Tutor = request.Tutor.Trim();
+            alumno.Domicilio = request.Domicilio.Trim();
+
+            // 🔹 FORZAR ACTUALIZACIÓN en todas las columnas dependientes
+            alumno.NombreCompleto = $"{alumno.Nombre} {alumno.Apellidos}".Trim();
+            alumno.NombreCompletoNormalizado = RemoveDiacritics(alumno.NombreCompleto.ToLower());
+
+            // 🔹 Guardar cambios en la base de datos
+            _context.Entry(alumno).State = EntityState.Modified;
+            await _context.SaveChangesAsync();
+
+            return Ok(new { mensaje = "✅ Alumno actualizado correctamente." });
+        }
+
+        // 🔹 ELIMINAR ALUMNO
+        [HttpDelete("eliminar/{id}")]
+        public async Task<IActionResult> EliminarAlumno(int id)
+        {
+            var alumno = await _context.Alumnos.FindAsync(id);
+            if (alumno == null) return NotFound("Alumno no encontrado.");
+
+            _context.Alumnos.Remove(alumno);
+            await _context.SaveChangesAsync();
+
+            return Ok(new { mensaje = "✅ Alumno eliminado correctamente." });
+        }
+
+        // 🔹 FUNCIÓN PARA ELIMINAR ACENTOS Y CARACTERES ESPECIALES
+        private static string RemoveDiacritics(string text)
+        {
+            if (string.IsNullOrEmpty(text)) return text;
+
+            text = text.Normalize(NormalizationForm.FormD);
+            StringBuilder sb = new StringBuilder();
+
+            foreach (char c in text)
+            {
+                if (CharUnicodeInfo.GetUnicodeCategory(c) != UnicodeCategory.NonSpacingMark)
+                {
+                    sb.Append(c);
+                }
+            }
+
+            return sb.ToString().Normalize(NormalizationForm.FormC);
         }
     }
 }

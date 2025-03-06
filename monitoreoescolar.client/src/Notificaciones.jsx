@@ -38,6 +38,7 @@ const Notificaciones = () => {
         window.open(`https://wa.me/${telefono}?text=`, "_blank");
     };
 
+
     // Función para simular el envío de SMS (se puede conectar a una API real)
 
     return (

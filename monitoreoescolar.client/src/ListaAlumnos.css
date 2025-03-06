@@ -28,78 +28,89 @@
     margin-bottom: 15px;
 }
 
-/* 🔹 Barra de búsqueda */
-.lista-search-container {
+/* 🔹 Estilo para las cartas de los grupos */
+.grupos-container {
     display: flex;
-    align-items: center;
-    background-color: white;
-    border-radius: 30px;
-    padding: 8px;
+    flex-direction: column;
+    gap: 15px;
     width: 100%;
-    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+    align-items: center;
 }
 
-    .lista-search-container input {
-        border: none;
-        width: 100%;
-        font-size: 16px;
-        outline: none;
-        padding: 10px;
-        border-radius: 20px;
-    }
-
-.lista-search-button {
-    background-color: #48cae4;
-    color: white;
-    border: none;
-    border-radius: 50%;
-    font-size: 16px;
-    padding: 8px;
+.grupo-card {
+    background: #ffffff;
+    border-radius: 10px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+    padding: 15px;
+    width: 80%;
+    text-align: center;
     cursor: pointer;
     transition: 0.3s;
-    width: 40px;
-    height: 40px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
 }
 
-    .lista-search-button:hover {
-        background-color: #1F7765;
+    .grupo-card:hover {
+        transform: scale(1.02);
     }
 
-/* 🔹 Tabla */
+.grupo-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 18px;
+    font-weight: bold;
+    color: #333;
+}
+
 .lista-table {
     width: 100%;
     border-collapse: collapse;
-    margin-top: 15px;
+    margin-top: 10px;
     background: white;
     color: black;
     border-radius: 10px;
-    overflow: hidden;
 }
 
-    .lista-table th,
-    .lista-table td {
+    .lista-table th, .lista-table td {
         padding: 12px;
         text-align: left;
         border-bottom: 1px solid #ddd;
     }
 
-    .lista-table th {
-        background-color: #8d99ae;
-        color: white;
-    }
-
-    .lista-table tr:hover {
-        background-color: #f1f1f1;
-    }
-
-/* 🔹 Contenedor de los iconos */
 .lista-icons {
     display: flex;
     gap: 10px;
     justify-content: center;
+}
+
+
+/* 🔹 Lista de alumnos dentro del grupo */
+.grupo-alumnos {
+    margin-top: 10px;
+    background: #ffffff20;
+    padding: 10px;
+    border-radius: 8px;
+}
+
+/* 🔹 Estilo de cada alumno */
+.alumno-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.2);
+    padding: 8px;
+    margin: 5px 0;
+    border-radius: 6px;
+    transition: 0.3s ease-in-out;
+}
+
+    .alumno-item:hover {
+        background: rgba(255, 255, 255, 0.3);
+    }
+
+/* 🔹 Iconos dentro de la lista de alumnos */
+.lista-icons {
+    display: flex;
+    gap: 10px;
 }
 
 /* 🔹 Tamaño y estilo de los iconos */

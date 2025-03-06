@@ -10,9 +10,11 @@ const ListaAlumnos = () => {
     const [alumnos, setAlumnos] = useState([]);
     const [cargando, setCargando] = useState(false);
     const [mensaje, setMensaje] = useState("");
+    const [gruposAbiertos, setGruposAbiertos] = useState({});
     const [nombre, setNombre] = useState("");
 
-    // Estado para el modal de edición
+    const [modalEliminar, setModalEliminar] = useState(false);
+    const [alumnoAEliminar, setAlumnoAEliminar] = useState(null);
     const [modalVisible, setModalVisible] = useState(false);
     const [alumnoActual, setAlumnoActual] = useState({
         id: "",
@@ -22,10 +24,6 @@ const ListaAlumnos = () => {
         tutor: "",
         domicilio: ""
     });
-
-    // Estado para la ventana de confirmación de eliminación
-    const [modalEliminar, setModalEliminar] = useState(false);
-    const [alumnoAEliminar, setAlumnoAEliminar] = useState(null);
 
     useEffect(() => {
         obtenerAlumnos();
@@ -56,6 +54,14 @@ const ListaAlumnos = () => {
         );
 
         setMensaje(filtrados.length === 0 ? "No se encontraron coincidencias." : "");
+        setAlumnos(filtrados);
+    };
+
+    const toggleGrupo = (grupo) => {
+        setGruposAbiertos((prev) => ({
+            ...prev,
+            [grupo]: !prev[grupo],
+        }));
     };
 
     const confirmarEliminar = (id) => {
@@ -105,12 +111,19 @@ const ListaAlumnos = () => {
         }
     };
 
+    const grupos = alumnos.reduce((acc, alumno) => {
+        if (!acc[alumno.grupo]) {
+            acc[alumno.grupo] = [];
+        }
+        acc[alumno.grupo].push(alumno);
+        return acc;
+    }, {});
+
     return (
         <div className="lista-container">
             <div className="lista-content">
                 <h2 className="lista-title">Lista de Alumnos</h2>
 
-                {/* 🔍 Barra de búsqueda */}
                 <div className="lista-search-container">
                     <input
                         type="text"
@@ -125,42 +138,59 @@ const ListaAlumnos = () => {
                 {cargando && <p>Cargando...</p>}
                 {mensaje && <p>{mensaje}</p>}
 
-                <table className="lista-table">
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Nombre Completo</th>
-                            <th>Grupo</th>
-                            <th>Tutor</th>
-                            <th>Domicilio</th>
-                            <th>Acciones</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {alumnos.length === 0 ? (
-                            <tr>
-                                <td colSpan="6" style={{ textAlign: "center" }}>No hay alumnos registrados.</td>
-                            </tr>
-                        ) : (
-                            alumnos.map((alumno) => (
-                                <tr key={alumno.id}>
-                                    <td>{alumno.id}</td>
-                                    <td>{alumno.nombreCompleto}</td>
-                                    <td>{alumno.grupo}</td>
-                                    <td>{alumno.tutor}</td>
-                                    <td>{alumno.domicilio}</td>
-                                    <td className="lista-icons">
-                                        <img src={editIcon} alt="Editar" className="icono-accion edit" onClick={() => abrirModalEdicion(alumno)} />
-                                        <img src={deleteIcon} alt="Eliminar" className="icono-accion delete" onClick={() => confirmarEliminar(alumno.id)} />
-                                    </td>
-                                </tr>
-                            ))
-                        )}
-                    </tbody>
-                </table>
+                <div className="grupos-container">
+                    {Object.keys(grupos).length === 0 ? (
+                        <p>No hay alumnos registrados.</p>
+                    ) : (
+                        Object.keys(grupos).map((grupo) => (
+                            <div key={grupo} className="grupo-card">
+                                <div className="grupo-header" onClick={() => toggleGrupo(grupo)}>
+                                    <h3>{grupo}</h3>
+                                    <span>{grupos[grupo].length} alumnos</span>
+                                </div>
+
+                                {gruposAbiertos[grupo] && (
+                                    <table className="lista-table">
+                                        <thead>
+                                            <tr>
+                                                <th>Nombre Completo</th>
+                                                <th>Tutor</th>
+                                                <th>Domicilio</th>
+                                                <th>Acciones</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {grupos[grupo].map((alumno) => (
+                                                <tr key={alumno.id}>
+                                                    <td>{alumno.nombreCompleto}</td>
+                                                    <td>{alumno.tutor}</td>
+                                                    <td>{alumno.domicilio}</td>
+                                                    <td className="lista-icons">
+                                                        <img
+                                                            src={editIcon}
+                                                            alt="Editar"
+                                                            className="icono-accion edit"
+                                                            onClick={() => abrirModalEdicion(alumno)}
+                                                        />
+                                                        <img
+                                                            src={deleteIcon}
+                                                            alt="Eliminar"
+                                                            className="icono-accion delete"
+                                                            onClick={() => confirmarEliminar(alumno.id)}
+                                                        />
+                                                    </td>
+                                                </tr>
+                                            ))}
+                                        </tbody>
+                                    </table>
+                                )}
+                            </div>
+                        ))
+                    )}
+                </div>
             </div>
 
-            {/* Modal de edición */}
+            {/* Modal de Edición */}
             {modalVisible && (
                 <div className="modal-overlay">
                     <div className="modal-content">
@@ -187,7 +217,7 @@ const ListaAlumnos = () => {
                 </div>
             )}
 
-            {/* Modal de confirmación de eliminación */}
+            {/* Modal de Confirmación de Eliminación */}
             {modalEliminar && (
                 <div className="modal-overlay">
                     <div className="modal-content">
@@ -195,10 +225,10 @@ const ListaAlumnos = () => {
                         <h2>¿Estás seguro de eliminar este alumno?</h2>
                         <div className="modal-buttons">
                             <button className="confirm-button" onClick={eliminarAlumno}>
-                                <img src={aceptarIcon} alt="Aceptar" /> 
+                                <img src={aceptarIcon} alt="Aceptar" />
                             </button>
                             <button className="cancel-button" onClick={() => setModalEliminar(false)}>
-                                <img src={rechazarIcon} alt="Rechazar" /> 
+                                <img src={rechazarIcon} alt="Rechazar" />
                             </button>
                         </div>
                     </div>

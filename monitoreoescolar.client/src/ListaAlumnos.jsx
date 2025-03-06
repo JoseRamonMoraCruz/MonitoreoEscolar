@@ -48,7 +48,7 @@ const ListaAlumnos = () => {
         alert(`Editar alumno con ID: ${id}`);
     };
 
-    // 🔹 Función para Eliminar Alumno
+    //  Función para Eliminar Alumno
     const eliminarAlumno = async (id) => {
         if (window.confirm("¿Estás seguro de eliminar este alumno?")) {
             try {

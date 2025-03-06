@@ -35,8 +35,9 @@ const Notificaciones = () => {
 
     // Función para abrir WhatsApp con el número
     const enviarWhatsApp = (telefono) => {
-        window.open(`https://wa.me/${telefono}`, "_blank");
+        window.open(`https://wa.me/${telefono}?text=`, "_blank");
     };
+
 
     // Función para simular el envío de SMS (se puede conectar a una API real)
 

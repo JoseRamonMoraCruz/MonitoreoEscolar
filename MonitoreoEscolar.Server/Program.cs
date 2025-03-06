@@ -3,7 +3,6 @@ using MonitoreoEscolar.Server.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 
-
 //  Configurar la conexión a SQL Server desde appsettings.json con logs detallados
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"), sqlServerOptions =>
@@ -24,6 +23,7 @@ builder.Services.AddCors(options =>
               .AllowCredentials());
 });
 
+//  Agregar controladores y herramientas de documentación (Swagger)
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -33,6 +33,7 @@ var app = builder.Build();
 app.UseDefaultFiles();
 app.UseStaticFiles();
 
+//  Habilitar Swagger solo en desarrollo
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -54,11 +55,13 @@ using (var scope = app.Services.CreateScope())
         {
             Console.ForegroundColor = ConsoleColor.Green;
             Console.WriteLine("✅ Conexión exitosa a SQL Server.");
+            Console.ResetColor();
         }
         else
         {
             Console.ForegroundColor = ConsoleColor.Red;
             Console.WriteLine("❌ No se pudo conectar a SQL Server.");
+            Console.ResetColor();
         }
     }
     catch (Exception ex)
@@ -71,15 +74,15 @@ using (var scope = app.Services.CreateScope())
             Console.WriteLine($"➡️ Detalles internos: {ex.InnerException.Message}");
         }
 
-        Console.WriteLine($"🔍 StackTrace: {ex.StackTrace}"); // Muestra más detalles técnicos
+        Console.WriteLine($"🔍 StackTrace: {ex.StackTrace}");
         Console.ResetColor();
     }
 }
 
-//  Agregar CORS antes de Authorization
+//  Agregar Middleware antes de ejecutar la API
 app.UseCors(corsPolicyName);
+app.UseHttpsRedirection();
 app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
-

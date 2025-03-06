@@ -21,7 +21,7 @@ const Notificaciones = () => {
 
         try {
             const nombreBusqueda = nombre.trim();
-            const response = await axios.get("/api/usuarios/buscarPadre", { params: { nombre: nombreBusqueda } });
+            const response = await axios.get("http://localhost:5099/api/usuarios/buscarPadre", { params: { nombre: nombreBusqueda } });
             console.log("Respuesta de la API:", response.data);
 
             setResultados(response.data);
@@ -35,7 +35,7 @@ const Notificaciones = () => {
 
     // Función para abrir WhatsApp con el número
     const enviarWhatsApp = (telefono) => {
-        window.open(`https://wa.me/${telefono}`, "_blank");
+        window.open(`https://wa.me/${telefono}?text=`, "_blank");
     };
 
     // Función para simular el envío de SMS (se puede conectar a una API real)

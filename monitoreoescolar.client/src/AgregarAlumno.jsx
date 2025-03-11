@@ -5,20 +5,44 @@ import huellaIcon from "./assets/huella-dactilar.png";
 import agregarIcon from "./assets/agregar-alumno.png";
 
 const AgregarAlumno = () => {
-    //  Estado para almacenar los datos del alumno
+    // Estado para almacenar los datos del alumno
     const [alumno, setAlumno] = useState({
         nombre: "",
         apellidos: "",
-        grupo: "",
+        grupo: "",   // <- Usado para mandar al backend el grupo completo (ej: "1-C")
+        grado: "",   // <- Para controlar el grado
+        letra: "",   // <- Para controlar la letra (A, B, C...)
         tutor: "",
         domicilio: ""
     });
 
-    //  Función para manejar cambios en los inputs
+    // Maneja cambios en nombre, apellidos, tutor, domicilio, etc.
     const handleChange = (e) => {
         setAlumno({
             ...alumno,
             [e.target.name]: e.target.value
+        });
+    };
+
+    // Maneja el cambio de Grado (ej: 1, 2, 3...)
+    const handleChangeGrado = (e) => {
+        const newGrado = e.target.value;
+        setAlumno({
+            ...alumno,
+            grado: newGrado,
+            // Genera el valor de 'grupo' concatenando grado y letra si ambos existen
+            grupo: newGrado && alumno.letra ? `${newGrado}${alumno.letra}` : ""
+        });
+    };
+
+    // Maneja el cambio de Letra (ej: A, B, C)
+    const handleChangeLetra = (e) => {
+        const newLetra = e.target.value;
+        setAlumno({
+            ...alumno,
+            letra: newLetra,
+            // Genera el valor de 'grupo' concatenando grado y letra si ambos existen
+            grupo: alumno.grado && newLetra ? `${alumno.grado}${newLetra}` : ""
         });
     };
 
@@ -27,11 +51,20 @@ const AgregarAlumno = () => {
         e.preventDefault(); // Evita el comportamiento por defecto del formulario
 
         try {
-            //  Enviar datos a la API
+            // Enviar datos a la API
             const response = await axios.post("/api/alumnos/registro", alumno);
 
             alert(response.data.mensaje); // Mostrar mensaje de éxito
-            setAlumno({ nombre: "", apellidos: "", grupo: "", tutor: "", domicilio: "" }); // Limpiar formulario
+            // Limpiar formulario
+            setAlumno({
+                nombre: "",
+                apellidos: "",
+                grupo: "",
+                grado: "",
+                letra: "",
+                tutor: "",
+                domicilio: ""
+            });
 
         } catch (error) {
             console.error("Error al registrar:", error);
@@ -43,7 +76,9 @@ const AgregarAlumno = () => {
         <div className="agregar-alumno-container">
             <div className="agregar-alumno-content">
                 <h2 className="agregar-alumno-title">📑 Registra un Alumno</h2>
+
                 <form onSubmit={handleSubmit}>
+                    {/* Nombre */}
                     <div className="agregar-alumno-group">
                         <label>👨🏻‍🎓 Nombre:</label>
                         <input
@@ -56,6 +91,7 @@ const AgregarAlumno = () => {
                         />
                     </div>
 
+                    {/* Apellidos */}
                     <div className="agregar-alumno-group">
                         <label>👨🏻‍🎓 Apellidos:</label>
                         <input
@@ -68,18 +104,40 @@ const AgregarAlumno = () => {
                         />
                     </div>
 
-                    <div className="agregar-alumno-group">
-                        <label>📚 Grupo:</label>
-                        <input
-                            type="text"
-                            name="grupo"
-                            value={alumno.grupo}
-                            onChange={handleChange}
-                            placeholder="Ingrese el grupo"
-                            required
-                        />
+                    {/* Grado y Letra (reemplaza el input de grupo) */}
+                    <div className="agregar-alumno-group-selects">
+                        <div>
+                            <label>Grado:</label>
+                            <select
+                                name="grado"
+                                value={alumno.grado}
+                                onChange={handleChangeGrado}
+                                required
+                            >
+                                <option value="">Seleccione</option>
+                                {[1, 2, 3, 4, 5, 6].map((g) => (
+                                    <option key={g} value={g}>{g}</option>
+                                ))}
+                            </select>
+                        </div>
+
+                        <div>
+                            <label>Grupo:</label>
+                            <select
+                                name="letra"
+                                value={alumno.letra}
+                                onChange={handleChangeLetra}
+                                required
+                            >
+                                <option value="">Seleccione</option>
+                                {["A", "B", "C", "D", "E", "F", "G"].map((l) => (
+                                    <option key={l} value={l}>{l}</option>
+                                ))}
+                            </select>
+                        </div>
                     </div>
 
+                    {/* Tutor */}
                     <div className="agregar-alumno-group">
                         <label>👨🏻‍🦰 Nombre del padre/madre o tutor:</label>
                         <input
@@ -92,6 +150,7 @@ const AgregarAlumno = () => {
                         />
                     </div>
 
+                    {/* Domicilio */}
                     <div className="agregar-alumno-group">
                         <label>🏠 Domicilio:</label>
                         <input
@@ -104,6 +163,7 @@ const AgregarAlumno = () => {
                         />
                     </div>
 
+                    {/* Botones */}
                     <div className="button-container">
                         <button type="submit" className="agregar-alumno-btn">
                             <img src={agregarIcon} alt="Agregar" className="back-icon" />

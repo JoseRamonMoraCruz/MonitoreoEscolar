@@ -66,13 +66,15 @@ namespace MonitoreoEscolar.Server.Controllers
             }
         }
 
-        // 🔹 OBTENER TODOS LOS ALUMNOS
-        [HttpGet]
-        public async Task<IActionResult> ObtenerAlumnos()
+        // 🔹 OBTENER ALUMNOS DE UN GRUPO ESPECÍFICO
+        [HttpGet("grupo/{grupoStr}")]
+        public async Task<IActionResult> ObtenerAlumnosPorGrupo(string grupoStr)
         {
             try
             {
+                // Buscamos alumnos cuyo campo 'Grupo' coincida con grupoStr (ej. "1C")
                 var alumnos = await _context.Alumnos
+                    .Where(a => a.Grupo == grupoStr)
                     .OrderBy(a => a.NombreCompleto)
                     .ToListAsync();
 
@@ -80,7 +82,7 @@ namespace MonitoreoEscolar.Server.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new { mensaje = "❌ Error al obtener alumnos.", error = ex.Message });
+                return StatusCode(500, new { mensaje = "❌ Error al obtener alumnos por grupo.", error = ex.Message });
             }
         }
 

@@ -1,236 +1,179 @@
 ﻿import { useState, useEffect } from "react";
 import axios from "axios";
 import "./ListaAlumnos.css";
-import editIcon from "./assets/editar-informacion.png"; // Ícono de editar
-import deleteIcon from "./assets/eliminar-informacion.png"; // Ícono de eliminar
-import aceptarIcon from "./assets/aceptar.png"; // Ícono de aceptar
-import rechazarIcon from "./assets/rechazar.png"; // Ícono de rechazar
+import addIcon from "./assets/agregar-grupo.png"; // Ícono de agregar grupo
 
 const ListaAlumnos = () => {
-    const [alumnos, setAlumnos] = useState([]);
-    const [cargando, setCargando] = useState(false);
-    const [mensaje, setMensaje] = useState("");
-    const [gruposAbiertos, setGruposAbiertos] = useState({});
-    const [nombre, setNombre] = useState("");
+    const [grupos, setGrupos] = useState([]);
+    const [modalGrupo, setModalGrupo] = useState(false);
+    const [nuevoGrupo, setNuevoGrupo] = useState({ grado: "", letra: "" });
 
-    const [modalEliminar, setModalEliminar] = useState(false);
-    const [alumnoAEliminar, setAlumnoAEliminar] = useState(null);
-    const [modalVisible, setModalVisible] = useState(false);
-    const [alumnoActual, setAlumnoActual] = useState({
-        id: "",
-        nombre: "",
-        apellidos: "",
-        grupo: "",
-        tutor: "",
-        domicilio: ""
-    });
+    // NUEVO: Estados y función para expandir la lista de alumnos
+    const [expandedGroup, setExpandedGroup] = useState(null);
+    const [alumnosGrupo, setAlumnosGrupo] = useState([]);
 
     useEffect(() => {
-        obtenerAlumnos();
+        obtenerGrupos();
     }, []);
 
-    const obtenerAlumnos = async () => {
-        setCargando(true);
+    const obtenerGrupos = async () => {
         try {
-            const response = await axios.get("/api/alumnos");
-            setAlumnos(response.data);
-            setMensaje(response.data.length === 0 ? "No hay alumnos registrados." : "");
+            const response = await axios.get("/api/grupos");
+            setGrupos(response.data);
         } catch (error) {
-            console.error("Error al obtener alumnos:", error);
-            setMensaje("No se pudo obtener la lista de alumnos.");
-        } finally {
-            setCargando(false);
+            console.error("Error al obtener grupos:", error);
         }
     };
 
-    const buscarAlumno = () => {
-        if (nombre.trim() === "") {
-            setMensaje("");
+    const abrirModalGrupo = () => setModalGrupo(true);
+    const cerrarModalGrupo = () => setModalGrupo(false);
+
+    const handleChange = (e) => {
+        setNuevoGrupo({ ...nuevoGrupo, [e.target.name]: e.target.value });
+    };
+
+    const agregarGrupo = async () => {
+        if (!nuevoGrupo.grado || !nuevoGrupo.letra) {
+            alert("Por favor, selecciona el grado y la letra del grupo.");
             return;
         }
 
-        const filtrados = alumnos.filter(alumno =>
-            alumno.nombreCompleto.toLowerCase().includes(nombre.toLowerCase())
-        );
-
-        setMensaje(filtrados.length === 0 ? "No se encontraron coincidencias." : "");
-        setAlumnos(filtrados);
-    };
-
-    const toggleGrupo = (grupo) => {
-        setGruposAbiertos((prev) => ({
-            ...prev,
-            [grupo]: !prev[grupo],
-        }));
-    };
-
-    const confirmarEliminar = (id) => {
-        setAlumnoAEliminar(id);
-        setModalEliminar(true);
-    };
-
-    const eliminarAlumno = async () => {
-        if (!alumnoAEliminar) return;
-
         try {
-            await axios.delete(`/api/alumnos/eliminar/${alumnoAEliminar}`);
-            alert("✅ Alumno eliminado correctamente.");
-            obtenerAlumnos();
-            setModalEliminar(false);
+            await axios.post("/api/grupos/agregar", nuevoGrupo);
+            alert("✅ Grupo agregado correctamente.");
+            obtenerGrupos();
+            cerrarModalGrupo();
         } catch (error) {
-            console.error("Error al eliminar:", error);
-            alert("❌ No se pudo eliminar el alumno.");
+            console.error("Error al agregar grupo:", error);
+            alert("❌ No se pudo agregar el grupo.");
         }
     };
 
-    const abrirModalEdicion = (alumno) => {
-        setAlumnoActual(alumno);
-        setModalVisible(true);
-    };
-
-    const cerrarModal = () => {
-        setModalVisible(false);
-    };
-
-    const handleChange = (e) => {
-        setAlumnoActual({
-            ...alumnoActual,
-            [e.target.name]: e.target.value
-        });
-    };
-
-    const guardarEdicion = async () => {
+    // NUEVO: Función para manejar el clic en una carta de grupo
+    const handleGroupClick = async (grupo) => {
+        // Si el grupo clicado ya está expandido, lo contraemos
+        if (expandedGroup && expandedGroup.id === grupo.id) {
+            setExpandedGroup(null);
+            setAlumnosGrupo([]);
+            return;
+        }
         try {
-            await axios.put(`/api/alumnos/editar/${alumnoActual.id}`, alumnoActual);
-            alert("✅ Alumno actualizado correctamente.");
-            obtenerAlumnos();
-            cerrarModal();
+            // Construimos el string del grupo, ej: "1-A"
+            const groupString = `${grupo.grado}${grupo.letra}`;
+            // Llamada al endpoint que obtiene alumnos de ese grupo
+            const response = await axios.get(`/api/alumnos/grupo/${groupString}`);
+            setAlumnosGrupo(response.data);
+            setExpandedGroup(grupo);
         } catch (error) {
-            console.error("Error al actualizar:", error);
-            alert("❌ No se pudo actualizar el alumno.");
+            console.error("Error al obtener alumnos del grupo:", error);
+            alert("❌ No se pudieron obtener los alumnos de este grupo.");
         }
     };
-
-    const grupos = alumnos.reduce((acc, alumno) => {
-        if (!acc[alumno.grupo]) {
-            acc[alumno.grupo] = [];
-        }
-        acc[alumno.grupo].push(alumno);
-        return acc;
-    }, {});
 
     return (
         <div className="lista-container">
+            {/* Contenido principal */}
             <div className="lista-content">
-                <h2 className="lista-title">Lista de Alumnos</h2>
-
-                <div className="lista-search-container">
-                    <input
-                        type="text"
-                        placeholder="Buscar alumno por nombre completo"
-                        value={nombre}
-                        onChange={(e) => setNombre(e.target.value)}
-                        onKeyPress={(e) => e.key === "Enter" && buscarAlumno()}
-                    />
-                    <button className="lista-search-button" onClick={buscarAlumno}>🔍</button>
+                {/* Encabezado */}
+                <div className="lista-header">
+                    <h2 className="lista-title">Lista de Grupos</h2>
                 </div>
 
-                {cargando && <p>Cargando...</p>}
-                {mensaje && <p>{mensaje}</p>}
+                {/* Barra de búsqueda */}
+                <div className="lista-search-container">
+                    <input type="text" placeholder="Buscar grupo" />
+                    <button className="lista-search-button">
+                        🔍
+                    </button>
+                </div>
 
+                {/* Contenedor de grupos */}
                 <div className="grupos-container">
-                    {Object.keys(grupos).length === 0 ? (
-                        <p>No hay alumnos registrados.</p>
+                    {grupos.length === 0 ? (
+                        <p>No hay grupos registrados.</p>
                     ) : (
-                        Object.keys(grupos).map((grupo) => (
-                            <div key={grupo} className="grupo-card">
-                                <div className="grupo-header" onClick={() => toggleGrupo(grupo)}>
-                                    <h3>{grupo}</h3>
-                                    <span>{grupos[grupo].length} alumnos</span>
+                        grupos.map((grupo) => (
+                            <div
+                                key={grupo.id}
+                                className="grupo-card"
+                                onClick={() => handleGroupClick(grupo)}
+                            >
+                                {/* Cabecera de la carta: muestra el grupo y la cantidad de alumnos (si está expandida) */}
+                                <div className="grupo-header">
+                                    <h3>{grupo.grado}{grupo.letra}</h3>
+                                    {/* Si este grupo está expandido, se muestra la cantidad; de lo contrario, se deja vacío */}
+                                    {expandedGroup && expandedGroup.id === grupo.id && (
+                                        <p>{alumnosGrupo.length} {alumnosGrupo.length === 1 ? "alumno" : "alumnos"}</p>
+                                    )}
                                 </div>
-
-                                {gruposAbiertos[grupo] && (
-                                    <table className="lista-table">
-                                        <thead>
-                                            <tr>
-                                                <th>Nombre Completo</th>
-                                                <th>Tutor</th>
-                                                <th>Domicilio</th>
-                                                <th>Acciones</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            {grupos[grupo].map((alumno) => (
-                                                <tr key={alumno.id}>
-                                                    <td>{alumno.nombreCompleto}</td>
-                                                    <td>{alumno.tutor}</td>
-                                                    <td>{alumno.domicilio}</td>
-                                                    <td className="lista-icons">
-                                                        <img
-                                                            src={editIcon}
-                                                            alt="Editar"
-                                                            className="icono-accion edit"
-                                                            onClick={() => abrirModalEdicion(alumno)}
-                                                        />
-                                                        <img
-                                                            src={deleteIcon}
-                                                            alt="Eliminar"
-                                                            className="icono-accion delete"
-                                                            onClick={() => confirmarEliminar(alumno.id)}
-                                                        />
-                                                    </td>
+                                {/* Se despliega la tabla solo si este grupo está expandido */}
+                                {expandedGroup && expandedGroup.id === grupo.id && (
+                                    alumnosGrupo.length === 0 ? (
+                                        <p>No hay alumnos registrados en este grupo.</p>
+                                    ) : (
+                                        <table className="tabla-alumnos">
+                                            <thead>
+                                                <tr>
+                                                    <th>Nombre Completo</th>
+                                                    <th>Tutor</th>
+                                                    <th>Domicilio</th>
                                                 </tr>
-                                            ))}
-                                        </tbody>
-                                    </table>
+                                            </thead>
+                                            <tbody>
+                                                {alumnosGrupo.map((alumno) => (
+                                                    <tr key={alumno.id}>
+                                                        <td>{alumno.nombre} {alumno.apellidos}</td>
+                                                        <td>{alumno.tutor}</td>
+                                                        <td>{alumno.domicilio}</td>
+                                                    </tr>
+                                                ))}
+                                            </tbody>
+                                        </table>
+                                    )
                                 )}
                             </div>
                         ))
                     )}
                 </div>
+
             </div>
 
-            {/* Modal de Edición */}
-            {modalVisible && (
+            {/* Botón flotante para agregar grupo */}
+            <button className="boton-agregar" onClick={abrirModalGrupo}>
+                <img src={addIcon} alt="Agregar Grupo" />
+            </button>
+
+            {/* Modal para Agregar Grupo */}
+            {modalGrupo && (
                 <div className="modal-overlay">
                     <div className="modal-content">
-                        <button className="close-button" onClick={cerrarModal}>✖</button>
-                        <h2>Editar Alumno</h2>
+                        <button className="close-button" onClick={cerrarModalGrupo}>✖</button>
 
-                        <label>Nombre:</label>
-                        <input type="text" name="nombre" value={alumnoActual.nombre} onChange={handleChange} />
+                        {/* Aquí el título */}
+                        <h2 className="modal-title">Agregar Grupo</h2>
 
-                        <label>Apellidos:</label>
-                        <input type="text" name="apellidos" value={alumnoActual.apellidos} onChange={handleChange} />
-
-                        <label>Grupo:</label>
-                        <input type="text" name="grupo" value={alumnoActual.grupo} onChange={handleChange} />
-
-                        <label>Tutor:</label>
-                        <input type="text" name="tutor" value={alumnoActual.tutor} onChange={handleChange} />
-
-                        <label>Domicilio:</label>
-                        <input type="text" name="domicilio" value={alumnoActual.domicilio} onChange={handleChange} />
-
-                        <button className="save-button" onClick={guardarEdicion}>Guardar</button>
-                    </div>
-                </div>
-            )}
-
-            {/* Modal de Confirmación de Eliminación */}
-            {modalEliminar && (
-                <div className="modal-overlay">
-                    <div className="modal-content">
-                        <button className="close-button" onClick={() => setModalEliminar(false)}>✖</button>
-                        <h2>¿Estás seguro de eliminar este alumno?</h2>
-                        <div className="modal-buttons">
-                            <button className="confirm-button" onClick={eliminarAlumno}>
-                                <img src={aceptarIcon} alt="Aceptar" />
-                            </button>
-                            <button className="cancel-button" onClick={() => setModalEliminar(false)}>
-                                <img src={rechazarIcon} alt="Rechazar" />
-                            </button>
+                        <div className="select-container">
+                            <div>
+                                <label>Grado:</label>
+                                <select name="grado" value={nuevoGrupo.grado} onChange={handleChange}>
+                                    <option value="">Seleccione</option>
+                                    {[1, 2, 3, 4, 5, 6].map((grado) => (
+                                        <option key={grado} value={grado}>{grado}</option>
+                                    ))}
+                                </select>
+                            </div>
+                            <div>
+                                <label>Grupo:</label>
+                                <select name="letra" value={nuevoGrupo.letra} onChange={handleChange}>
+                                    <option value="">Seleccione</option>
+                                    {["A", "B", "C", "D", "E", "F"].map((letra) => (
+                                        <option key={letra} value={letra}>{letra}</option>
+                                    ))}
+                                </select>
+                            </div>
                         </div>
+
+                        <button className="save-button" onClick={agregarGrupo}>Guardar</button>
                     </div>
                 </div>
             )}

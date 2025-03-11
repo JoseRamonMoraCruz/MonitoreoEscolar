@@ -1,276 +1,240 @@
-﻿/* 🔹 Contenedor principal */
+﻿/* Contenedor principal */
 .lista-container {
     display: flex;
     flex-direction: column;
-    height: 100vh;
-    width: 100vw;
     align-items: center;
     justify-content: flex-start;
-    padding-left: 10px;
     padding-top: 20px;
+    height: 100vh;
+    width: 100vw;
 }
 
-/* 🔹 Caja del contenido */
+/* Contenido interno */
+/* Se cambió max-width a 100% para que ocupe todo el ancho */
+/* Contenido interno (sin cambios) */
 .lista-content {
-    background-color: #384147;
-    padding: 30px;
-    border-radius: 15px;
-    box-shadow: 10px 10px 20px rgba(0, 0, 0, 1);
-    color: white;
-    width: 800px;
-    text-align: left;
+    width: 100%;
+    max-width: 800px; /* Se mantiene en 800px para la barra de búsqueda y demás */
+    margin: 0 auto;
 }
 
-/* 🔹 Estilo del título */
+/* Encabezado */
+.lista-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between; /* Si luego quisieras poner algo a la derecha */
+    margin-bottom: 15px;
+}
+
+/* Estilo del título */
 .lista-title {
     font-size: 22px;
     font-weight: bold;
     margin-bottom: 15px;
+    text-align: left; /* Alineación a la izquierda */
+    width: 100%;
+    color: black;
 }
 
-/* 🔹 Estilo para las cartas de los grupos */
+/* Contenedor de la barra de búsqueda */
+.lista-search-container {
+    display: flex;
+    align-items: center;
+    background-color: white;
+    border-radius: 30px;
+    padding: 8px;
+    width: 100%;
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+    border: 3px solid #007bff; /* Borde azul */
+    margin-bottom: 20px;
+}
+
+    .lista-search-container input {
+        border: none;
+        width: 100%;
+        font-size: 16px;
+        outline: none;
+        padding: 10px;
+        border-radius: 20px;
+        text-align: center;
+        font-weight: bold;
+    }
+
+/* Botón de búsqueda */
+.lista-search-button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 20px;
+}
+
+/* Contenedor de grupos */
 .grupos-container {
     display: flex;
     flex-direction: column;
     gap: 15px;
+    align-items: center; /* Mantiene las tarjetas centradas */
     width: 100%;
+    margin: 0 auto;
+}
+
+/* Estilo de las cartas */
+.grupo-card {
+    background: white;
+    border-radius: 10px;
+    width: 90vw; /* Ocupa el 90% del ancho de la ventana */
+    max-width: 750px;
+    min-height: 80px; /* Altura mínima, se expandirá según el contenido */
+    padding: 20px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+    font-size: 18px;
+    font-weight: bold;
+    color: gray;
+    cursor: pointer;
+    transition: transform 0.3s ease-in-out;
+    display: flex;
+    flex-direction: column; /* Los elementos hijos se apilan verticalmente */
+    align-items: center;
+    justify-content: flex-start;
+    margin: 0 auto;
+}
+
+.grupo-card:hover {
+    transform: scale(1.02);
+}
+
+
+/* Botón para agregar grupo (flotante) */
+.boton-agregar {
+    background-color: #8800ff;
+    border: none;
+    border-radius: 50%;
+    padding: 15px;
+    cursor: pointer;
+    position: fixed; /* Hace que el botón se mantenga fijo */
+    bottom: 20px; /* Lo coloca en la parte inferior */
+    right: 20px; /* Lo coloca en la esquina derecha */
+    box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.2);
+    transition: transform 0.2s ease-in-out;
+}
+
+    .boton-agregar img {
+        width: 28px;
+        height: 28px;
+    }
+
+    .boton-agregar:hover {
+        transform: scale(1.1);
+    }
+
+/* MODAL */
+/* Fondo semitransparente */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0,0,0,0.5);
+    display: flex;
+    justify-content: center;
     align-items: center;
 }
 
-.grupo-card {
-    background: #ffffff;
+/* Contenido del modal */
+.modal-content {
+    background: white;
+    padding: 20px;
     border-radius: 10px;
-    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
-    padding: 15px;
-    width: 80%;
     text-align: center;
-    cursor: pointer;
-    transition: 0.3s;
+    width: 400px;
+    position: relative;
+    color: black; /* Texto en negro para que se vea */
 }
 
-    .grupo-card:hover {
-        transform: scale(1.02);
+/* Botón de cerrar (X) */
+.close-button {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    background: none;
+    border: none;
+    font-size: 20px;
+    cursor: pointer;
+}
+
+/* Título del modal */
+.modal-title {
+    color: black; /* ¡Texto en negro para asegurarnos de que se vea! */
+    font-size: 24px;
+    margin-bottom: 10px;
+}
+
+/* Contenedor de los select */
+.select-container {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 15px;
+}
+
+    .select-container select {
+        width: 100%;
+        padding: 8px;
+        font-size: 16px;
     }
+
+/* Botón de guardar */
+.save-button {
+    background: green;
+    color: white;
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+    .save-button:hover {
+        background: darkgreen;
+    }
+
+/* =========================
+   NUEVO: Tabla de alumnos
+   ========================= */
+.tabla-alumnos {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 15px;
+}
+
+    .tabla-alumnos th,
+    .tabla-alumnos td {
+        border: 1px solid #ccc;
+        padding: 8px;
+        text-align: left;
+        color: black;
+        background-color: white;
+    }
+
+    .tabla-alumnos th {
+        background-color: #f2f2f2;
+        font-weight: bold;
+    }
+
+/* NUEVO: Contenedor para la sección expandida del grupo */
+.grupo-details {
+    margin-top: 10px;
+    background-color: #fff;
+    border-radius: 10px;
+    padding: 15px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+}
 
 .grupo-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    font-size: 18px;
-    font-weight: bold;
-    color: #333;
-}
-
-.lista-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 10px;
-    background: white;
     color: black;
-    border-radius: 10px;
+    margin-bottom: 10px;
+    font-size: 18px;
 }
-
-    .lista-table th, .lista-table td {
-        padding: 12px;
-        text-align: left;
-        border-bottom: 1px solid #ddd;
-    }
-
-.lista-icons {
-    display: flex;
-    gap: 10px;
-    justify-content: center;
-}
-
-
-/* 🔹 Lista de alumnos dentro del grupo */
-.grupo-alumnos {
-    margin-top: 10px;
-    background: #ffffff20;
-    padding: 10px;
-    border-radius: 8px;
-}
-
-/* 🔹 Estilo de cada alumno */
-.alumno-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background: rgba(255, 255, 255, 0.2);
-    padding: 8px;
-    margin: 5px 0;
-    border-radius: 6px;
-    transition: 0.3s ease-in-out;
-}
-
-    .alumno-item:hover {
-        background: rgba(255, 255, 255, 0.3);
-    }
-
-/* 🔹 Iconos dentro de la lista de alumnos */
-.lista-icons {
-    display: flex;
-    gap: 10px;
-}
-
-/* 🔹 Tamaño y estilo de los iconos */
-.icono-accion {
-    width: 35px;
-    height: 35px;
-    cursor: pointer;
-    transition: transform 0.2s ease-in-out;
-}
-
-    .icono-accion:hover {
-        transform: scale(1.2);
-    }
-
-    /* 🔹 Colores específicos para los íconos */
-    .icono-accion.edit {
-        filter: invert(29%) sepia(96%) saturate(1371%) hue-rotate(176deg) brightness(97%) contrast(97%);
-    }
-
-    .icono-accion.delete {
-        filter: invert(27%) sepia(97%) saturate(2196%) hue-rotate(342deg) brightness(92%) contrast(90%);
-    }
-
-/* 🔹 🔥 Ventana emergente (Modal) */
-.modal-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.6);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 1000;
-    backdrop-filter: blur(3px);
-}
-
-.modal-content {
-    background: white;
-    padding: 25px;
-    border-radius: 12px;
-    width: 420px;
-    text-align: center;
-    position: relative;
-    box-shadow: 0px 5px 20px rgba(0, 0, 0, 0.3);
-    animation: fadeIn 0.3s ease-in-out;
-}
-
-@keyframes fadeIn {
-    from {
-        transform: scale(0.8);
-        opacity: 0;
-    }
-
-    to {
-        transform: scale(1);
-        opacity: 1;
-    }
-}
-
-/* 🔹 Botón de cerrar (X) */
-.close-button {
-    position: absolute;
-    top: 12px;
-    right: 12px;
-    background: none;
-    border: none;
-    font-size: 22px;
-    cursor: pointer;
-    color: #ff4d4d;
-    font-weight: bold;
-    transition: transform 0.2s ease-in-out;
-}
-
-    .close-button:hover {
-        transform: scale(1.2);
-    }
-
-/* 🔹 Texto de confirmación */
-.modal-content h2 {
-    font-size: 20px;
-    color: #333;
-    margin-bottom: 15px;
-    font-weight: bold;
-}
-
-/* 🔹 Contenedor de los botones */
-.modal-buttons {
-    display: flex;
-    justify-content: center;
-    gap: 20px;
-    margin-top: 20px;
-}
-
-/* 🔹 Botón de confirmar eliminación */
-.confirm-button,
-.cancel-button {
-    border: none;
-    cursor: pointer;
-    padding: 12px;
-    border-radius: 10px;
-    font-size: 16px;
-    font-weight: bold;
-    width: 80px;
-    height: 80px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: transform 0.2s ease-in-out;
-    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
-}
-
-.confirm-button {
-    background: #28a745;
-}
-
-    .confirm-button img {
-        width: 40px;
-        height: 40px;
-    }
-
-.cancel-button {
-    background: #dc3545;
-}
-
-    .cancel-button img {
-        width: 40px;
-        height: 40px;
-    }
-
-    .confirm-button:hover,
-    .cancel-button:hover {
-        transform: scale(1.1);
-    }
-
-/* 🔹 Campos de entrada dentro del modal */
-.modal-content input {
-    width: 100%;
-    padding: 8px;
-    margin: 5px 0;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    font-size: 16px;
-}
-
-/* 🔹 Botón "Guardar" dentro del modal */
-.save-button {
-    margin-top: 10px;
-    background: blue;
-    color: white;
-    padding: 10px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    width: 100%;
-    font-size: 16px;
-    transition: 0.3s;
-}
-
-    .save-button:hover {
-        background: darkblue;
-    }

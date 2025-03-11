@@ -1,4 +1,4 @@
-﻿/* 🔹 Contenedor principal */
+﻿/* 🔹 Contenedor Principal */
 .lista-container {
     display: flex;
     flex-direction: column;
@@ -6,7 +6,6 @@
     width: 100vw;
     align-items: center;
     justify-content: flex-start;
-    padding-left: 10px;
     padding-top: 20px;
 }
 
@@ -17,50 +16,112 @@
     border-radius: 15px;
     box-shadow: 10px 10px 20px rgba(0, 0, 0, 1);
     color: white;
-    width: 800px;
-    text-align: left;
+    width: 850px;
+    text-align: center;
 }
 
 /* 🔹 Estilo del título */
 .lista-title {
-    font-size: 22px;
+    font-size: 26px;
     font-weight: bold;
-    margin-bottom: 15px;
+    margin-bottom: 20px;
+    text-align: center;
 }
 
-/* 🔹 Estilo para las cartas de los grupos */
+/* 🔍 Buscador */
+.lista-search-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: white;
+    border-radius: 40px;
+    padding: 10px;
+    width: 100%;
+    max-width: 600px;
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+    position: relative;
+    margin: 0 auto;
+}
+
+    /* 🔹 Estilo del campo de búsqueda */
+    .lista-search-container input {
+        border: none;
+        width: 100%;
+        font-size: 18px;
+        outline: none;
+        padding: 15px 20px;
+        border-radius: 40px;
+    }
+
+/* 🔍 Botón de búsqueda */
+.lista-search-button {
+    background-color: #2A9D8F;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: transform 0.2s ease-in-out;
+    width: 55px;
+    height: 55px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+    /* 🔹 Efecto hover en el botón */
+    .lista-search-button:hover {
+        transform: translateY(-50%) scale(1.1);
+        background-color: #1F7765;
+    }
+
+/* 🔍 Icono de búsqueda */
+.search-icon {
+    width: 25px;
+    height: 25px;
+}
+
+/* 🔹 Diseño de los grupos */
 .grupos-container {
     display: flex;
     flex-direction: column;
     gap: 15px;
     width: 100%;
     align-items: center;
+    margin-top: 20px;
 }
 
 .grupo-card {
-    background: #ffffff;
+    background: white;
     border-radius: 10px;
     box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
-    padding: 15px;
-    width: 80%;
+    padding: 20px;
+    width: 90%;
+    max-width: 750px;
     text-align: center;
     cursor: pointer;
     transition: 0.3s;
+    font-size: 18px;
+    font-weight: bold;
 }
 
     .grupo-card:hover {
         transform: scale(1.02);
     }
 
+/* 🔹 Cabecera de grupo */
 .grupo-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    font-size: 18px;
+    font-size: 20px;
     font-weight: bold;
     color: #333;
 }
 
+/* 🔹 Tabla de alumnos */
 .lista-table {
     width: 100%;
     border-collapse: collapse;
@@ -76,41 +137,11 @@
         border-bottom: 1px solid #ddd;
     }
 
+/* 🔹 Iconos de acciones */
 .lista-icons {
     display: flex;
     gap: 10px;
     justify-content: center;
-}
-
-
-/* 🔹 Lista de alumnos dentro del grupo */
-.grupo-alumnos {
-    margin-top: 10px;
-    background: #ffffff20;
-    padding: 10px;
-    border-radius: 8px;
-}
-
-/* 🔹 Estilo de cada alumno */
-.alumno-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background: rgba(255, 255, 255, 0.2);
-    padding: 8px;
-    margin: 5px 0;
-    border-radius: 6px;
-    transition: 0.3s ease-in-out;
-}
-
-    .alumno-item:hover {
-        background: rgba(255, 255, 255, 0.3);
-    }
-
-/* 🔹 Iconos dentro de la lista de alumnos */
-.lista-icons {
-    display: flex;
-    gap: 10px;
 }
 
 /* 🔹 Tamaño y estilo de los iconos */
@@ -125,7 +156,7 @@
         transform: scale(1.2);
     }
 
-    /* 🔹 Colores específicos para los íconos */
+    /* 🔹 Colores de los íconos */
     .icono-accion.edit {
         filter: invert(29%) sepia(96%) saturate(1371%) hue-rotate(176deg) brightness(97%) contrast(97%);
     }
@@ -134,7 +165,7 @@
         filter: invert(27%) sepia(97%) saturate(2196%) hue-rotate(342deg) brightness(92%) contrast(90%);
     }
 
-/* 🔹 🔥 Ventana emergente (Modal) */
+/* 🔹 Modal */
 .modal-overlay {
     position: fixed;
     top: 0;
@@ -190,15 +221,7 @@
         transform: scale(1.2);
     }
 
-/* 🔹 Texto de confirmación */
-.modal-content h2 {
-    font-size: 20px;
-    color: #333;
-    margin-bottom: 15px;
-    font-weight: bold;
-}
-
-/* 🔹 Contenedor de los botones */
+/* 🔹 Botones del modal */
 .modal-buttons {
     display: flex;
     justify-content: center;
@@ -206,7 +229,7 @@
     margin-top: 20px;
 }
 
-/* 🔹 Botón de confirmar eliminación */
+/* 🔹 Botón de confirmar */
 .confirm-button,
 .cancel-button {
     border: none;
@@ -247,17 +270,7 @@
         transform: scale(1.1);
     }
 
-/* 🔹 Campos de entrada dentro del modal */
-.modal-content input {
-    width: 100%;
-    padding: 8px;
-    margin: 5px 0;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    font-size: 16px;
-}
-
-/* 🔹 Botón "Guardar" dentro del modal */
+/* 🔹 Botón "Guardar" en modal */
 .save-button {
     margin-top: 10px;
     background: blue;

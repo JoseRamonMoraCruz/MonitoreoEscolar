@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using MonitoreoEscolar.Server.Data;
 using MonitoreoEscolar.Server.Models;
+using OfficeOpenXml; // EPPlus
 using System.Globalization;
 using System.Text;
 
@@ -17,15 +18,6 @@ namespace MonitoreoEscolar.Server.Controllers
         {
             _context = context;
             Console.WriteLine("✔ AlumnosController CARGADO");
-
-            if (_context == null)
-            {
-                Console.WriteLine("❌ ERROR: _context es NULL");
-            }
-            else
-            {
-                Console.WriteLine("✔ _context CARGADO correctamente");
-            }
         }
 
         // 🔹 REGISTRAR ALUMNO
@@ -40,7 +32,6 @@ namespace MonitoreoEscolar.Server.Controllers
                 if (string.IsNullOrWhiteSpace(request.Nombre) || string.IsNullOrWhiteSpace(request.Apellidos))
                     return BadRequest(new { mensaje = "❌ Nombre y Apellidos son obligatorios." });
 
-                // 🔹 Generar Nombre Completo y su versión normalizada
                 var nombreCompleto = $"{request.Nombre.Trim()} {request.Apellidos.Trim()}".Trim();
                 var nombreNormalizado = RemoveDiacritics(nombreCompleto.ToLower());
 
@@ -72,10 +63,7 @@ namespace MonitoreoEscolar.Server.Controllers
         {
             try
             {
-                var alumnos = await _context.Alumnos
-                    .OrderBy(a => a.NombreCompleto)
-                    .ToListAsync();
-
+                var alumnos = await _context.Alumnos.OrderBy(a => a.NombreCompleto).ToListAsync();
                 return Ok(alumnos);
             }
             catch (Exception ex)
@@ -84,42 +72,117 @@ namespace MonitoreoEscolar.Server.Controllers
             }
         }
 
-        // 🔹 EDITAR ALUMNO (ACTUALIZA TODOS LOS CAMPOS)
-        [HttpPut("editar/{id}")]
-        public async Task<IActionResult> EditarAlumno(int id, [FromBody] Alumno request)
+        // 🔹 SUBIR Y PROCESAR ARCHIVO EXCEL
+        [HttpPost("subirCalificaciones")]
+        public async Task<IActionResult> SubirExcel()
         {
-            var alumno = await _context.Alumnos.FindAsync(id);
-            if (alumno == null) return NotFound("Alumno no encontrado.");
+            try
+            {
+                var file = Request.Form.Files.FirstOrDefault();
+                if (file == null || file.Length == 0)
+                {
+                    Console.WriteLine("❌ No se proporcionó un archivo válido.");
+                    return BadRequest(new { mensaje = "❌ No se proporcionó un archivo válido." });
+                }
 
-            // 🔹 Actualizar los datos individuales
-            alumno.Nombre = request.Nombre.Trim();
-            alumno.Apellidos = request.Apellidos.Trim();
-            alumno.Grupo = request.Grupo.Trim();
-            alumno.Tutor = request.Tutor.Trim();
-            alumno.Domicilio = request.Domicilio.Trim();
+                Console.WriteLine($"✔ Archivo recibido: {file.FileName}, Tamaño: {file.Length} bytes");
 
-            // 🔹 FORZAR ACTUALIZACIÓN en todas las columnas dependientes
-            alumno.NombreCompleto = $"{alumno.Nombre} {alumno.Apellidos}".Trim();
-            alumno.NombreCompletoNormalizado = RemoveDiacritics(alumno.NombreCompleto.ToLower());
+                var calificaciones = new List<Calificacion>();
 
-            // 🔹 Guardar cambios en la base de datos
-            _context.Entry(alumno).State = EntityState.Modified;
-            await _context.SaveChangesAsync();
+                using (var stream = new MemoryStream())
+                {
+                    await file.CopyToAsync(stream);
+                    using (var package = new ExcelPackage(stream))
+                    {
+                        ExcelWorksheet worksheet = package.Workbook.Worksheets[0];
+                        if (worksheet == null)
+                        {
+                            Console.WriteLine("❌ No se pudo leer la hoja de Excel.");
+                            return BadRequest(new { mensaje = "❌ No se pudo leer la hoja de Excel." });
+                        }
 
-            return Ok(new { mensaje = "✅ Alumno actualizado correctamente." });
-        }
+                        int rowCount = worksheet.Dimension.Rows;
+                        int colCount = worksheet.Dimension.Columns;
+                        Console.WriteLine($"✔ Archivo Excel detectado - Filas: {rowCount}, Columnas: {colCount}");
 
-        // 🔹 ELIMINAR ALUMNO
-        [HttpDelete("eliminar/{id}")]
-        public async Task<IActionResult> EliminarAlumno(int id)
-        {
-            var alumno = await _context.Alumnos.FindAsync(id);
-            if (alumno == null) return NotFound("Alumno no encontrado.");
+                        //  Leer encabezados de la primera fila y normalizarlos
+                        Dictionary<string, int> columnas = new Dictionary<string, int>();
+                        for (int col = 1; col <= colCount; col++)
+                        {
+                            string header = RemoveDiacritics(worksheet.Cells[1, col].Text.Trim().ToLower().Replace(" ", ""));
+                            columnas[header] = col;
+                        }
 
-            _context.Alumnos.Remove(alumno);
-            await _context.SaveChangesAsync();
+                        //  Definir los nombres esperados y sus posibles variantes
+                        Dictionary<string, string> columnasEsperadas = new Dictionary<string, string>
+                        {
+                            { "nombre", "nombre" },
+                            { "materia", "materia" },
+                            { "calificacion", "calificaciones" }, // Ajuste según tu archivo
+                            { "grupo", "grupo" },
+                            { "parcialunidad", "parcial/unidad" }
+                        };
 
-            return Ok(new { mensaje = "✅ Alumno eliminado correctamente." });
+                        //  Validar que todas las columnas requeridas existen
+                        foreach (var col in columnasEsperadas)
+                        {
+                            if (!columnas.ContainsKey(RemoveDiacritics(col.Value.ToLower().Replace(" ", ""))))
+                            {
+                                Console.WriteLine($"❌ Falta la columna '{col.Value}' en el archivo Excel.");
+                                return BadRequest(new { mensaje = $"❌ Falta la columna '{col.Value}' en el archivo Excel." });
+                            }
+                        }
+
+                        // 🔹 Procesar filas de datos
+                        for (int row = 2; row <= rowCount; row++)
+                        {
+                            try
+                            {
+                                string grupoTexto = worksheet.Cells[row, columnas["grupo"]].Text.Trim();
+                                var grupoEncontrado = _context.Grupos.FirstOrDefault(g => g.Grado + g.Letra == grupoTexto);
+
+                                if (grupoEncontrado == null)
+                                {
+                                    Console.WriteLine($"⚠ Grupo '{grupoTexto}' no encontrado. Fila {row} omitida.");
+                                    continue;
+                                }
+
+                                string califTexto = worksheet.Cells[row, columnas["calificacion"]].Text.Trim();
+                                if (!int.TryParse(califTexto, out int calif) || calif < 0 || calif > 100)
+                                {
+                                    Console.WriteLine($"⚠ Calificación inválida '{califTexto}' en la fila {row}. Omitida.");
+                                    continue;
+                                }
+
+                                var calificacion = new Calificacion
+                                {
+                                    Nombre = worksheet.Cells[row, columnas["nombre"]].Text.Trim(),
+                                    Materia = worksheet.Cells[row, columnas["materia"]].Text.Trim(),
+                                    GrupoId = grupoEncontrado.Id,
+                                    ParcialUnidad = worksheet.Cells[row, columnas["parcialunidad"]].Text.Trim(),
+                                    CalificacionValor = calif
+                                };
+
+                                calificaciones.Add(calificacion);
+                            }
+                            catch (Exception e)
+                            {
+                                Console.WriteLine($"⚠ Error en la fila {row}: {e.Message}");
+                            }
+                        }
+                    }
+                }
+
+                _context.Calificaciones.AddRange(calificaciones);
+                await _context.SaveChangesAsync();
+
+                Console.WriteLine($"✅ {calificaciones.Count} registros guardados.");
+                return Ok(new { mensaje = "✅ Archivo procesado correctamente.", calificaciones });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { mensaje = "❌ Error interno del servidor.", error = ex.Message });
+            }
         }
 
         // 🔹 FUNCIÓN PARA ELIMINAR ACENTOS Y CARACTERES ESPECIALES

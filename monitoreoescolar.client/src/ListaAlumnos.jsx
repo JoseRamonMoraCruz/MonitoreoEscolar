@@ -32,7 +32,7 @@ const ListaAlumnos = () => {
     const obtenerAlumnos = async () => {
         setCargando(true);
         try {
-            const response = await axios.get("/api/alumnos");
+            const response = await axios.get("http://localhost:5099/api/alumnos");
             setAlumnos(response.data);
             setMensaje(response.data.length === 0 ? "No hay alumnos registrados." : "");
         } catch (error) {
@@ -73,7 +73,7 @@ const ListaAlumnos = () => {
         if (!alumnoAEliminar) return;
 
         try {
-            await axios.delete(`/api/alumnos/eliminar/${alumnoAEliminar}`);
+            await axios.delete(`http://localhost:5099/api/alumnos/eliminar/${alumnoAEliminar}`);
             alert("✅ Alumno eliminado correctamente.");
             obtenerAlumnos();
             setModalEliminar(false);
@@ -101,7 +101,7 @@ const ListaAlumnos = () => {
 
     const guardarEdicion = async () => {
         try {
-            await axios.put(`/api/alumnos/editar/${alumnoActual.id}`, alumnoActual);
+            await axios.put(`http://localhost:5099/api/alumnos/editar/${alumnoActual.id}`, alumnoActual);
             alert("✅ Alumno actualizado correctamente.");
             obtenerAlumnos();
             cerrarModal();

@@ -86,31 +86,6 @@ namespace MonitoreoEscolar.Server.Controllers
             }
         }
 
-        // 🔹 EDITAR ALUMNO (ACTUALIZA TODOS LOS CAMPOS)
-        [HttpPut("editar/{id}")]
-        public async Task<IActionResult> EditarAlumno(int id, [FromBody] Alumno request)
-        {
-            var alumno = await _context.Alumnos.FindAsync(id);
-            if (alumno == null) return NotFound("Alumno no encontrado.");
-
-            // 🔹 Actualizar los datos individuales
-            alumno.Nombre = request.Nombre.Trim();
-            alumno.Apellidos = request.Apellidos.Trim();
-            alumno.Grupo = request.Grupo.Trim();
-            alumno.Tutor = request.Tutor.Trim();
-            alumno.Domicilio = request.Domicilio.Trim();
-
-            // 🔹 FORZAR ACTUALIZACIÓN en todas las columnas dependientes
-            alumno.NombreCompleto = $"{alumno.Nombre} {alumno.Apellidos}".Trim();
-            alumno.NombreCompletoNormalizado = RemoveDiacritics(alumno.NombreCompleto.ToLower());
-
-            // 🔹 Guardar cambios en la base de datos
-            _context.Entry(alumno).State = EntityState.Modified;
-            await _context.SaveChangesAsync();
-
-            return Ok(new { mensaje = "✅ Alumno actualizado correctamente." });
-        }
-
         // 🔹 ELIMINAR ALUMNO
         [HttpDelete("eliminar/{id}")]
         public async Task<IActionResult> EliminarAlumno(int id)
@@ -123,6 +98,7 @@ namespace MonitoreoEscolar.Server.Controllers
 
             return Ok(new { mensaje = "✅ Alumno eliminado correctamente." });
         }
+
 
         // 🔹 FUNCIÓN PARA ELIMINAR ACENTOS Y CARACTERES ESPECIALES
         private static string RemoveDiacritics(string text)

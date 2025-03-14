@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace MonitoreoEscolar.Server.Models
 {
@@ -16,8 +17,11 @@ namespace MonitoreoEscolar.Server.Models
         [Required]
         public int CalificacionValor { get; set; }
 
-        [Required]
-        public string Grupo { get; set; }
+        [ForeignKey("Grupo")]
+        public int GrupoId { get; set; }
+
+        // Relación con Grupo
+        public Grupo Grupo { get; set; }
 
         [Required]
         public string ParcialUnidad { get; set; }

@@ -5,7 +5,7 @@ import "./SubirCalif.css";
 const SubirCalif = () => {
     const [archivo, setArchivo] = useState(null);
     const [nombreArchivo, setNombreArchivo] = useState("");
-    const [datos, setDatos] = useState([]); // Estado para almacenar los datos cargados
+    const [datos, setDatos] = useState([]); //  Estado para almacenar los datos cargados
     const [cargando, setCargando] = useState(false);
     const fileInputRef = useRef(null);
 
@@ -18,7 +18,7 @@ const SubirCalif = () => {
         }
     };
 
-    // Función para subir el archivo y obtener los datos del backend
+    //  Función para subir el archivo y obtener los datos del backend
     const handleUpload = async () => {
         if (!archivo) {
             alert("❌ Selecciona un archivo Excel primero.");
@@ -28,9 +28,8 @@ const SubirCalif = () => {
         const formData = new FormData();
         formData.append("file", archivo);
 
-        //  LOG: Verifica que el archivo se está enviando al backend
         console.log("📂 Archivo enviado:", archivo.name);
-        console.log("📦 FormData enviado (Verificando archivo):", formData.get("file"));
+        console.log("📦 FormData enviado:", formData.get("file"));
 
         setCargando(true);
 
@@ -41,8 +40,8 @@ const SubirCalif = () => {
 
             console.log("✅ Respuesta del backend:", response.data);
 
-            if (response.data && response.data.alumnos) {
-                setDatos(response.data.alumnos); //  Guardamos los datos en el estado
+            if (response.data && response.data.calificaciones) {
+                setDatos(response.data.calificaciones); //  Guardamos los datos en el estado
             } else {
                 console.log("⚠ No se recibieron datos del servidor.");
                 alert("⚠ No se recibieron datos válidos del servidor.");
@@ -93,8 +92,8 @@ const SubirCalif = () => {
                         </button>
                     )}
 
-                    {/*  Tabla para mostrar los datos cargados */}
-                    {datos.length > 0 && (
+                    {/* Tabla para mostrar los datos cargados */}
+                    {datos.length > 0 ? (
                         <table className="subir-table">
                             <thead>
                                 <tr>
@@ -110,13 +109,15 @@ const SubirCalif = () => {
                                     <tr key={index}>
                                         <td>{alumno.nombre}</td>
                                         <td>{alumno.materia}</td>
-                                        <td>{alumno.calificacion}</td>
+                                        <td>{alumno.calificacionValor || "N/A"}</td>
                                         <td>{alumno.grupo}</td>
-                                        <td>{alumno.parcialUnidad}</td>
+                                        <td>{alumno.parcialUnidad || "N/A"}</td>
                                     </tr>
                                 ))}
                             </tbody>
                         </table>
+                    ) : (
+                        <p className="no-data-message"> No hay datos cargados aún.</p>
                     )}
                 </div>
             </div>

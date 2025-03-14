@@ -18,7 +18,7 @@ const ListaAlumnos = () => {
 
     const obtenerGrupos = async () => {
         try {
-            const response = await axios.get("/api/grupos");
+            const response = await axios.get("http://localhost:5099/api/grupos");
             setGrupos(response.data);
         } catch (error) {
             console.error("Error al obtener grupos:", error);
@@ -39,7 +39,7 @@ const ListaAlumnos = () => {
         }
 
         try {
-            await axios.post("/api/grupos/agregar", nuevoGrupo);
+            await axios.post("http://localhost:5099/api/grupos/agregar", nuevoGrupo);
             alert("✅ Grupo agregado correctamente.");
             obtenerGrupos();
             cerrarModalGrupo();
@@ -61,7 +61,7 @@ const ListaAlumnos = () => {
             // Construimos el string del grupo, ej: "1-A"
             const groupString = `${grupo.grado}${grupo.letra}`;
             // Llamada al endpoint que obtiene alumnos de ese grupo
-            const response = await axios.get(`/api/alumnos/grupo/${groupString}`);
+            const response = await axios.get(`http://localhost:5099/api/alumnos/grupo/${groupString}`);
             setAlumnosGrupo(response.data);
             setExpandedGroup(grupo);
         } catch (error) {

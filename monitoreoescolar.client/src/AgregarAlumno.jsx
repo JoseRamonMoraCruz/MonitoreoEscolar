@@ -9,9 +9,9 @@ const AgregarAlumno = () => {
     const [alumno, setAlumno] = useState({
         nombre: "",
         apellidos: "",
-        grupo: "",   // <- Usado para mandar al backend el grupo completo (ej: "1-C")
-        grado: "",   // <- Para controlar el grado
-        letra: "",   // <- Para controlar la letra (A, B, C...)
+        grupo: "",   // Se genera automáticamente (ej: "1A")
+        grado: "",   // Para controlar el grado
+        letra: "",   // Para controlar la letra (A, B, C, …)
         tutor: "",
         domicilio: ""
     });
@@ -24,7 +24,7 @@ const AgregarAlumno = () => {
         });
     };
 
-    // Maneja el cambio de Grado (ej: 1, 2, 3...)
+    // Maneja el cambio de Grado (ej: 1, 2, 3, …)
     const handleChangeGrado = (e) => {
         const newGrado = e.target.value;
         setAlumno({
@@ -35,7 +35,7 @@ const AgregarAlumno = () => {
         });
     };
 
-    // Maneja el cambio de Letra (ej: A, B, C)
+    // Maneja el cambio de Letra (ej: A, B, C, …)
     const handleChangeLetra = (e) => {
         const newLetra = e.target.value;
         setAlumno({
@@ -46,15 +46,36 @@ const AgregarAlumno = () => {
         });
     };
 
-    //  Función para enviar los datos al backend
+    // Función para enviar los datos al backend
     const handleSubmit = async (e) => {
         e.preventDefault(); // Evita el comportamiento por defecto del formulario
 
+        // Verificar que el grupo seleccionado exista
         try {
-            // Enviar datos a la API
-            const response = await axios.post("/api/alumnos/registro", alumno);
+            const gruposResponse = await axios.get("/api/grupos");
+            const gruposExistentes = gruposResponse.data;
+            // Buscamos un grupo cuyo grado y letra concuerde con el alumno
+            const grupoEncontrado = gruposExistentes.find(
+                (g) =>
+                    g.grado.toString() === alumno.grado &&
+                    g.letra.toUpperCase() === alumno.letra.toUpperCase()
+            );
 
+            if (!grupoEncontrado) {
+                alert("❌ El grupo seleccionado no ha sido creado. Por favor, cree el grupo antes de registrar al alumno.");
+                return;
+            }
+        } catch (error) {
+            console.error("Error al verificar grupos:", error);
+            alert("❌ No se pudo verificar la existencia del grupo.");
+            return;
+        }
+
+        // Si el grupo existe, enviamos los datos del alumno al backend
+        try {
+            const response = await axios.post("/api/alumnos/registro", alumno);
             alert(response.data.mensaje); // Mostrar mensaje de éxito
+
             // Limpiar formulario
             setAlumno({
                 nombre: "",
@@ -65,10 +86,9 @@ const AgregarAlumno = () => {
                 tutor: "",
                 domicilio: ""
             });
-
         } catch (error) {
             console.error("Error al registrar:", error);
-            alert("No se pudo registrar el alumno.");
+            alert("❌ No se pudo registrar el alumno.");
         }
     };
 

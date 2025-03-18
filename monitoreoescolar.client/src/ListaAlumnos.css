@@ -10,11 +10,9 @@
 }
 
 /* Contenido interno */
-/* Se cambió max-width a 100% para que ocupe todo el ancho */
-/* Contenido interno (sin cambios) */
 .lista-content {
     width: 100%;
-    max-width: 800px; /* Se mantiene en 800px para la barra de búsqueda y demás */
+    max-width: 800px;
     margin: 0 auto;
 }
 
@@ -22,7 +20,7 @@
 .lista-header {
     display: flex;
     align-items: center;
-    justify-content: space-between; /* Si luego quisieras poner algo a la derecha */
+    justify-content: space-between;
     margin-bottom: 15px;
 }
 
@@ -31,7 +29,7 @@
     font-size: 22px;
     font-weight: bold;
     margin-bottom: 15px;
-    text-align: left; /* Alineación a la izquierda */
+    text-align: left;
     width: 100%;
     color: black;
 }
@@ -45,7 +43,7 @@
     padding: 8px;
     width: 100%;
     box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
-    border: 3px solid #007bff; /* Borde azul */
+    border: 3px solid #007bff;
     margin-bottom: 20px;
 }
 
@@ -73,7 +71,7 @@
     display: flex;
     flex-direction: column;
     gap: 15px;
-    align-items: center; /* Mantiene las tarjetas centradas */
+    align-items: center;
     width: 100%;
     margin: 0 auto;
 }
@@ -82,9 +80,9 @@
 .grupo-card {
     background: white;
     border-radius: 10px;
-    width: 90vw; /* Ocupa el 90% del ancho de la ventana */
+    width: 90vw;
     max-width: 750px;
-    min-height: 80px; /* Altura mínima, se expandirá según el contenido */
+    min-height: 80px;
     padding: 20px;
     box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
     font-size: 18px;
@@ -93,16 +91,15 @@
     cursor: pointer;
     transition: transform 0.3s ease-in-out;
     display: flex;
-    flex-direction: column; /* Los elementos hijos se apilan verticalmente */
+    flex-direction: column;
     align-items: center;
     justify-content: flex-start;
     margin: 0 auto;
 }
 
-.grupo-card:hover {
-    transform: scale(1.02);
-}
-
+    .grupo-card:hover {
+        transform: scale(1.02);
+    }
 
 /* Botón para agregar grupo (flotante) */
 .boton-agregar {
@@ -111,9 +108,9 @@
     border-radius: 50%;
     padding: 15px;
     cursor: pointer;
-    position: fixed; /* Hace que el botón se mantenga fijo */
-    bottom: 20px; /* Lo coloca en la parte inferior */
-    right: 20px; /* Lo coloca en la esquina derecha */
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
     box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.2);
     transition: transform 0.2s ease-in-out;
 }
@@ -153,23 +150,30 @@
     position: relative;
     box-shadow: 0px 5px 20px rgba(0, 0, 0, 0.3);
     animation: fadeIn 0.3s ease-in-out;
-    color: black; /* Texto en negro para que se vea */
+    color: black;
 }
 
-/* Botón de cerrar (X) */
+/* Botón de cerrar (X) en modales */
 .close-button {
     position: absolute;
-    top: 10px;
-    right: 15px;
+    top: 12px;
+    right: 12px;
     background: none;
     border: none;
-    font-size: 20px;
+    font-size: 22px;
     cursor: pointer;
+    color: #ff4d4d;
+    font-weight: bold;
+    transition: transform 0.2s ease-in-out;
 }
+
+    .close-button:hover {
+        transform: scale(1.2);
+    }
 
 /* Título del modal */
 .modal-title {
-    color: black; /* ¡Texto en negro para asegurarnos de que se vea! */
+    color: black;
     font-size: 24px;
     margin-bottom: 10px;
 }
@@ -202,7 +206,7 @@
         background: darkgreen;
     }
 
-/* NUEVO: Tabla de alumnos */
+/* Tabla de alumnos */
 .tabla-alumnos {
     width: 100%;
     border-collapse: collapse;
@@ -223,7 +227,7 @@
         font-weight: bold;
     }
 
-/* NUEVO: Contenedor para la sección expandida del grupo */
+/* Contenedor para la sección expandida del grupo */
 .grupo-details {
     margin-top: 10px;
     background-color: #fff;
@@ -242,13 +246,15 @@
     width: 100%;
 }
 
+/* Icono para eliminar grupo */
 .delete-icon {
     width: 40px;
     height: 40px;
     cursor: pointer;
+    transition: transform 0.2s ease-in-out;
 }
 
-/*CRUD*/
+/* CRUD: iconos de editar y eliminar alumno */
 .acciones {
     display: flex;
     gap: 10px;
@@ -257,11 +263,19 @@
 }
 
 .accion-icon {
-    width: 30px;
-    height: 30px;
+    width: 36px;
+    height: 36px;
     cursor: pointer;
+    transition: transform 0.2s ease-in-out;
 }
 
+    /* Efecto hover para iconos (editar, eliminar alumno y borrar grupo) */
+    .accion-icon:hover,
+    .delete-icon:hover {
+        transform: scale(1.1);
+    }
+
+/* Estilos específicos para iconos */
 .editar {
     padding: 5px;
     border-radius: 50%;
@@ -272,7 +286,7 @@
     border-radius: 50%;
 }
 
-/*Modales del CRUD (ELIMINAR)*/
+/* Animación para modales */
 @keyframes fadeIn {
     from {
         transform: scale(0.8);
@@ -284,24 +298,8 @@
         opacity: 1;
     }
 }
-/* 🔹 Botón de cerrar (X) */
-.close-button {
-    position: absolute;
-    top: 12px;
-    right: 12px;
-    background: none;
-    border: none;
-    font-size: 22px;
-    cursor: pointer;
-    color: #ff4d4d;
-    font-weight: bold;
-    transition: transform 0.2s ease-in-out;
-}
 
-    .close-button:hover {
-        transform: scale(1.2);
-    }
-
+/* Contenedor de botones en modales */
 .modal-buttons {
     display: flex;
     justify-content: center;
@@ -309,14 +307,13 @@
     margin-top: 20px;
 }
 
-
-* 🔹 Botón de confirmar */
+/* Botones de confirmar y cancelar */
 .confirm-button,
 .cancel-button {
     border: none;
     cursor: pointer;
     padding: 12px;
-    border-radius: 10px;
+    border-radius: 15px;
     font-size: 16px;
     font-weight: bold;
     width: 80px;
@@ -328,23 +325,19 @@
     box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
 }
 
-
 .confirm-button {
     background: #28a745;
 }
+
     .confirm-button img {
         width: 40px;
         height: 40px;
     }
 
-
-    .confirm-button:hover {
-        background: darkred;
-    }
-
 .cancel-button {
     background: #dc3545;
 }
+
     .cancel-button img {
         width: 40px;
         height: 40px;
@@ -354,6 +347,3 @@
     .cancel-button:hover {
         transform: scale(1.1);
     }
-
-
-

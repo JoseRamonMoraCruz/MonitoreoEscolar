@@ -109,6 +109,36 @@ namespace MonitoreoEscolar.Server.Controllers
             return sb.ToString().Normalize(NormalizationForm.FormC);
         }
 
+        // 🔹 EDITAR ALUMNO
+        [HttpPut("editar/{id}")]
+        public async Task<IActionResult> EditarAlumno(int id, [FromBody] Alumno alumnoEditado)
+        {
+            try
+            {
+                var alumnoExistente = await _context.Alumnos.FindAsync(id);
+
+                if (alumnoExistente == null)
+                    return NotFound(new { mensaje = "Alumno no encontrado." });
+
+                // Actualizando datos del alumno
+                alumnoExistente.Nombre = alumnoEditado.Nombre.Trim();
+                alumnoExistente.Apellidos = alumnoEditado.Apellidos.Trim();
+                alumnoExistente.NombreCompleto = $"{alumnoEditado.Nombre.Trim()} {alumnoEditado.Apellidos.Trim()}";
+                alumnoExistente.NombreCompletoNormalizado = RemoveDiacritics(alumnoExistente.NombreCompleto.ToLower());
+                alumnoExistente.Grupo = alumnoEditado.Grupo.Trim();
+                alumnoExistente.Tutor = alumnoEditado.Tutor.Trim();
+                alumnoExistente.Domicilio = alumnoEditado.Domicilio.Trim();
+
+                // Guardar cambios
+                await _context.SaveChangesAsync();
+
+                return Ok(new { mensaje = "✅ Alumno actualizado correctamente.", alumno = alumnoExistente });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { mensaje = "Error interno al editar el alumno.", error = ex.Message });
+            }
+        }
 
     }
 }

@@ -21,6 +21,7 @@ namespace MonitoreoEscolar.Server.Models
         public int GrupoId { get; set; }
 
         // Relación con Grupo
+        [Required]
         public Grupo Grupo { get; set; }
 
         [Required]

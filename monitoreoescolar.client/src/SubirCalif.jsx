@@ -5,11 +5,10 @@ import "./SubirCalif.css";
 const SubirCalif = () => {
     const [archivo, setArchivo] = useState(null);
     const [nombreArchivo, setNombreArchivo] = useState("");
-    const [datos, setDatos] = useState([]); //  Estado para almacenar los datos cargados
+    const [datos, setDatos] = useState([]);
     const [cargando, setCargando] = useState(false);
     const fileInputRef = useRef(null);
 
-    //  Función para manejar el archivo seleccionado
     const handleFileSelect = (event) => {
         const file = event.target.files[0];
         if (file) {
@@ -18,7 +17,6 @@ const SubirCalif = () => {
         }
     };
 
-    //  Función para subir el archivo y obtener los datos del backend
     const handleUpload = async () => {
         if (!archivo) {
             alert("❌ Selecciona un archivo Excel primero.");
@@ -28,47 +26,41 @@ const SubirCalif = () => {
         const formData = new FormData();
         formData.append("file", archivo);
 
-        console.log("📂 Archivo enviado:", archivo.name);
-        console.log("📦 FormData enviado:", formData.get("file"));
-
         setCargando(true);
 
         try {
-            const response = await axios.post("http://localhost:5099/api/alumnos/subirCalificaciones", formData, {
+            console.log("📤 Enviando archivo:", archivo.name);
+
+            const response = await axios.post("http://localhost:5099/api/calificaciones/subirCalificaciones", formData, {
                 headers: { "Content-Type": "multipart/form-data" }
             });
 
-            console.log("✅ Respuesta del backend:", response.data);
+            console.log("📥 Respuesta del servidor:", response.data);
 
             if (response.data && response.data.calificaciones) {
-                setDatos(response.data.calificaciones); //  Guardamos los datos en el estado
+                setDatos(response.data.calificaciones);
             } else {
-                console.log("⚠ No se recibieron datos del servidor.");
                 alert("⚠ No se recibieron datos válidos del servidor.");
             }
         } catch (error) {
-            console.error("❌ Error al subir el archivo:", error.response?.data || error.message);
-
-            if (error.response) {
-                console.log("⚠ Código de estado:", error.response.status);
-                console.log("⚠ Mensaje del backend:", error.response.data);
-                alert(`❌ Error del servidor: ${error.response.data.mensaje || "Error desconocido"}`);
-            } else {
-                console.log("⚠ No hubo respuesta del servidor.");
-                alert("❌ No se pudo conectar con el servidor.");
-            }
+            console.error("❌ Error al subir el archivo:", error.response ? error.response.data : error.message);
+            alert(`❌ Error al subir el archivo: ${error.message}`);
         } finally {
             setCargando(false);
         }
     };
 
+
     return (
         <div className="subir-page-container">
             <div className="subir-container">
-                <div className="subir-content-box">
-                    <h2 className="subir-title">📁 Subir Calificaciones</h2>
+                <h2 className="subir-title">📁 Subir Calificaciones</h2>
 
-                    {/*  Input oculto para seleccionar archivo */}
+                <div className="file-input-container">
+                    <button className="btn choose-file" onClick={() => fileInputRef.current.click()}>
+                        📄 Elegir Archivo
+                    </button>
+                    <span className="file-name">{nombreArchivo || "No se ha seleccionado archivo"}</span>
                     <input
                         type="file"
                         accept=".xlsx"
@@ -76,36 +68,26 @@ const SubirCalif = () => {
                         style={{ display: "none" }}
                         onChange={handleFileSelect}
                     />
+                </div>
 
-                    {/*  Contenedor del botón y el nombre del archivo */}
-                    <div className="file-input-container">
-                        <button className="btn choose-file" onClick={() => fileInputRef.current.click()}>
-                            📄 Elegir Archivo
-                        </button>
-                        <span className="file-name">{nombreArchivo || "No se ha seleccionado archivo"}</span>
-                    </div>
+                <button className="btn upload-data" onClick={handleUpload} disabled={cargando || !archivo}>
+                    {cargando ? "📥 Cargando..." : "📥 Cargar Datos"}
+                </button>
 
-                    {/*  Botón para cargar datos */}
-                    {archivo && (
-                        <button className="btn upload-data" onClick={handleUpload} disabled={cargando}>
-                            {cargando ? "📥 Cargando..." : "📥 Cargar Datos"}
-                        </button>
-                    )}
-
-                    {/* Tabla para mostrar los datos cargados */}
-                    {datos.length > 0 ? (
-                        <table className="subir-table">
-                            <thead>
-                                <tr>
-                                    <th>Alumno</th>
-                                    <th>Materia</th>
-                                    <th>Calificación</th>
-                                    <th>Grupo</th>
-                                    <th>Parcial/Unidad</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {datos.map((alumno, index) => (
+                <div className="tabla-container">
+                    <table className="subir-table">
+                        <thead>
+                            <tr>
+                                <th>Alumno</th>
+                                <th>Materia</th>
+                                <th>Calificación</th>
+                                <th>Grupo</th>
+                                <th>Parcial/Unidad</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {datos.length > 0 ? (
+                                datos.map((alumno, index) => (
                                     <tr key={index}>
                                         <td>{alumno.nombre}</td>
                                         <td>{alumno.materia}</td>
@@ -113,12 +95,14 @@ const SubirCalif = () => {
                                         <td>{alumno.grupo}</td>
                                         <td>{alumno.parcialUnidad || "N/A"}</td>
                                     </tr>
-                                ))}
-                            </tbody>
-                        </table>
-                    ) : (
-                        <p className="no-data-message"> No hay datos cargados aún.</p>
-                    )}
+                                ))
+                            ) : (
+                                <tr>
+                                    <td colSpan="5">No hay datos cargados aún.</td>
+                                </tr>
+                            )}
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>

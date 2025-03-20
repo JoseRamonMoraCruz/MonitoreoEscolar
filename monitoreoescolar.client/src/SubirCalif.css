@@ -1,22 +1,23 @@
-﻿.subir-page-container {
+﻿/* Contenedor principal */
+.subir-page-container {
     display: flex;
     flex-direction: column;
     height: 100vh;
     width: 100vw;
     justify-content: center;
     align-items: center;
-    background-color: #A8DADC;
 }
 
-/* Caja principal */
+/* Caja principal ampliada */
 .subir-container {
     background-color: #384147;
     padding: 30px;
     border-radius: 15px;
     box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.5);
     text-align: center;
-    width: 500px;
+    width: 750px; /* más amplio */
     color: white;
+    position: relative;
 }
 
 /* Estilo del título */
@@ -30,57 +31,68 @@
     gap: 8px;
 }
 
-/* ✅ Sección de selección de archivo */
+/* Sección de selección de archivo más pequeña */
 .file-input-container {
     display: flex;
     align-items: center;
     background-color: #d3d3d3;
-    padding: 8px;
+    padding: 6px 12px; /* más pequeño */
     border-radius: 10px;
     margin-bottom: 15px;
-    width: 100%;
+    width: 70%; /* más pequeño */
+    justify-content: flex-start;
+    gap: 20px;
 }
 
+/* Botón elegir archivo */
 .choose-file {
     background: #5A189A;
     border: none;
-    padding: 8px;
+    padding: 6px 12px; /* más pequeño */
     border-radius: 8px;
     cursor: pointer;
-    font-size: 16px;
+    font-size: 15px;
     color: white;
     transition: 0.3s;
 }
-
-    .choose-file:hover {
-        background: #3A0CA3;
-    }
 
 .file-name {
-    flex-grow: 1;
-    text-align: center;
+    text-align: left;
     color: black;
     font-weight: bold;
+    flex-grow: 1;
 }
 
-/* ✅ Botón de carga de datos */
+/* Botón para subir los datos posicionado a la derecha */
 .upload-data {
-    background: #FF8500;
+    position: absolute;
+    top: 92px; /* al mismo nivel del file-input-container */
+    right: 40px; /* más alejado a la derecha */
+    background-color: #6B46C1;
     border: none;
-    padding: 10px;
-    border-radius: 8px;
-    cursor: pointer;
-    font-size: 16px;
+    padding: 8px 16px;
     color: white;
-    transition: 0.3s;
-    width: 100%;
+    font-weight: bold;
+    border-radius: 10px;
+    cursor: pointer;
+    box-shadow: 0px 0px 12px rgba(107, 70, 193, 0.9);
+    transition: transform 0.2s;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
 }
 
     .upload-data:hover {
-        background: #E57300;
+        transform: scale(1.05);
     }
 
-/* ✅ Estilos para la tabla */
+    .upload-data:disabled {
+        background-color: gray;
+        cursor: not-allowed;
+        box-shadow: none;
+    }
+
+/* Tabla con los datos */
 .subir-table {
     width: 100%;
     margin-top: 15px;
@@ -92,7 +104,7 @@
     box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.2);
 }
 
-/* ✅ Contenedor para tabla con scroll */
+/* Contenedor para tabla con scroll */
 .table-container {
     max-height: 300px;
     overflow-y: auto;
@@ -100,8 +112,8 @@
     border-radius: 10px;
 }
 
-/* ✅ Estilos para las celdas */
-.subir-table th, .subir-table td {
+.subir-table th,
+.subir-table td {
     padding: 10px;
     border-bottom: 1px solid #ddd;
     text-align: center;
@@ -116,7 +128,7 @@
     background: #f1f1f1;
 }
 
-/* ✅ Mensaje si no hay datos */
+/* Mensaje si no hay datos */
 .no-data-message {
     margin-top: 15px;
     padding: 10px;

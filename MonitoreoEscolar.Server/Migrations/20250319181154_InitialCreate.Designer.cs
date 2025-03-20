@@ -11,8 +11,8 @@ using MonitoreoEscolar.Server.Data;
 namespace MonitoreoEscolar.Server.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250310172758_CrearTablaCalificaciones")]
-    partial class CrearTablaCalificaciones
+    [Migration("20250319181154_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -36,9 +36,6 @@ namespace MonitoreoEscolar.Server.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("Calificacion")
-                        .HasColumnType("int");
-
                     b.Property<string>("Domicilio")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -47,9 +44,8 @@ namespace MonitoreoEscolar.Server.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Materia")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int?>("GrupoId")
+                        .HasColumnType("int");
 
                     b.Property<string>("Nombre")
                         .IsRequired()
@@ -63,15 +59,13 @@ namespace MonitoreoEscolar.Server.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("ParcialUnidad")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("Tutor")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("GrupoId");
 
                     b.ToTable("Alumnos");
                 });
@@ -87,9 +81,8 @@ namespace MonitoreoEscolar.Server.Migrations
                     b.Property<int>("CalificacionValor")
                         .HasColumnType("int");
 
-                    b.Property<string>("Grupo")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int>("GrupoId")
+                        .HasColumnType("int");
 
                     b.Property<string>("Materia")
                         .IsRequired()
@@ -105,7 +98,29 @@ namespace MonitoreoEscolar.Server.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("GrupoId");
+
                     b.ToTable("Calificaciones");
+                });
+
+            modelBuilder.Entity("MonitoreoEscolar.Server.Models.Grupo", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("Grado")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Letra")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Grupos");
                 });
 
             modelBuilder.Entity("MonitoreoEscolar.Server.Models.Usuario", b =>
@@ -146,6 +161,29 @@ namespace MonitoreoEscolar.Server.Migrations
                     b.HasKey("Id_Usuario");
 
                     b.ToTable("Usuarios");
+                });
+
+            modelBuilder.Entity("MonitoreoEscolar.Server.Models.Alumno", b =>
+                {
+                    b.HasOne("MonitoreoEscolar.Server.Models.Grupo", null)
+                        .WithMany("Alumnos")
+                        .HasForeignKey("GrupoId");
+                });
+
+            modelBuilder.Entity("MonitoreoEscolar.Server.Models.Calificacion", b =>
+                {
+                    b.HasOne("MonitoreoEscolar.Server.Models.Grupo", "Grupo")
+                        .WithMany()
+                        .HasForeignKey("GrupoId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Grupo");
+                });
+
+            modelBuilder.Entity("MonitoreoEscolar.Server.Models.Grupo", b =>
+                {
+                    b.Navigation("Alumnos");
                 });
 #pragma warning restore 612, 618
         }

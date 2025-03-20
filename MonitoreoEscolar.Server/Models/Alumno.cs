@@ -25,9 +25,6 @@ namespace MonitoreoEscolar.Server.Models
 
         [Required]
         public string Domicilio { get; set; } = string.Empty;
-        //Para la la parte de las calificaciones 
-        public string Materia { get; set; } = string.Empty;
-        public int Calificacion { get; set; }
-        public string ParcialUnidad { get; set; } = string.Empty;
+      
     }
 }

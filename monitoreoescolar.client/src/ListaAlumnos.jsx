@@ -314,6 +314,7 @@ const ListaAlumnos = () => {
                                                                     src={editIcon}
                                                                     alt="Editar"
                                                                     className="accion-icon editar"
+                                                                    onClick={() => abrirModalEditarAlumno(alumno)}
                                                                 />
                                                                 <img
                                                                     src={removeIcon}

@@ -67,6 +67,39 @@ namespace MonitoreoEscolar.Server.Migrations
                     b.ToTable("Alumnos");
                 });
 
+            modelBuilder.Entity("MonitoreoEscolar.Server.Models.Calificacion", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("CalificacionValor")
+                        .HasColumnType("int");
+
+                    b.Property<int>("GrupoId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Materia")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Nombre")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ParcialUnidad")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("GrupoId");
+
+                    b.ToTable("Calificaciones");
+                });
+
             modelBuilder.Entity("MonitoreoEscolar.Server.Models.Grupo", b =>
                 {
                     b.Property<int>("Id")
@@ -132,6 +165,17 @@ namespace MonitoreoEscolar.Server.Migrations
                     b.HasOne("MonitoreoEscolar.Server.Models.Grupo", null)
                         .WithMany("Alumnos")
                         .HasForeignKey("GrupoId");
+                });
+
+            modelBuilder.Entity("MonitoreoEscolar.Server.Models.Calificacion", b =>
+                {
+                    b.HasOne("MonitoreoEscolar.Server.Models.Grupo", "Grupo")
+                        .WithMany()
+                        .HasForeignKey("GrupoId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Grupo");
                 });
 
             modelBuilder.Entity("MonitoreoEscolar.Server.Models.Grupo", b =>

@@ -28,6 +28,17 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+/**************************************************************/
+//BORRAR EN CASO DE QUE NO FUNCIONE
+builder.Services.AddControllersWithViews();
+// Añade esta línea para ver excepciones detalladas:
+builder.Services.AddLogging(logging =>
+{
+    logging.ClearProviders();
+    logging.AddConsole();
+});
+/**************************************************************/
+
 var app = builder.Build();
 
 app.UseDefaultFiles();

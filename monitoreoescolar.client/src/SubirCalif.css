@@ -1,88 +1,139 @@
-﻿.subir-page-container {
+﻿/* Contenedor principal */
+.subir-page-container {
     display: flex;
     flex-direction: column;
     height: 100vh;
     width: 100vw;
-}
-
-/*  Contenedor centrado */
-.subir-container {
-    flex: 1;
-    display: flex;
-    justify-content: center; 
+    justify-content: center;
     align-items: center;
 }
 
-/*  Caja principal */
-.subir-content-box {
+/* Caja principal ampliada */
+.subir-container {
     background-color: #384147;
     padding: 30px;
     border-radius: 15px;
-    box-shadow: 10px 10px 20px rgba(0, 0, 0, 1);
+    box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.5);
     text-align: center;
-    width: 450px;
+    width: 750px; /* más amplio */
     color: white;
+    position: relative;
 }
 
-/*  Estilo del encabezado */
+/* Estilo del título */
 .subir-title {
-    font-size: 24px;
+    font-size: 22px;
     font-weight: bold;
     margin-bottom: 15px;
-}
-
-/*  Estilo de la descripción */
-.subir-description {
-    font-size: 16px;
-    margin-bottom: 25px;
-    color: #cfcfcf;
-}
-
-/*  Contenedor de botones */
-.subir-button-container {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-    margin-top: 20px;
-}
-
-/*  Estilo de los botones */
-.btn {
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 10px;
-    padding: 12px 20px;
-    font-size: 16px;
-    font-weight: bold;
+    gap: 8px;
+}
+
+/* Sección de selección de archivo más pequeña */
+.file-input-container {
+    display: flex;
+    align-items: center;
+    background-color: #d3d3d3;
+    padding: 6px 12px; /* más pequeño */
+    border-radius: 10px;
+    margin-bottom: 15px;
+    width: 70%; /* más pequeño */
+    justify-content: flex-start;
+    gap: 20px;
+}
+
+/* Botón elegir archivo */
+.choose-file {
+    background: #5A189A;
     border: none;
+    padding: 6px 12px; /* más pequeño */
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 15px;
+    color: white;
+    transition: 0.3s;
+}
+
+.file-name {
+    text-align: left;
+    color: black;
+    font-weight: bold;
+    flex-grow: 1;
+}
+
+/* Botón para subir los datos posicionado a la derecha */
+.upload-data {
+    position: absolute;
+    top: 92px; /* al mismo nivel del file-input-container */
+    right: 40px; /* más alejado a la derecha */
+    background-color: #6B46C1;
+    border: none;
+    padding: 8px 16px;
+    color: white;
+    font-weight: bold;
     border-radius: 10px;
     cursor: pointer;
-    transition: background-color 0.3s ease-in-out;
-    width: 100%;
-}
-
-/*  Botón de "Elegir Archivo" */
-.choose-file {
-    background-color: #34A853;
-    color: white;
-}
-
-    .choose-file:hover {
-        background-color: #2c8a44;
-    }
-
-/*  Botón de "Subir Datos" */
-.upload-data {
-    background-color: #4285F4;
-    color: white;
+    box-shadow: 0px 0px 12px rgba(107, 70, 193, 0.9);
+    transition: transform 0.2s;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
 }
 
     .upload-data:hover {
-        background-color: #3367d6;
+        transform: scale(1.05);
     }
 
-/*  Estilos para los iconos */
-.icon {
-    font-size: 20px;
+    .upload-data:disabled {
+        background-color: gray;
+        cursor: not-allowed;
+        box-shadow: none;
+    }
+
+/* Tabla con los datos */
+.subir-table {
+    width: 100%;
+    margin-top: 15px;
+    border-collapse: collapse;
+    background: white;
+    color: black;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.2);
+}
+
+/* Contenedor para tabla con scroll */
+.table-container {
+    max-height: 300px;
+    overflow-y: auto;
+    margin-top: 10px;
+    border-radius: 10px;
+}
+
+.subir-table th,
+.subir-table td {
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+    text-align: center;
+}
+
+.subir-table th {
+    background: #8D99AE;
+    color: white;
+}
+
+.subir-table tr:hover {
+    background: #f1f1f1;
+}
+
+/* Mensaje si no hay datos */
+.no-data-message {
+    margin-top: 15px;
+    padding: 10px;
+    background: #FFD700;
+    color: black;
+    font-weight: bold;
+    border-radius: 5px;
 }

@@ -15,6 +15,7 @@ const ListaAlumnos = () => {
     const [expandedGroup, setExpandedGroup] = useState(null);
     const [alumnosGrupo, setAlumnosGrupo] = useState([]);
     const [modalEliminarAlumno, setModalEliminarAlumno] = useState(false);
+    const [modalEditarAlumno, setModalEditarAlumno] = useState(false);
     const [alumnoSeleccionado, setAlumnoSeleccionado] = useState(null);
 
     // Estados para el modal de eliminar grupo
@@ -73,7 +74,41 @@ const ListaAlumnos = () => {
     };
     const abrirModalGrupo = () => setModalGrupo(true);
     const cerrarModalGrupo = () => setModalGrupo(false);
+    /* EDITAR */
+    const abrirModalEditarAlumno = (alumno) => {
+        setAlumnoSeleccionado(alumno);
+        setModalEditarAlumno(true);
+    };
 
+    const cerrarModalEditarAlumno = () => {
+        setModalEditarAlumno(false);
+        setAlumnoSeleccionado(null);
+    };
+
+    const actualizarAlumno = async (alumno) => {
+        try {
+            // Combina grado y grupo antes de enviar
+            const alumnoParaActualizar = {
+                ...alumno,
+                Grupo: `${alumno.grado}${alumno.grupo}`
+            };
+
+            const response = await axios.put(
+                `/api/alumnos/editar/${alumno.id}`,
+                alumnoParaActualizar
+            );
+
+            alert(response.data.mensaje);
+            setAlumnosGrupo(alumnosGrupo.map(al => al.id === alumno.id ? alumnoParaActualizar : al));
+            cerrarModalEditarAlumno();
+        } catch (error) {
+            console.error("Error al actualizar alumno:", error.response?.data || error.message);
+            alert("❌ No se pudo actualizar al alumno. " + (error.response?.data.mensaje || error.message));
+        }
+    };
+
+
+    /*FIN DE EDITAR */
     const handleChange = (e) => {
         setNuevoGrupo({ ...nuevoGrupo, [e.target.name]: e.target.value });
     };
@@ -386,7 +421,6 @@ const ListaAlumnos = () => {
                     </div>
                 </div>
             )}
-
             {modalEliminarAlumno && (
                 <div className="modal-overlay">
                     <div className="modal-content">
@@ -427,6 +461,95 @@ const ListaAlumnos = () => {
                             </button>
                             <button className="cancel-button" onClick={cerrarModalEliminarGrupo}>
                                 <img src={rechazarIcon} alt="Cancelar" />
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* MODAL DE EDITAR */}
+            {modalEditarAlumno && alumnoSeleccionado && (
+                <div className="modal-overlay">
+                    <div className="modal-content">
+                        <button className="close-button" onClick={cerrarModalEditarAlumno}>✖</button>
+                        <h2 className="modal-title">Editar Alumno</h2>
+
+                        <div className="input-container">
+                            <label>Nombre:</label>
+                            <input
+                                type="text"
+                                name="nombre"
+                                value={alumnoSeleccionado.nombre}
+                                onChange={(e) => setAlumnoSeleccionado({ ...alumnoSeleccionado, nombre: e.target.value })}
+                            />
+                        </div>
+
+                        <div className="input-container">
+                            <label>Apellidos:</label>
+                            <input
+                                type="text"
+                                name="apellidos"
+                                value={alumnoSeleccionado.apellidos}
+                                onChange={(e) => setAlumnoSeleccionado({ ...alumnoSeleccionado, apellidos: e.target.value })}
+                            />
+                        </div>
+
+                        <div className="select-container">
+                            <div>
+                                <label>Grado:</label>
+                                <select
+                                    name="grado"
+                                    value={alumnoSeleccionado.grado}
+                                    onChange={(e) => setAlumnoSeleccionado({ ...alumnoSeleccionado, grado: e.target.value })}
+                                >
+                                    <option value="">Seleccione</option>
+                                    {[1, 2, 3, 4, 5, 6].map((grado) => (
+                                        <option key={grado} value={grado}>{grado}</option>
+                                    ))}
+                                </select>
+                            </div>
+
+                            <div>
+                                <label>Grupo:</label>
+                                <select
+                                    name="grupo"
+                                    value={alumnoSeleccionado.grupo}
+                                    onChange={(e) => setAlumnoSeleccionado({ ...alumnoSeleccionado, grupo: e.target.value })}
+                                >
+                                    <option value="">Seleccione</option>
+                                    {["A", "B", "C", "D", "E", "F"].map((letra) => (
+                                        <option key={letra} value={letra}>{letra}</option>
+                                    ))}
+                                </select>
+                            </div>
+                        </div>
+
+                        <div className="input-container">
+                            <label>Padre/Madre o tutor:</label>
+                            <input
+                                type="text"
+                                name="tutor"
+                                value={alumnoSeleccionado.tutor}
+                                onChange={(e) => setAlumnoSeleccionado({ ...alumnoSeleccionado, tutor: e.target.value })}
+                            />
+                        </div>
+
+                        <div className="input-container">
+                            <label>Domicilio:</label>
+                            <input
+                                type="text"
+                                name="domicilio"
+                                value={alumnoSeleccionado.domicilio}
+                                onChange={(e) => setAlumnoSeleccionado({ ...alumnoSeleccionado, domicilio: e.target.value })}
+                            />
+                        </div>
+
+                        <div className="modal-buttons">
+                            <button className="confirm-button" onClick={() => actualizarAlumno(alumnoSeleccionado)}>
+                                <img src={aceptarIcon} alt="Aceptar" /> Guardar
+                            </button>
+                            <button className="cancel-button" onClick={cerrarModalEditarAlumno}>
+                                <img src={rechazarIcon} alt="Cancelar" /> Cancelar
                             </button>
                         </div>
                     </div>

@@ -72,11 +72,25 @@ const ListaAlumnos = () => {
             console.error("Error al obtener grupos:", error);
         }
     };
+
     const abrirModalGrupo = () => setModalGrupo(true);
     const cerrarModalGrupo = () => setModalGrupo(false);
+
     /* EDITAR */
     const abrirModalEditarAlumno = (alumno) => {
-        setAlumnoSeleccionado(alumno);
+        // Extraer por defecto el grado y grupo desde la propiedad "Grupo" si existe.
+        let grado = "";
+        let grupo = "";
+        if (alumno.Grupo) {
+            const matchGrade = alumno.Grupo.match(/\d+/);
+            const matchGroup = alumno.Grupo.match(/[A-Za-z]+/);
+            grado = matchGrade ? matchGrade[0] : "";
+            grupo = matchGroup ? matchGroup[0] : "";
+        } else {
+            grado = alumno.grado || "";
+            grupo = alumno.grupo || "";
+        }
+        setAlumnoSeleccionado({ ...alumno, grado, grupo });
         setModalEditarAlumno(true);
     };
 
@@ -86,11 +100,27 @@ const ListaAlumnos = () => {
     };
 
     const actualizarAlumno = async (alumno) => {
+        // Validar que se hayan seleccionado tanto el grado como el grupo
+        if (!alumno.grado || !alumno.grupo) {
+            alert("❌ Por favor, seleccione el grado y el grupo.");
+            return;
+        }
+        // Verificar que el grupo seleccionado exista en los grupos cargados
+        const grupoExistente = grupos.find(
+            (g) =>
+                g.grado.toString() === alumno.grado.toString() &&
+                g.letra.toLowerCase() === alumno.grupo.toLowerCase()
+        );
+        if (!grupoExistente) {
+            alert("❌ El grupo seleccionado no existe.");
+            return;
+        }
+
         try {
             // Combina grado y grupo antes de enviar
             const alumnoParaActualizar = {
                 ...alumno,
-                Grupo: `${alumno.grado}${alumno.grupo}`
+                Grupo: `${alumno.grado}${alumno.grupo}`,
             };
 
             const response = await axios.put(
@@ -99,16 +129,25 @@ const ListaAlumnos = () => {
             );
 
             alert(response.data.mensaje);
-            setAlumnosGrupo(alumnosGrupo.map(al => al.id === alumno.id ? alumnoParaActualizar : al));
+            setAlumnosGrupo(
+                alumnosGrupo.map((al) =>
+                    al.id === alumno.id ? alumnoParaActualizar : al
+                )
+            );
             cerrarModalEditarAlumno();
         } catch (error) {
-            console.error("Error al actualizar alumno:", error.response?.data || error.message);
-            alert("❌ No se pudo actualizar al alumno. " + (error.response?.data.mensaje || error.message));
+            console.error(
+                "Error al actualizar alumno:",
+                error.response?.data || error.message
+            );
+            alert(
+                "❌ No se pudo actualizar al alumno. " +
+                (error.response?.data.mensaje || error.message)
+            );
         }
     };
-
-
     /*FIN DE EDITAR */
+
     const handleChange = (e) => {
         setNuevoGrupo({ ...nuevoGrupo, [e.target.name]: e.target.value });
     };
@@ -129,11 +168,10 @@ const ListaAlumnos = () => {
         }
     };
 
-    // Se modifica para permitir toggle si el término coincide con el grupo o con su grado
+    // Permite toggle si el término coincide con el grupo o su grado
     const handleGroupClick = async (grupo) => {
         const groupString = `${grupo.grado}${grupo.letra}`.toLowerCase();
         const normalizedSearch = removeDiacritics(searchTerm.trim().toLowerCase());
-        // Si se está buscando y el término NO coincide ni con el identificador completo ni con el grado, no se hace toggle
         if (searchTerm.trim() !== "" && normalizedSearch !== groupString && normalizedSearch !== grupo.grado.toString().toLowerCase())
             return;
 
@@ -159,13 +197,11 @@ const ListaAlumnos = () => {
         setModalEliminarGrupo(true);
     };
 
-    // Funciones para cerrar el modal de eliminar grupo
     const cerrarModalEliminarGrupo = () => {
         setModalEliminarGrupo(false);
         setGrupoSeleccionado(null);
     };
 
-    // Función para eliminar el grupo
     const eliminarGrupo = async () => {
         if (!grupoSeleccionado) return;
         try {
@@ -183,7 +219,7 @@ const ListaAlumnos = () => {
         }
     };
 
-    // Funciones para el modal de eliminar alumno (ya existente)
+    // Funciones para el modal de eliminar alumno
     const abrirModalEliminarAlumno = (alumno) => {
         setAlumnoSeleccionado(alumno);
         setModalEliminarAlumno(true);
@@ -207,18 +243,15 @@ const ListaAlumnos = () => {
         }
     };
 
-    // Función para quitar acentos (similar a RemoveDiacritics en C#)
+    // Función para quitar acentos
     const removeDiacritics = (str) => {
         return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
     };
 
-    // Manejador del input de búsqueda
     const handleSearchChange = (e) => {
         setSearchTerm(e.target.value);
     };
 
-    // Filtrado de grupos: se incluyen los que tengan coincidencia en el identificador (grado + letra)
-    // o bien tengan algún alumno cuyo nombre completo (normalizado) contenga el término.
     const normalizedSearch = removeDiacritics(searchTerm.trim().toLowerCase());
     const gruposFiltrados = searchTerm.trim()
         ? grupos.filter((grupo) => {
@@ -253,20 +286,16 @@ const ListaAlumnos = () => {
                     ) : (
                         gruposFiltrados.map((grupo) => {
                             const groupString = `${grupo.grado}${grupo.letra}`.toLowerCase();
-                            // Ahora isGroupSearch será verdadero si el término coincide con el identificador completo o con el grado
                             const isGroupSearch =
                                 normalizedSearch === groupString ||
                                 normalizedSearch === grupo.grado.toString().toLowerCase();
                             const tableData = searchTerm.trim()
                                 ? isGroupSearch
-                                    ? // Si se busca el grupo (por identificador completo o solo el grado), se muestran TODOS los alumnos
-                                    alumnosPorGrupo[grupo.id] || []
-                                    : // Si se busca por alumno, se filtran los alumnos cuyo nombre completo incluya el término
-                                    (alumnosPorGrupo[grupo.id] || []).filter((alumno) =>
+                                    ? alumnosPorGrupo[grupo.id] || []
+                                    : (alumnosPorGrupo[grupo.id] || []).filter((alumno) =>
                                         removeDiacritics((alumno.nombre + " " + alumno.apellidos).toLowerCase()).includes(normalizedSearch)
                                     )
-                                : // En modo normal, se muestra la tabla solo si se ha hecho clic para expandir
-                                expandedGroup && expandedGroup.id === grupo.id
+                                : expandedGroup && expandedGroup.id === grupo.id
                                     ? alumnosGrupo
                                     : null;
                             return (
@@ -287,7 +316,6 @@ const ListaAlumnos = () => {
                                             onClick={(e) => handleDeleteClick(e, grupo)}
                                         />
                                     </div>
-
                                     {tableData ? (
                                         tableData.length === 0 ? (
                                             <p>No hay alumnos registrados en este grupo.</p>
@@ -422,6 +450,7 @@ const ListaAlumnos = () => {
                     </div>
                 </div>
             )}
+
             {modalEliminarAlumno && (
                 <div className="modal-overlay">
                     <div className="modal-content">
@@ -547,10 +576,10 @@ const ListaAlumnos = () => {
 
                         <div className="modal-buttons">
                             <button className="confirm-button" onClick={() => actualizarAlumno(alumnoSeleccionado)}>
-                                <img src={aceptarIcon} alt="Aceptar" /> Guardar
+                                <img src={aceptarIcon} alt="Aceptar" />
                             </button>
                             <button className="cancel-button" onClick={cerrarModalEditarAlumno}>
-                                <img src={rechazarIcon} alt="Cancelar" /> Cancelar
+                                <img src={rechazarIcon} alt="Cancelar" />
                             </button>
                         </div>
                     </div>

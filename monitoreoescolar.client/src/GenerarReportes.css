@@ -28,7 +28,7 @@
 .generar-reportes-form {
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 5px; /* Se reduce el espacio entre los campos */
 }
 
 /* ✅ Contenedor de cada input alineado */
@@ -37,7 +37,7 @@
     flex-direction: column;
     align-items: flex-start;
     text-align: left;
-    margin-bottom: 20px;
+    margin-bottom: 10px; /* Se reduce el margen inferior para juntar los campos */
 }
 
     .generar-reportes-group label {

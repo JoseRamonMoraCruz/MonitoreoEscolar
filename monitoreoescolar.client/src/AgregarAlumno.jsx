@@ -52,7 +52,7 @@ const AgregarAlumno = () => {
 
         // Verificar que el grupo seleccionado exista
         try {
-            const gruposResponse = await axios.get("/api/grupos");
+            const gruposResponse = await axios.get("http://localhost:5099/api/grupos");
             const gruposExistentes = gruposResponse.data;
             // Buscamos un grupo cuyo grado y letra concuerde con el alumno
             const grupoEncontrado = gruposExistentes.find(
@@ -73,7 +73,7 @@ const AgregarAlumno = () => {
 
         // Si el grupo existe, enviamos los datos del alumno al backend
         try {
-            const response = await axios.post("/api/alumnos/registro", alumno);
+            const response = await axios.post("http://localhost:5099/api/alumnos/registro", alumno);
             alert(response.data.mensaje); // Mostrar mensaje de éxito
 
             // Limpiar formulario

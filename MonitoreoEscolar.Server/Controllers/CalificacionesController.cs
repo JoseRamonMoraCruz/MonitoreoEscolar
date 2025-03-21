@@ -53,6 +53,8 @@ namespace MonitoreoEscolar.Server.Controllers
                     return BadRequest("❌ El archivo Excel no tiene suficientes filas de datos.");
                 }
 
+                List<Calificacion> calificacionesGuardadas = new List<Calificacion>();
+
                 for (int row = 2; row <= rowCount; row++)
                 {
                     string grupoStr = worksheet.Cells[row, 4].Text.Trim();
@@ -64,7 +66,6 @@ namespace MonitoreoEscolar.Server.Controllers
                         continue;
                     }
 
-                    // Verifica si el formato del grupo es correcto
                     if (grupoStr.Length < 2)
                     {
                         _logger.LogWarning($"⚠️ Grupo en fila {row} tiene un formato incorrecto: '{grupoStr}'");
@@ -107,16 +108,49 @@ namespace MonitoreoEscolar.Server.Controllers
                     };
 
                     _context.Calificaciones.Add(calificacion);
+                    calificacionesGuardadas.Add(calificacion);
                 }
 
                 await _context.SaveChangesAsync();
-                return Ok(new { mensaje = "✅ Calificaciones cargadas correctamente." });
+
+                // ✅ Ahora devolvemos las calificaciones guardadas
+                return Ok(new
+                {
+                    mensaje = "✅ Calificaciones cargadas correctamente.",
+                    cantidad = calificacionesGuardadas.Count,
+                    calificaciones = calificacionesGuardadas
+                });
             }
             catch (Exception ex)
             {
                 _logger.LogError($"❌ ERROR en SubirCalificaciones: {ex}");
                 return StatusCode(500, $"Error interno del servidor: {ex.Message} {ex.InnerException?.Message}");
             }
+        }
+        //PARA OBTENER LAS CALIFICACIONES DE LA BASE DE DATOS
+        [HttpGet("obtenerCalificaciones")]
+        public async Task<IActionResult> ObtenerCalificaciones()
+        {
+            var calificaciones = await _context.Calificaciones
+                .Include(c => c.Grupo)
+                .Select(c => new
+                {
+                    c.Nombre,
+                    c.Materia,
+                    c.CalificacionValor,
+                    Grupo = $"{c.Grupo.Grado}{c.Grupo.Letra}",
+                    c.ParcialUnidad
+                })
+                .ToListAsync();
+
+            // 📌 LOG: Verifica en la consola si la API está devolviendo datos
+            Console.WriteLine("📊 Datos obtenidos desde la BD:");
+            foreach (var cal in calificaciones)
+            {
+                Console.WriteLine($"➡ {cal.Nombre} - {cal.Materia} - {cal.CalificacionValor} - {cal.Grupo} - {cal.ParcialUnidad}");
+            }
+
+            return Ok(calificaciones);
         }
     }
 }

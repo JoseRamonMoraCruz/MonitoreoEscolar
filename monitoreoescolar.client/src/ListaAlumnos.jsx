@@ -39,7 +39,7 @@ const ListaAlumnos = () => {
                 for (const grupo of grupos) {
                     const groupString = `${grupo.grado}${grupo.letra}`;
                     try {
-                        const response = await axios.get(`http://localhost:5099/api/alumnos/grupo/${groupString}`);
+                        const response = await axios.get(`/api/alumnos/grupo/${groupString}`);
                         newAlumnosPorGrupo[grupo.id] = response.data;
                     } catch (error) {
                         console.error("Error al obtener alumnos para el grupo", grupo, error);
@@ -54,7 +54,7 @@ const ListaAlumnos = () => {
 
     const obtenerGrupos = async () => {
         try {
-            const response = await axios.get("http://localhost:5099/api/grupos");
+            const response = await axios.get("/api/grupos");
             const gruposOrdenados = response.data.sort((a, b) => {
                 // Convertimos a número por si acaso, en caso de que no lo sean
                 const gradeA = parseInt(a.grado, 10);
@@ -124,7 +124,7 @@ const ListaAlumnos = () => {
             };
 
             const response = await axios.put(
-                `http://localhost:5099/api/alumnos/editar/${alumno.id}`,
+                `/api/alumnos/editar/${alumno.id}`,
                 alumnoParaActualizar
             );
 
@@ -158,7 +158,7 @@ const ListaAlumnos = () => {
             return;
         }
         try {
-            await axios.post("http://localhost:5099/api/grupos/agregar", nuevoGrupo);
+            await axios.post("/api/grupos/agregar", nuevoGrupo);
             alert("✅ Grupo agregado correctamente.");
             obtenerGrupos();
             cerrarModalGrupo();
@@ -181,7 +181,7 @@ const ListaAlumnos = () => {
             return;
         }
         try {
-            const response = await axios.get(`http://localhost:5099/api/alumnos/grupo/${groupString}`);
+            const response = await axios.get(`/api/alumnos/grupo/${groupString}`);
             setAlumnosGrupo(response.data);
             setExpandedGroup(grupo);
         } catch (error) {
@@ -205,7 +205,7 @@ const ListaAlumnos = () => {
     const eliminarGrupo = async () => {
         if (!grupoSeleccionado) return;
         try {
-            await axios.delete(`http://localhost:5099/api/grupos/eliminar/${grupoSeleccionado.id}`);
+            await axios.delete(`/api/grupos/eliminar/${grupoSeleccionado.id}`);
             alert("✅ Grupo eliminado exitosamente.");
             setGrupos(grupos.filter((g) => g.id !== grupoSeleccionado.id));
             if (expandedGroup && expandedGroup.id === grupoSeleccionado.id) {
@@ -233,7 +233,7 @@ const ListaAlumnos = () => {
     const eliminarAlumno = async () => {
         if (!alumnoSeleccionado) return;
         try {
-            await axios.delete(`http://localhost:5099/api/alumnos/eliminar/${alumnoSeleccionado.id}`);
+            await axios.delete(`/api/alumnos/eliminar/${alumnoSeleccionado.id}`);
             alert("✅ Alumno eliminado correctamente.");
             setAlumnosGrupo(alumnosGrupo.filter((al) => al.id !== alumnoSeleccionado.id));
             cerrarModalEliminarAlumno();

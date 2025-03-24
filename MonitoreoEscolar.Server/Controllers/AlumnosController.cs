@@ -43,7 +43,8 @@ namespace MonitoreoEscolar.Server.Controllers
                     NombreCompletoNormalizado = nombreNormalizado,
                     Grupo = request.Grupo.Trim(),
                     Tutor = request.Tutor.Trim(),
-                    Domicilio = request.Domicilio.Trim()
+                    Domicilio = request.Domicilio.Trim(),
+                    TutorId = request.TutorId
                 };
 
                 _context.Alumnos.Add(alumno);

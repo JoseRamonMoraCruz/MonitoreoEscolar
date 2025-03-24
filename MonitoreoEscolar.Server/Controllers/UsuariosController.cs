@@ -110,6 +110,24 @@ namespace MonitoreoEscolar.Server.Controllers
             return Ok(new { mensaje = "Contraseña actualizada exitosamente." });
         }
 
+        //OBTENER LISTA DE PADRES PARA RELACIONARLOS EN EL REGISTRO DEL ALUMNO
+        [HttpGet("padres")]
+        public async Task<IActionResult> GetPadres()
+        {
+            var padres = await _context.Usuarios
+                .Where(u => u.Tipo_Usuario.ToLower() == "padre")
+                .Select(u => new
+                {
+                    id_Usuario = u.Id_Usuario,
+                    nombre = u.Nombre,
+                    apellidos = u.Apellidos,
+                    correo = u.Correo
+                })
+                .ToListAsync();
+
+            return Ok(padres);
+        }
+
         // BUSCAR PADRE POR NOMBRE O APELLIDOS (sin importar acentos ni mayúsculas/minúsculas)
         [HttpGet("buscarPadre")]
         public async Task<IActionResult> BuscarPadre([FromQuery] string nombre)

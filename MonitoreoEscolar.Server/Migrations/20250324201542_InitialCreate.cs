@@ -77,8 +77,7 @@ namespace MonitoreoEscolar.Server.Migrations
                     NombreCompleto = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     NombreCompletoNormalizado = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Grupo = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Tutor = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    TutorId = table.Column<int>(type: "int", nullable: true),
+                    TutorId = table.Column<int>(type: "int", nullable: false),
                     Domicilio = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     GrupoId = table.Column<int>(type: "int", nullable: true)
                 },

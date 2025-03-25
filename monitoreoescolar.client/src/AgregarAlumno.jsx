@@ -183,23 +183,9 @@ const AgregarAlumno = () => {
                             </select>
                         </div>
                     </div>
-
-                    {/* Tutor (string) */}
+                    {/* NUEVO: Seleccionar padre/tutor */}
                     <div className="agregar-alumno-group">
-                        <label>👨🏻‍🦰 Nombre del padre/madre o tutor:</label>
-                        <input
-                            type="text"
-                            name="tutor"
-                            value={alumno.tutor}
-                            onChange={handleChange}
-                            placeholder="Ingrese el nombre del tutor"
-                            required
-                        />
-                    </div>
-
-                    {/* NUEVO: Seleccionar padre/tutor (opcional) */}
-                    <div className="agregar-alumno-group">
-                        <label>Seleccionar padre registrado (opcional):</label>
+                        <label>Seleccionar padre del alumno:</label>
                         <select
                             name="tutorId"
                             value={alumno.tutorId || ""}

@@ -21,12 +21,9 @@ namespace MonitoreoEscolar.Server.Models
         [Required]
         public string Grupo { get; set; } = string.Empty;
 
-        [Required]
-        public string Tutor { get; set; } = string.Empty; 
-
         // Nueva propiedad para la relación con Usuario 
-
-        public int? TutorId { get; set; }
+        [Required]
+        public int TutorId { get; set; }
 
         [ForeignKey("TutorId")]
         public Usuario? TutorUsuario { get; set; }

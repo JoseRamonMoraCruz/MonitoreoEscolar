@@ -42,7 +42,6 @@ namespace MonitoreoEscolar.Server.Controllers
                     NombreCompleto = nombreCompleto,
                     NombreCompletoNormalizado = nombreNormalizado,
                     Grupo = request.Grupo.Trim(),
-                    Tutor = request.Tutor.Trim(),
                     Domicilio = request.Domicilio.Trim(),
                     TutorId = request.TutorId
                 };
@@ -127,7 +126,6 @@ namespace MonitoreoEscolar.Server.Controllers
                 alumnoExistente.NombreCompleto = $"{alumnoEditado.Nombre.Trim()} {alumnoEditado.Apellidos.Trim()}";
                 alumnoExistente.NombreCompletoNormalizado = RemoveDiacritics(alumnoExistente.NombreCompleto.ToLower());
                 alumnoExistente.Grupo = alumnoEditado.Grupo.Trim();
-                alumnoExistente.Tutor = alumnoEditado.Tutor.Trim();
                 alumnoExistente.Domicilio = alumnoEditado.Domicilio.Trim();
 
                 // Guardar cambios

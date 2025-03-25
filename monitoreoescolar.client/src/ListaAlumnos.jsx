@@ -39,6 +39,7 @@ const ListaAlumnos = () => {
                 for (const grupo of grupos) {
                     const groupString = `${grupo.grado}${grupo.letra}`;
                     try {
+                        // Asegúrate de que este endpoint incluya el TutorUsuario (usando Include en el backend)
                         const response = await axios.get(`/api/alumnos/grupo/${groupString}`);
                         newAlumnosPorGrupo[grupo.id] = response.data;
                     } catch (error) {
@@ -56,13 +57,11 @@ const ListaAlumnos = () => {
         try {
             const response = await axios.get("/api/grupos");
             const gruposOrdenados = response.data.sort((a, b) => {
-                // Convertimos a número por si acaso, en caso de que no lo sean
                 const gradeA = parseInt(a.grado, 10);
                 const gradeB = parseInt(b.grado, 10);
                 if (gradeA !== gradeB) {
                     return gradeA - gradeB;
                 }
-                // Si los grados son iguales, se comparan las letras
                 if (a.letra < b.letra) return -1;
                 if (a.letra > b.letra) return 1;
                 return 0;
@@ -78,7 +77,6 @@ const ListaAlumnos = () => {
 
     /* EDITAR */
     const abrirModalEditarAlumno = (alumno) => {
-        // Extraer por defecto el grado y grupo desde la propiedad "Grupo" si existe.
         let grado = "";
         let grupo = "";
         if (alumno.Grupo) {
@@ -100,12 +98,10 @@ const ListaAlumnos = () => {
     };
 
     const actualizarAlumno = async (alumno) => {
-        // Validar que se hayan seleccionado tanto el grado como el grupo
         if (!alumno.grado || !alumno.grupo) {
             alert("❌ Por favor, seleccione el grado y el grupo.");
             return;
         }
-        // Verificar que el grupo seleccionado exista en los grupos cargados
         const grupoExistente = grupos.find(
             (g) =>
                 g.grado.toString() === alumno.grado.toString() &&
@@ -117,7 +113,6 @@ const ListaAlumnos = () => {
         }
 
         try {
-            // Combina grado y grupo antes de enviar
             const alumnoParaActualizar = {
                 ...alumno,
                 Grupo: `${alumno.grado}${alumno.grupo}`,
@@ -168,7 +163,6 @@ const ListaAlumnos = () => {
         }
     };
 
-    // Permite toggle si el término coincide con el grupo o su grado
     const handleGroupClick = async (grupo) => {
         const groupString = `${grupo.grado}${grupo.letra}`.toLowerCase();
         const normalizedSearch = removeDiacritics(searchTerm.trim().toLowerCase());
@@ -335,7 +329,11 @@ const ListaAlumnos = () => {
                                                             <td>
                                                                 {alumno.nombre} {alumno.apellidos}
                                                             </td>
-                                                            <td>{alumno.tutor}</td>
+                                                            <td>
+                                                                {alumno.tutorUsuario
+                                                                    ? `${alumno.tutorUsuario.Nombre} ${alumno.tutorUsuario.Apellidos}`
+                                                                    : "Sin Tutor"}
+                                                            </td>
                                                             <td>{alumno.domicilio}</td>
                                                             <td className="acciones">
                                                                 <img
@@ -348,9 +346,7 @@ const ListaAlumnos = () => {
                                                                     src={removeIcon}
                                                                     alt="Eliminar"
                                                                     className="accion-icon eliminar"
-                                                                    onClick={() =>
-                                                                        abrirModalEliminarAlumno(alumno)
-                                                                    }
+                                                                    onClick={() => abrirModalEliminarAlumno(alumno)}
                                                                 />
                                                             </td>
                                                         </tr>
@@ -379,7 +375,11 @@ const ListaAlumnos = () => {
                                                             <td>
                                                                 {alumno.nombre} {alumno.apellidos}
                                                             </td>
-                                                            <td>{alumno.tutor}</td>
+                                                            <td>
+                                                                {alumno.tutorUsuario
+                                                                    ? `${alumno.tutorUsuario.Nombre} ${alumno.tutorUsuario.Apellidos}`
+                                                                    : "Sin Tutor"}
+                                                            </td>
                                                             <td>{alumno.domicilio}</td>
                                                             <td className="acciones">
                                                                 <img
@@ -391,9 +391,7 @@ const ListaAlumnos = () => {
                                                                     src={removeIcon}
                                                                     alt="Eliminar"
                                                                     className="accion-icon eliminar"
-                                                                    onClick={() =>
-                                                                        abrirModalEliminarAlumno(alumno)
-                                                                    }
+                                                                    onClick={() => abrirModalEliminarAlumno(alumno)}
                                                                 />
                                                             </td>
                                                         </tr>
@@ -554,13 +552,18 @@ const ListaAlumnos = () => {
                             </div>
                         </div>
 
+                        {/* En edición, si requieres mostrar el tutor asociado, puedes hacerlo de forma similar */}
                         <div className="input-container">
-                            <label>Padre/Madre o tutor:</label>
+                            <label>Tutor:</label>
                             <input
                                 type="text"
                                 name="tutor"
-                                value={alumnoSeleccionado.tutor}
-                                onChange={(e) => setAlumnoSeleccionado({ ...alumnoSeleccionado, tutor: e.target.value })}
+                                value={
+                                    alumnoSeleccionado.tutorUsuario
+                                        ? `${alumnoSeleccionado.tutorUsuario.Nombre} ${alumnoSeleccionado.tutorUsuario.Apellidos}`
+                                        : ""
+                                }
+                                readOnly
                             />
                         </div>
 

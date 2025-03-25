@@ -7,7 +7,7 @@
     background-color: #9AD3FE; /* Fondo */
 }
 
-/*  Mantener tamaño fijo y permitir scroll si es necesario */
+/* Mantener tamaño fijo y permitir scroll si es necesario */
 .agregar-alumno-content {
     background-color: #384147;
     padding: 30px;
@@ -26,7 +26,7 @@
 .agregar-alumno-form {
     display: flex;
     flex-direction: column;
-    gap: 15px;
+    gap: 8px; /* Se reduce el espacio entre los campos */
     max-height: 100%; /* Evita que crezca más de lo permitido */
 }
 
@@ -35,7 +35,7 @@
     display: flex;
     flex-direction: column;
     text-align: left;
-    margin-bottom: 15px; /* Ajuste de margen para que quepa mejor */
+    margin-bottom: 8px; /* Se reduce el margen inferior */
 }
 
     /* ✅ Inputs */
@@ -51,7 +51,7 @@
 /* ✅ Contenedor de botones alineados */
 .button-container {
     display: flex;
-    justify-content: space-between; /*  Un botón a la izquierda y otro a la derecha */
+    justify-content: space-between; /* Un botón a la izquierda y otro a la derecha */
     width: 100%;
     margin-top: 10px;
 }
@@ -99,11 +99,12 @@
     .capturar-huella-btn:hover {
         background-color: #cc5200;
     }
+
 /* Contenedor para Grado y Letra en la misma línea */
 .agregar-alumno-group-selects {
     display: flex;
-    gap: 20px; /* Espacio horizontal entre ambos selects */
-    margin-bottom: 15px; /* Mantiene la separación vertical */
+    gap: 10px; /* Espacio horizontal reducido entre ambos selects */
+    margin-bottom: 8px; /* Se reduce la separación vertical */
     text-align: left; /* Alineación de las etiquetas a la izquierda */
 }
 

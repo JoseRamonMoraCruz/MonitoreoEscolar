@@ -11,7 +11,7 @@ using MonitoreoEscolar.Server.Data;
 namespace MonitoreoEscolar.Server.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250319181154_InitialCreate")]
+    [Migration("20250324201542_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -59,13 +59,14 @@ namespace MonitoreoEscolar.Server.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Tutor")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int>("TutorId")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
                     b.HasIndex("GrupoId");
+
+                    b.HasIndex("TutorId");
 
                     b.ToTable("Alumnos");
                 });
@@ -168,6 +169,12 @@ namespace MonitoreoEscolar.Server.Migrations
                     b.HasOne("MonitoreoEscolar.Server.Models.Grupo", null)
                         .WithMany("Alumnos")
                         .HasForeignKey("GrupoId");
+
+                    b.HasOne("MonitoreoEscolar.Server.Models.Usuario", "TutorUsuario")
+                        .WithMany("Alumnos")
+                        .HasForeignKey("TutorId");
+
+                    b.Navigation("TutorUsuario");
                 });
 
             modelBuilder.Entity("MonitoreoEscolar.Server.Models.Calificacion", b =>
@@ -182,6 +189,11 @@ namespace MonitoreoEscolar.Server.Migrations
                 });
 
             modelBuilder.Entity("MonitoreoEscolar.Server.Models.Grupo", b =>
+                {
+                    b.Navigation("Alumnos");
+                });
+
+            modelBuilder.Entity("MonitoreoEscolar.Server.Models.Usuario", b =>
                 {
                     b.Navigation("Alumnos");
                 });

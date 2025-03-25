@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace MonitoreoEscolar.Server.Models
 {
@@ -13,18 +14,21 @@ namespace MonitoreoEscolar.Server.Models
         [Required]
         public string Apellidos { get; set; } = string.Empty;
 
-        public string NombreCompleto { get; set; } = string.Empty; //Se genera automáticamente
+        public string NombreCompleto { get; set; } = string.Empty; // Se genera automáticamente
 
-        public string NombreCompletoNormalizado { get; set; } = string.Empty; //  Se genera automáticamente
+        public string NombreCompletoNormalizado { get; set; } = string.Empty; // Se genera automáticamente
 
         [Required]
         public string Grupo { get; set; } = string.Empty;
 
+        // Nueva propiedad para la relación con Usuario 
         [Required]
-        public string Tutor { get; set; } = string.Empty;
+        public int TutorId { get; set; }
+
+        [ForeignKey("TutorId")]
+        public Usuario? TutorUsuario { get; set; }
 
         [Required]
         public string Domicilio { get; set; } = string.Empty;
-      
     }
 }

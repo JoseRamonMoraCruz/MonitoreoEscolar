@@ -44,31 +44,6 @@ namespace MonitoreoEscolar.Server.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Alumnos",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Nombre = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Apellidos = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    NombreCompleto = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    NombreCompletoNormalizado = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Grupo = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Tutor = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Domicilio = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    GrupoId = table.Column<int>(type: "int", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Alumnos", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Alumnos_Grupos_GrupoId",
-                        column: x => x.GrupoId,
-                        principalTable: "Grupos",
-                        principalColumn: "Id");
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Calificaciones",
                 columns: table => new
                 {
@@ -91,10 +66,45 @@ namespace MonitoreoEscolar.Server.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "Alumnos",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Nombre = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Apellidos = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    NombreCompleto = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    NombreCompletoNormalizado = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Grupo = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    TutorId = table.Column<int>(type: "int", nullable: false),
+                    Domicilio = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    GrupoId = table.Column<int>(type: "int", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Alumnos", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Alumnos_Grupos_GrupoId",
+                        column: x => x.GrupoId,
+                        principalTable: "Grupos",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_Alumnos_Usuarios_TutorId",
+                        column: x => x.TutorId,
+                        principalTable: "Usuarios",
+                        principalColumn: "Id_Usuario");
+                });
+
             migrationBuilder.CreateIndex(
                 name: "IX_Alumnos_GrupoId",
                 table: "Alumnos",
                 column: "GrupoId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Alumnos_TutorId",
+                table: "Alumnos",
+                column: "TutorId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Calificaciones_GrupoId",

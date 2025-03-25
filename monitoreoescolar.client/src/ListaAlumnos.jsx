@@ -39,7 +39,8 @@ const ListaAlumnos = () => {
                 for (const grupo of grupos) {
                     const groupString = `${grupo.grado}${grupo.letra}`;
                     try {
-                        const response = await axios.get(`http://localhost:5099/api/alumnos/grupo/${groupString}`);
+                        // Asegúrate de que este endpoint incluya el TutorUsuario (usando Include en el backend)
+                        const response = await axios.get(`/api/alumnos/grupo/${groupString}`);
                         newAlumnosPorGrupo[grupo.id] = response.data;
                     } catch (error) {
                         console.error("Error al obtener alumnos para el grupo", grupo, error);
@@ -54,15 +55,13 @@ const ListaAlumnos = () => {
 
     const obtenerGrupos = async () => {
         try {
-            const response = await axios.get("http://localhost:5099/api/grupos");
+            const response = await axios.get("/api/grupos");
             const gruposOrdenados = response.data.sort((a, b) => {
-                // Convertimos a número por si acaso, en caso de que no lo sean
                 const gradeA = parseInt(a.grado, 10);
                 const gradeB = parseInt(b.grado, 10);
                 if (gradeA !== gradeB) {
                     return gradeA - gradeB;
                 }
-                // Si los grados son iguales, se comparan las letras
                 if (a.letra < b.letra) return -1;
                 if (a.letra > b.letra) return 1;
                 return 0;
@@ -72,11 +71,24 @@ const ListaAlumnos = () => {
             console.error("Error al obtener grupos:", error);
         }
     };
+
     const abrirModalGrupo = () => setModalGrupo(true);
     const cerrarModalGrupo = () => setModalGrupo(false);
+
     /* EDITAR */
     const abrirModalEditarAlumno = (alumno) => {
-        setAlumnoSeleccionado(alumno);
+        let grado = "";
+        let grupo = "";
+        if (alumno.Grupo) {
+            const matchGrade = alumno.Grupo.match(/\d+/);
+            const matchGroup = alumno.Grupo.match(/[A-Za-z]+/);
+            grado = matchGrade ? matchGrade[0] : "";
+            grupo = matchGroup ? matchGroup[0] : "";
+        } else {
+            grado = alumno.grado || "";
+            grupo = alumno.grupo || "";
+        }
+        setAlumnoSeleccionado({ ...alumno, grado, grupo });
         setModalEditarAlumno(true);
     };
 
@@ -86,29 +98,51 @@ const ListaAlumnos = () => {
     };
 
     const actualizarAlumno = async (alumno) => {
+        if (!alumno.grado || !alumno.grupo) {
+            alert("❌ Por favor, seleccione el grado y el grupo.");
+            return;
+        }
+        const grupoExistente = grupos.find(
+            (g) =>
+                g.grado.toString() === alumno.grado.toString() &&
+                g.letra.toLowerCase() === alumno.grupo.toLowerCase()
+        );
+        if (!grupoExistente) {
+            alert("❌ El grupo seleccionado no existe.");
+            return;
+        }
+
         try {
-            // Combina grado y grupo antes de enviar
             const alumnoParaActualizar = {
                 ...alumno,
-                Grupo: `${alumno.grado}${alumno.grupo}`
+                Grupo: `${alumno.grado}${alumno.grupo}`,
             };
 
             const response = await axios.put(
-                `http://localhost:5099/api/alumnos/editar/${alumno.id}`,
+                `/api/alumnos/editar/${alumno.id}`,
                 alumnoParaActualizar
             );
 
             alert(response.data.mensaje);
-            setAlumnosGrupo(alumnosGrupo.map(al => al.id === alumno.id ? alumnoParaActualizar : al));
+            setAlumnosGrupo(
+                alumnosGrupo.map((al) =>
+                    al.id === alumno.id ? alumnoParaActualizar : al
+                )
+            );
             cerrarModalEditarAlumno();
         } catch (error) {
-            console.error("Error al actualizar alumno:", error.response?.data || error.message);
-            alert("❌ No se pudo actualizar al alumno. " + (error.response?.data.mensaje || error.message));
+            console.error(
+                "Error al actualizar alumno:",
+                error.response?.data || error.message
+            );
+            alert(
+                "❌ No se pudo actualizar al alumno. " +
+                (error.response?.data.mensaje || error.message)
+            );
         }
     };
-
-
     /*FIN DE EDITAR */
+
     const handleChange = (e) => {
         setNuevoGrupo({ ...nuevoGrupo, [e.target.name]: e.target.value });
     };
@@ -119,7 +153,7 @@ const ListaAlumnos = () => {
             return;
         }
         try {
-            await axios.post("http://localhost:5099/api/grupos/agregar", nuevoGrupo);
+            await axios.post("/api/grupos/agregar", nuevoGrupo);
             alert("✅ Grupo agregado correctamente.");
             obtenerGrupos();
             cerrarModalGrupo();
@@ -129,11 +163,9 @@ const ListaAlumnos = () => {
         }
     };
 
-    // Se modifica para permitir toggle si el término coincide con el grupo o con su grado
     const handleGroupClick = async (grupo) => {
         const groupString = `${grupo.grado}${grupo.letra}`.toLowerCase();
         const normalizedSearch = removeDiacritics(searchTerm.trim().toLowerCase());
-        // Si se está buscando y el término NO coincide ni con el identificador completo ni con el grado, no se hace toggle
         if (searchTerm.trim() !== "" && normalizedSearch !== groupString && normalizedSearch !== grupo.grado.toString().toLowerCase())
             return;
 
@@ -143,7 +175,7 @@ const ListaAlumnos = () => {
             return;
         }
         try {
-            const response = await axios.get(`http://localhost:5099/api/alumnos/grupo/${groupString}`);
+            const response = await axios.get(`/api/alumnos/grupo/${groupString}`);
             setAlumnosGrupo(response.data);
             setExpandedGroup(grupo);
         } catch (error) {
@@ -159,17 +191,15 @@ const ListaAlumnos = () => {
         setModalEliminarGrupo(true);
     };
 
-    // Funciones para cerrar el modal de eliminar grupo
     const cerrarModalEliminarGrupo = () => {
         setModalEliminarGrupo(false);
         setGrupoSeleccionado(null);
     };
 
-    // Función para eliminar el grupo
     const eliminarGrupo = async () => {
         if (!grupoSeleccionado) return;
         try {
-            await axios.delete(`http://localhost:5099/api/grupos/eliminar/${grupoSeleccionado.id}`);
+            await axios.delete(`/api/grupos/eliminar/${grupoSeleccionado.id}`);
             alert("✅ Grupo eliminado exitosamente.");
             setGrupos(grupos.filter((g) => g.id !== grupoSeleccionado.id));
             if (expandedGroup && expandedGroup.id === grupoSeleccionado.id) {
@@ -183,7 +213,7 @@ const ListaAlumnos = () => {
         }
     };
 
-    // Funciones para el modal de eliminar alumno (ya existente)
+    // Funciones para el modal de eliminar alumno
     const abrirModalEliminarAlumno = (alumno) => {
         setAlumnoSeleccionado(alumno);
         setModalEliminarAlumno(true);
@@ -197,7 +227,7 @@ const ListaAlumnos = () => {
     const eliminarAlumno = async () => {
         if (!alumnoSeleccionado) return;
         try {
-            await axios.delete(`http://localhost:5099/api/alumnos/eliminar/${alumnoSeleccionado.id}`);
+            await axios.delete(`/api/alumnos/eliminar/${alumnoSeleccionado.id}`);
             alert("✅ Alumno eliminado correctamente.");
             setAlumnosGrupo(alumnosGrupo.filter((al) => al.id !== alumnoSeleccionado.id));
             cerrarModalEliminarAlumno();
@@ -207,18 +237,15 @@ const ListaAlumnos = () => {
         }
     };
 
-    // Función para quitar acentos (similar a RemoveDiacritics en C#)
+    // Función para quitar acentos
     const removeDiacritics = (str) => {
         return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
     };
 
-    // Manejador del input de búsqueda
     const handleSearchChange = (e) => {
         setSearchTerm(e.target.value);
     };
 
-    // Filtrado de grupos: se incluyen los que tengan coincidencia en el identificador (grado + letra)
-    // o bien tengan algún alumno cuyo nombre completo (normalizado) contenga el término.
     const normalizedSearch = removeDiacritics(searchTerm.trim().toLowerCase());
     const gruposFiltrados = searchTerm.trim()
         ? grupos.filter((grupo) => {
@@ -253,20 +280,16 @@ const ListaAlumnos = () => {
                     ) : (
                         gruposFiltrados.map((grupo) => {
                             const groupString = `${grupo.grado}${grupo.letra}`.toLowerCase();
-                            // Ahora isGroupSearch será verdadero si el término coincide con el identificador completo o con el grado
                             const isGroupSearch =
                                 normalizedSearch === groupString ||
                                 normalizedSearch === grupo.grado.toString().toLowerCase();
                             const tableData = searchTerm.trim()
                                 ? isGroupSearch
-                                    ? // Si se busca el grupo (por identificador completo o solo el grado), se muestran TODOS los alumnos
-                                    alumnosPorGrupo[grupo.id] || []
-                                    : // Si se busca por alumno, se filtran los alumnos cuyo nombre completo incluya el término
-                                    (alumnosPorGrupo[grupo.id] || []).filter((alumno) =>
+                                    ? alumnosPorGrupo[grupo.id] || []
+                                    : (alumnosPorGrupo[grupo.id] || []).filter((alumno) =>
                                         removeDiacritics((alumno.nombre + " " + alumno.apellidos).toLowerCase()).includes(normalizedSearch)
                                     )
-                                : // En modo normal, se muestra la tabla solo si se ha hecho clic para expandir
-                                expandedGroup && expandedGroup.id === grupo.id
+                                : expandedGroup && expandedGroup.id === grupo.id
                                     ? alumnosGrupo
                                     : null;
                             return (
@@ -287,7 +310,6 @@ const ListaAlumnos = () => {
                                             onClick={(e) => handleDeleteClick(e, grupo)}
                                         />
                                     </div>
-
                                     {tableData ? (
                                         tableData.length === 0 ? (
                                             <p>No hay alumnos registrados en este grupo.</p>
@@ -307,7 +329,11 @@ const ListaAlumnos = () => {
                                                             <td>
                                                                 {alumno.nombre} {alumno.apellidos}
                                                             </td>
-                                                            <td>{alumno.tutor}</td>
+                                                            <td>
+                                                                {alumno.tutorUsuario
+                                                                    ? `${alumno.tutorUsuario.Nombre} ${alumno.tutorUsuario.Apellidos}`
+                                                                    : "Sin Tutor"}
+                                                            </td>
                                                             <td>{alumno.domicilio}</td>
                                                             <td className="acciones">
                                                                 <img
@@ -320,9 +346,7 @@ const ListaAlumnos = () => {
                                                                     src={removeIcon}
                                                                     alt="Eliminar"
                                                                     className="accion-icon eliminar"
-                                                                    onClick={() =>
-                                                                        abrirModalEliminarAlumno(alumno)
-                                                                    }
+                                                                    onClick={() => abrirModalEliminarAlumno(alumno)}
                                                                 />
                                                             </td>
                                                         </tr>
@@ -351,7 +375,11 @@ const ListaAlumnos = () => {
                                                             <td>
                                                                 {alumno.nombre} {alumno.apellidos}
                                                             </td>
-                                                            <td>{alumno.tutor}</td>
+                                                            <td>
+                                                                {alumno.tutorUsuario
+                                                                    ? `${alumno.tutorUsuario.Nombre} ${alumno.tutorUsuario.Apellidos}`
+                                                                    : "Sin Tutor"}
+                                                            </td>
                                                             <td>{alumno.domicilio}</td>
                                                             <td className="acciones">
                                                                 <img
@@ -363,9 +391,7 @@ const ListaAlumnos = () => {
                                                                     src={removeIcon}
                                                                     alt="Eliminar"
                                                                     className="accion-icon eliminar"
-                                                                    onClick={() =>
-                                                                        abrirModalEliminarAlumno(alumno)
-                                                                    }
+                                                                    onClick={() => abrirModalEliminarAlumno(alumno)}
                                                                 />
                                                             </td>
                                                         </tr>
@@ -422,6 +448,7 @@ const ListaAlumnos = () => {
                     </div>
                 </div>
             )}
+
             {modalEliminarAlumno && (
                 <div className="modal-overlay">
                     <div className="modal-content">
@@ -525,13 +552,18 @@ const ListaAlumnos = () => {
                             </div>
                         </div>
 
+                        {/* En edición, si requieres mostrar el tutor asociado, puedes hacerlo de forma similar */}
                         <div className="input-container">
-                            <label>Padre/Madre o tutor:</label>
+                            <label>Tutor:</label>
                             <input
                                 type="text"
                                 name="tutor"
-                                value={alumnoSeleccionado.tutor}
-                                onChange={(e) => setAlumnoSeleccionado({ ...alumnoSeleccionado, tutor: e.target.value })}
+                                value={
+                                    alumnoSeleccionado.tutorUsuario
+                                        ? `${alumnoSeleccionado.tutorUsuario.Nombre} ${alumnoSeleccionado.tutorUsuario.Apellidos}`
+                                        : ""
+                                }
+                                readOnly
                             />
                         </div>
 
@@ -547,10 +579,10 @@ const ListaAlumnos = () => {
 
                         <div className="modal-buttons">
                             <button className="confirm-button" onClick={() => actualizarAlumno(alumnoSeleccionado)}>
-                                <img src={aceptarIcon} alt="Aceptar" />{ /*Guardar*/}
+                                <img src={aceptarIcon} alt="Aceptar" />
                             </button>
                             <button className="cancel-button" onClick={cerrarModalEditarAlumno}>
-                                <img src={rechazarIcon} alt="Cancelar" />{ /*Cancelar*/}
+                                <img src={rechazarIcon} alt="Cancelar" />
                             </button>
                         </div>
                     </div>

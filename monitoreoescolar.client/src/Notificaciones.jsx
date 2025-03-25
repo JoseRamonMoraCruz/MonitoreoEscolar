@@ -20,9 +20,9 @@ const Notificaciones = () => {
         setCargando(true);
         setMensaje("");
         try {
-            const response = await axios.get("http://localhost:5099/api/usuarios/buscarPadre", {
-                params: { nombre: nombreBusqueda.trim() }
-            });
+            const nombreBusqueda = nombre.trim();
+            const response = await axios.get("/api/usuarios/buscarPadre", { params: { nombre: nombreBusqueda } });
+            console.log("Respuesta de la API:", response.data);
 
             setResultados(response.data);
         } catch (error) {

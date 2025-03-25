@@ -29,5 +29,7 @@ namespace MonitoreoEscolar.Server.Models
         // Solo se usa si el usuario es Padre
         public string? NombreAlumno { get; set; }
 
+        // Colección de alumnos asociados (opcional, pero recomendable)
+        public ICollection<Alumno> Alumnos { get; set; } = new List<Alumno>();
     }
 }

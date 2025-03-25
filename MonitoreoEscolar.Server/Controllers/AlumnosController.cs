@@ -64,6 +64,7 @@ namespace MonitoreoEscolar.Server.Controllers
             try
             {
                 var alumnos = await _context.Alumnos
+                    .Include(a => a.TutorUsuario)
                     .Where(a => a.Grupo == grupoStr)
                     .OrderBy(a => a.NombreCompleto)
                     .ToListAsync();
@@ -128,6 +129,9 @@ namespace MonitoreoEscolar.Server.Controllers
                 alumnoExistente.Grupo = alumnoEditado.Grupo.Trim();
                 alumnoExistente.Domicilio = alumnoEditado.Domicilio.Trim();
 
+                // Actualiza el TutorId para cambiar el tutor
+                alumnoExistente.TutorId = alumnoEditado.TutorId;
+
                 // Guardar cambios
                 await _context.SaveChangesAsync();
 
@@ -138,6 +142,5 @@ namespace MonitoreoEscolar.Server.Controllers
                 return StatusCode(500, new { mensaje = "Error interno al editar el alumno.", error = ex.Message });
             }
         }
-
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace MonitoreoEscolar.Server.Models
 {
@@ -30,6 +31,7 @@ namespace MonitoreoEscolar.Server.Models
         public string? NombreAlumno { get; set; }
 
         // Colección de alumnos asociados (opcional, pero recomendable)
+        [JsonIgnore]
         public ICollection<Alumno> Alumnos { get; set; } = new List<Alumno>();
     }
 }

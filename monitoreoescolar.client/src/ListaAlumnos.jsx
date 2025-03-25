@@ -26,20 +26,34 @@ const ListaAlumnos = () => {
     const [searchTerm, setSearchTerm] = useState("");
     // Para almacenar todos los alumnos de cada grupo (clave: grupo.id)
     const [alumnosPorGrupo, setAlumnosPorGrupo] = useState({});
+    // Estado para almacenar la lista de padres disponibles
+    const [padres, setPadres] = useState([]);
 
     useEffect(() => {
         obtenerGrupos();
     }, []);
 
     useEffect(() => {
-        // Una vez que tenemos los grupos, obtenemos los alumnos de cada grupo
+        const fetchPadres = async () => {
+            try {
+                // Asegúrate de que este endpoint retorne los padres (tipo "padre")
+                const response = await axios.get("/api/usuarios/padres");
+                setPadres(response.data);
+            } catch (error) {
+                console.error("Error al obtener la lista de padres:", error);
+            }
+        };
+        fetchPadres();
+    }, []);
+
+    useEffect(() => {
         if (grupos.length > 0) {
             const fetchAllStudents = async () => {
                 const newAlumnosPorGrupo = {};
                 for (const grupo of grupos) {
                     const groupString = `${grupo.grado}${grupo.letra}`;
                     try {
-                        // Asegúrate de que este endpoint incluya el TutorUsuario (usando Include en el backend)
+                        // Asegúrate de que este endpoint incluya TutorUsuario (usando Include en el backend)
                         const response = await axios.get(`/api/alumnos/grupo/${groupString}`);
                         newAlumnosPorGrupo[grupo.id] = response.data;
                     } catch (error) {
@@ -59,9 +73,7 @@ const ListaAlumnos = () => {
             const gruposOrdenados = response.data.sort((a, b) => {
                 const gradeA = parseInt(a.grado, 10);
                 const gradeB = parseInt(b.grado, 10);
-                if (gradeA !== gradeB) {
-                    return gradeA - gradeB;
-                }
+                if (gradeA !== gradeB) return gradeA - gradeB;
                 if (a.letra < b.letra) return -1;
                 if (a.letra > b.letra) return 1;
                 return 0;
@@ -149,7 +161,7 @@ const ListaAlumnos = () => {
 
     const agregarGrupo = async () => {
         if (!nuevoGrupo.grado || !nuevoGrupo.letra) {
-            alert("Por favor, selecciona el grado y la letra del grupo.");
+            alert("Por favor, seleccione el grado y la letra del grupo.");
             return;
         }
         try {
@@ -331,7 +343,7 @@ const ListaAlumnos = () => {
                                                             </td>
                                                             <td>
                                                                 {alumno.tutorUsuario
-                                                                    ? `${alumno.tutorUsuario.Nombre} ${alumno.tutorUsuario.Apellidos}`
+                                                                    ? `${alumno.tutorUsuario.nombre} ${alumno.tutorUsuario.apellidos}`
                                                                     : "Sin Tutor"}
                                                             </td>
                                                             <td>{alumno.domicilio}</td>
@@ -377,7 +389,7 @@ const ListaAlumnos = () => {
                                                             </td>
                                                             <td>
                                                                 {alumno.tutorUsuario
-                                                                    ? `${alumno.tutorUsuario.Nombre} ${alumno.tutorUsuario.Apellidos}`
+                                                                    ? `${alumno.tutorUsuario.nombre} ${alumno.tutorUsuario.apellidos}`
                                                                     : "Sin Tutor"}
                                                             </td>
                                                             <td>{alumno.domicilio}</td>
@@ -552,19 +564,27 @@ const ListaAlumnos = () => {
                             </div>
                         </div>
 
-                        {/* En edición, si requieres mostrar el tutor asociado, puedes hacerlo de forma similar */}
+                        {/* Selección del tutor en el modal de edición */}
                         <div className="input-container">
                             <label>Tutor:</label>
-                            <input
-                                type="text"
-                                name="tutor"
-                                value={
-                                    alumnoSeleccionado.tutorUsuario
-                                        ? `${alumnoSeleccionado.tutorUsuario.Nombre} ${alumnoSeleccionado.tutorUsuario.Apellidos}`
-                                        : ""
+                            <select
+                                name="tutorId"
+                                value={alumnoSeleccionado.tutorId || ""}
+                                onChange={(e) =>
+                                    setAlumnoSeleccionado({
+                                        ...alumnoSeleccionado,
+                                        tutorId: parseInt(e.target.value)
+                                    })
                                 }
-                                readOnly
-                            />
+                                required
+                            >
+                                <option value="">Seleccione tutor</option>
+                                {padres.map((padre) => (
+                                    <option key={padre.id_Usuario} value={padre.id_Usuario}>
+                                        {padre.nombre} {padre.apellidos} - {padre.correo}
+                                    </option>
+                                ))}
+                            </select>
                         </div>
 
                         <div className="input-container">

@@ -1,4 +1,4 @@
-﻿import { useState } from "react";
+﻿import { useState, useEffect } from "react";
 import "./Notificaciones.css";
 import axios from "axios";
 import WhatsappIcon from "./assets/whatsapp.png"; // Ícono de WhatsApp
@@ -9,37 +9,44 @@ const Notificaciones = () => {
     const [cargando, setCargando] = useState(false);
     const [mensaje, setMensaje] = useState("");
 
-    const buscarPadre = async () => {
-        if (nombre.trim() === "") {
-            alert("Por favor ingrese un nombre para buscar.");
+    //  Función para buscar en la API
+    const buscarPadre = async (nombreBusqueda) => {
+        if (!nombreBusqueda.trim()) {
+            setResultados([]);
+            setMensaje("");
             return;
         }
 
         setCargando(true);
         setMensaje("");
-        setResultados([]);
-
         try {
-            const nombreBusqueda = nombre.trim();
-            const response = await axios.get("http://localhost:5099/api/usuarios/buscarPadre", { params: { nombre: nombreBusqueda } });
-            console.log("Respuesta de la API:", response.data);
+            const response = await axios.get("http://localhost:5099/api/usuarios/buscarPadre", {
+                params: { nombre: nombreBusqueda.trim() }
+            });
 
             setResultados(response.data);
         } catch (error) {
             console.error("Error al buscar:", error);
             setMensaje(error.response?.data?.mensaje || "Error al buscar.");
+            setResultados([]);
         } finally {
             setCargando(false);
         }
     };
 
-    // Función para abrir WhatsApp con el número
+    //  Hook para hacer la búsqueda en tiempo real con debounce
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            buscarPadre(nombre);
+        }, 500); // Espera 500ms antes de hacer la consulta a la API
+
+        return () => clearTimeout(timer); // Limpia el temporizador si el usuario sigue escribiendo
+    }, [nombre]);
+
+    //  Función para abrir WhatsApp con el número
     const enviarWhatsApp = (telefono) => {
         window.open(`https://wa.me/${telefono}?text=`, "_blank");
     };
-
-
-    // Función para simular el envío de SMS (se puede conectar a una API real)
 
     return (
         <div className="notificaciones-container">
@@ -53,11 +60,10 @@ const Notificaciones = () => {
                         value={nombre}
                         onChange={(e) => setNombre(e.target.value)}
                     />
-                    <button className="notificaciones-search-button" onClick={buscarPadre}>🔍</button>
+                    <button className="notificaciones-search-button" onClick={() => buscarPadre(nombre)}>🔍</button>
                 </div>
 
                 {cargando && <p>Cargando...</p>}
-
                 {mensaje && <p>{mensaje}</p>}
 
                 {resultados.length > 0 && (
@@ -68,7 +74,6 @@ const Notificaciones = () => {
                                     <strong>{padre.nombre}{padre.apellidos ? ` ${padre.apellidos}` : ""}</strong>
                                 </span>
                                 <div className="notificaciones-icons">
-                                   
                                     <img
                                         src={WhatsappIcon}
                                         alt="WhatsApp"

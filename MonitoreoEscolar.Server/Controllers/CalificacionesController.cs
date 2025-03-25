@@ -113,10 +113,10 @@ namespace MonitoreoEscolar.Server.Controllers
 
                 await _context.SaveChangesAsync();
 
-                // ✅ Ahora devolvemos las calificaciones guardadas
+                //  Ahora devolvemos las calificaciones guardadas
                 return Ok(new
                 {
-                    mensaje = "✅ Calificaciones cargadas correctamente.",
+                    mensaje = "Calificaciones cargadas correctamente.",
                     cantidad = calificacionesGuardadas.Count,
                     calificaciones = calificacionesGuardadas
                 });
@@ -143,7 +143,7 @@ namespace MonitoreoEscolar.Server.Controllers
                 })
                 .ToListAsync();
 
-            // 📌 LOG: Verifica en la consola si la API está devolviendo datos
+            // Verifica en la consola si la API está devolviendo datos
             Console.WriteLine("📊 Datos obtenidos desde la BD:");
             foreach (var cal in calificaciones)
             {

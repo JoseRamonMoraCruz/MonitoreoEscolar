@@ -14,7 +14,7 @@ const ListaAlumnos = () => {
     const [nuevoGrupo, setNuevoGrupo] = useState({ grado: "", letra: "" });
     const [expandedGroup, setExpandedGroup] = useState(null);
     const [alumnosGrupo, setAlumnosGrupo] = useState([]);
-    const [modalEliminarAlumno, setModalEliminarAlumno] = useState(false);
+    const [modalEliminarAlumno, setModalEliminarAlumno] = useState(false); 
     const [modalEditarAlumno, setModalEditarAlumno] = useState(false);
     const [alumnoSeleccionado, setAlumnoSeleccionado] = useState(null);
 
@@ -547,10 +547,10 @@ const ListaAlumnos = () => {
 
                         <div className="modal-buttons">
                             <button className="confirm-button" onClick={() => actualizarAlumno(alumnoSeleccionado)}>
-                                <img src={aceptarIcon} alt="Aceptar" /> Guardar
+                                <img src={aceptarIcon} alt="Aceptar" />{ /*Guardar*/}
                             </button>
                             <button className="cancel-button" onClick={cerrarModalEditarAlumno}>
-                                <img src={rechazarIcon} alt="Cancelar" /> Cancelar
+                                <img src={rechazarIcon} alt="Cancelar" />{ /*Cancelar*/}
                             </button>
                         </div>
                     </div>

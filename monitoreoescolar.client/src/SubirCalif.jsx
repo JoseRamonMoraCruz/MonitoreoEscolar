@@ -18,7 +18,7 @@ const SubirCalif = () => {
                 const response = await axios.get("http://localhost:5099/api/calificaciones"); // ⬅️ Endpoint GET para traer datos
                 setDatos(response.data); //  Guardamos los datos en el estado
             } catch (error) {
-                console.error("⚠️ Error cargando calificaciones:", error);
+                console.error(" Error cargando calificaciones:", error);
             }
         };
 
@@ -35,7 +35,7 @@ const SubirCalif = () => {
 
     const handleUpload = async () => {
         if (!archivo) {
-            alert("❌ Selecciona un archivo Excel primero.");
+            alert(" Selecciona un archivo Excel primero.");
             return;
         }
 
@@ -53,13 +53,20 @@ const SubirCalif = () => {
 
             console.log("📥 Respuesta del servidor:", response.data);
 
-            // ✅ Muestra el mensaje de éxito
+            // ✅ Mostrar solo las calificaciones recién subidas
+            if (response.data && response.data.calificaciones) {
+                setDatos(response.data.calificaciones);
+            } else {
+                setDatos([]); // fallback por si no vino nada
+            }
+
             alert(`✅ ${response.data.mensaje}`);
 
-            // 🚀 Espera un pequeño tiempo antes de actualizar la tabla
-            setTimeout(() => {
-                fetchCalificaciones();
-            }, 500); // 500ms de espera para asegurarse de que la BD ha guardado los datos
+            // 🧼 Limpia el archivo después de subir
+            setArchivo(null);
+            setNombreArchivo("");
+            fileInputRef.current.value = null;
+
         } catch (error) {
             console.error("❌ Error al subir el archivo:", error.response ? error.response.data : error.message);
             alert(`❌ Error al subir el archivo: ${error.message}`);
@@ -69,7 +76,8 @@ const SubirCalif = () => {
     };
 
 
-    // Nueva función para obtener calificaciones desde la API
+
+   /* // Nueva función para obtener calificaciones desde la API
     const fetchCalificaciones = async () => {
         try {
             const response = await axios.get("http://localhost:5099/api/calificaciones/obtenerCalificaciones");
@@ -78,7 +86,7 @@ const SubirCalif = () => {
         } catch (error) {
             console.error("⚠ Error al obtener calificaciones:", error);
         }
-    };
+    };*/
 
     // Función para limpiar la tabla sin afectar la base de datos
     const handleReset = () => {

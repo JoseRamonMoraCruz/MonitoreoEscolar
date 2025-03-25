@@ -118,8 +118,16 @@ namespace MonitoreoEscolar.Server.Controllers
                 {
                     mensaje = "Calificaciones cargadas correctamente.",
                     cantidad = calificacionesGuardadas.Count,
-                    calificaciones = calificacionesGuardadas
+                    calificaciones = calificacionesGuardadas.Select(c => new
+                    {
+                        nombre = c.Nombre,
+                        materia = c.Materia,
+                        calificacionValor = c.CalificacionValor,
+                        grupo = $"{c.Grupo.Grado}{c.Grupo.Letra}",
+                        parcialUnidad = c.ParcialUnidad
+                    }).ToList()
                 });
+
             }
             catch (Exception ex)
             {

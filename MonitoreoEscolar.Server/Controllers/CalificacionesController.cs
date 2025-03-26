@@ -60,15 +60,9 @@ namespace MonitoreoEscolar.Server.Controllers
                     string grupoStr = worksheet.Cells[row, 4].Text.Trim();
                     _logger.LogInformation($"🔍 Fila {row} - Grupo en Excel: '{grupoStr}'");
 
-                    if (string.IsNullOrEmpty(grupoStr))
+                    if (string.IsNullOrEmpty(grupoStr) || grupoStr.Length < 2)
                     {
-                        _logger.LogWarning($"⚠️ Grupo inválido en fila {row}: '{grupoStr}'");
-                        continue;
-                    }
-
-                    if (grupoStr.Length < 2)
-                    {
-                        _logger.LogWarning($"⚠️ Grupo en fila {row} tiene un formato incorrecto: '{grupoStr}'");
+                        _logger.LogWarning($"⚠️ Grupo inválido o con formato incorrecto en fila {row}: '{grupoStr}'");
                         continue;
                     }
 
@@ -89,7 +83,17 @@ namespace MonitoreoEscolar.Server.Controllers
                         continue;
                     }
 
-                    _logger.LogInformation($"✅ Grupo '{grupoStr}' encontrado con ID: {grupoEncontrado.Id}");
+                    string nombreAlumno = worksheet.Cells[row, 1].Text.Trim();
+                    string nombreNormalizado = Normalizar(nombreAlumno);
+
+                    var alumno = await _context.Alumnos
+                        .FirstOrDefaultAsync(a => a.NombreCompletoNormalizado == nombreNormalizado);
+
+                    if (alumno == null)
+                    {
+                        _logger.LogWarning($"⚠️ Alumno '{nombreAlumno}' no encontrado en fila {row}.");
+                        continue;
+                    }
 
                     string calificacionTexto = worksheet.Cells[row, 3].Text.Trim();
                     if (!int.TryParse(calificacionTexto, out int calificacionValor))
@@ -100,11 +104,12 @@ namespace MonitoreoEscolar.Server.Controllers
 
                     var calificacion = new Calificacion
                     {
-                        Nombre = worksheet.Cells[row, 1].Text,
+                        Nombre = nombreAlumno,
                         Materia = worksheet.Cells[row, 2].Text,
                         CalificacionValor = calificacionValor,
                         GrupoId = grupoEncontrado.Id,
-                        ParcialUnidad = worksheet.Cells[row, 5].Text
+                        ParcialUnidad = worksheet.Cells[row, 5].Text,
+                        AlumnoId = alumno.Id
                     };
 
                     _context.Calificaciones.Add(calificacion);
@@ -113,7 +118,6 @@ namespace MonitoreoEscolar.Server.Controllers
 
                 await _context.SaveChangesAsync();
 
-                //  Ahora devolvemos las calificaciones guardadas
                 return Ok(new
                 {
                     mensaje = "Calificaciones cargadas correctamente.",
@@ -127,7 +131,6 @@ namespace MonitoreoEscolar.Server.Controllers
                         parcialUnidad = c.ParcialUnidad
                     }).ToList()
                 });
-
             }
             catch (Exception ex)
             {
@@ -135,6 +138,7 @@ namespace MonitoreoEscolar.Server.Controllers
                 return StatusCode(500, $"Error interno del servidor: {ex.Message} {ex.InnerException?.Message}");
             }
         }
+
         //PARA OBTENER LAS CALIFICACIONES DE LA BASE DE DATOS
         [HttpGet("obtenerCalificaciones")]
         public async Task<IActionResult> ObtenerCalificaciones()
@@ -159,6 +163,48 @@ namespace MonitoreoEscolar.Server.Controllers
             }
 
             return Ok(calificaciones);
+        }
+
+        //PARA ASIGNAR EL ID DEL ALUMNO A LAS CALIFICACIONES SOLO ES NECESARIO EJECUTAR ESTE METODO UNA VEZ
+        [HttpPost("asignar-alumno-id")]
+        public async Task<IActionResult> AsignarAlumnoIdACalificaciones()
+        {
+            var calificaciones = _context.Calificaciones.Where(c => c.AlumnoId == null).ToList();
+
+            int actualizadas = 0;
+
+            foreach (var cal in calificaciones)
+            {
+                var alumno = _context.Alumnos.FirstOrDefault(a => a.NombreCompleto == cal.Nombre);
+
+                if (alumno != null)
+                {
+                    cal.AlumnoId = alumno.Id;
+                    actualizadas++;
+                }
+            }
+
+            await _context.SaveChangesAsync();
+
+            return Ok($"✅ Se actualizaron {actualizadas} calificaciones con su AlumnoId.");
+        }
+        //PARA NORMALIZAR EL NOMBRE DEL ALUMNO
+        private string Normalizar(string input)
+        {
+            if (string.IsNullOrWhiteSpace(input)) return "";
+
+            var normalized = input.Normalize(System.Text.NormalizationForm.FormD);
+            var sb = new System.Text.StringBuilder();
+
+            foreach (var c in normalized)
+            {
+                var unicodeCategory = System.Globalization.CharUnicodeInfo.GetUnicodeCategory(c);
+                if (unicodeCategory != System.Globalization.UnicodeCategory.NonSpacingMark)
+                {
+                    sb.Append(c);
+                }
+            }
+            return sb.ToString().ToLower().Replace("  ", " ").Trim();
         }
     }
 }

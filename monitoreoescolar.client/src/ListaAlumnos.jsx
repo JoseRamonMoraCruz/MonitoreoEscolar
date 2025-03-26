@@ -37,7 +37,7 @@ const ListaAlumnos = () => {
         const fetchPadres = async () => {
             try {
                 // Asegúrate de que este endpoint retorne los padres (tipo "padre")
-                const response = await axios.get("/api/usuarios/padres");
+                const response = await axios.get("http://localhost:5099/api/usuarios/padres");
                 setPadres(response.data);
             } catch (error) {
                 console.error("Error al obtener la lista de padres:", error);
@@ -54,7 +54,7 @@ const ListaAlumnos = () => {
                     const groupString = `${grupo.grado}${grupo.letra}`;
                     try {
                         // Asegúrate de que este endpoint incluya TutorUsuario (usando Include en el backend)
-                        const response = await axios.get(`/api/alumnos/grupo/${groupString}`);
+                        const response = await axios.get(`http://localhost:5099/api/alumnos/grupo/${groupString}`);
                         newAlumnosPorGrupo[grupo.id] = response.data;
                     } catch (error) {
                         console.error("Error al obtener alumnos para el grupo", grupo, error);

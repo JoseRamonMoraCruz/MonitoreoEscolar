@@ -25,7 +25,7 @@ const AgregarAlumno = () => {
         const fetchPadres = async () => {
             try {
                 // Ajusta la URL según tu API real para obtener solo los padres
-                const response = await axios.get("/api/usuarios/padres");
+                const response = await axios.get("http://localhost:5099/api/usuarios/padres");
                 setPadres(response.data);
             } catch (error) {
                 console.error("Error al obtener la lista de padres:", error);

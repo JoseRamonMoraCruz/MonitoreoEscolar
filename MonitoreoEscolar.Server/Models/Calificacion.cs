@@ -26,6 +26,13 @@ namespace MonitoreoEscolar.Server.Models
 
         [Required]
         public string ParcialUnidad { get; set; }
+
+        // Relación con Alumno
+        [ForeignKey("Alumno")]
+        public int? AlumnoId { get; set; }
+
+        public Alumno Alumno { get; set; }
+
     }
 }
 

@@ -15,7 +15,7 @@ const SubirCalif = () => {
     useEffect(() => {
         const cargarCalificaciones = async () => {
             try {
-                const response = await axios.get("http://localhost:5099/api/calificaciones"); // ⬅️ Endpoint GET para traer datos
+                const response = await axios.get("/api/calificaciones"); // ⬅️ Endpoint GET para traer datos
                 setDatos(response.data); //  Guardamos los datos en el estado
             } catch (error) {
                 console.error(" Error cargando calificaciones:", error);
@@ -47,7 +47,7 @@ const SubirCalif = () => {
         try {
             console.log("📤 Enviando archivo:", archivo.name);
 
-            const response = await axios.post("http://localhost:5099/api/calificaciones/subirCalificaciones", formData, {
+            const response = await axios.post("/api/calificaciones/subirCalificaciones", formData, {
                 headers: { "Content-Type": "multipart/form-data" }
             });
 
@@ -86,7 +86,7 @@ const SubirCalif = () => {
    /* // Nueva función para obtener calificaciones desde la API
     const fetchCalificaciones = async () => {
         try {
-            const response = await axios.get("http://localhost:5099/api/calificaciones/obtenerCalificaciones");
+            const response = await axios.get("/api/calificaciones/obtenerCalificaciones");
             setDatos(response.data); // ✅ Actualiza la tabla con los datos de la BD
             console.log("📊 Calificaciones obtenidas:", response.data);
         } catch (error) {

@@ -1,5 +1,6 @@
-﻿import { useState, useEffect } from "react";
+﻿import { useState } from "react";
 import axios from "axios";
+import Select from "react-select"; // Importamos react-select
 import "./AgregarAlumno.css";
 import huellaIcon from "./assets/huella-dactilar.png";
 import agregarIcon from "./assets/agregar-alumno.png";
@@ -14,27 +15,15 @@ const AgregarAlumno = () => {
         letra: "",   // Para controlar la letra (A, B, C, …)
         tutor: "",
         domicilio: "",
-        tutorId: null // Nuevo campo para almacenar el Id_Usuario del padre
+        tutorId: null // Campo para almacenar el Id_Usuario del padre
     });
 
-    // Estado para almacenar la lista de padres disponibles en el sistema
-    const [padres, setPadres] = useState([]);
+    // Estado para las opciones del autocompletado de padres (se cargarán al escribir)
+    const [tutorOptions, setTutorOptions] = useState([]);
+    // Estado para la opción seleccionada en el autocompletado
+    const [selectedTutor, setSelectedTutor] = useState(null);
 
-    // Al montar el componente, obtener la lista de padres (tipo "Padre")
-    useEffect(() => {
-        const fetchPadres = async () => {
-            try {
-                // Ajusta la URL según tu API real para obtener solo los padres
-                const response = await axios.get("http://localhost:5099/api/usuarios/padres");
-                setPadres(response.data);
-            } catch (error) {
-                console.error("Error al obtener la lista de padres:", error);
-            }
-        };
-        fetchPadres();
-    }, []);
-
-    // Maneja cambios en nombre, apellidos, tutor, domicilio, etc.
+    // Maneja cambios en los campos de texto (nombre, apellidos, domicilio, etc.)
     const handleChange = (e) => {
         setAlumno({
             ...alumno,
@@ -48,7 +37,6 @@ const AgregarAlumno = () => {
         setAlumno({
             ...alumno,
             grado: newGrado,
-            // Genera el valor de 'grupo' concatenando grado y letra si ambos existen
             grupo: newGrado && alumno.letra ? `${newGrado}${alumno.letra}` : ""
         });
     };
@@ -59,27 +47,52 @@ const AgregarAlumno = () => {
         setAlumno({
             ...alumno,
             letra: newLetra,
-            // Genera el valor de 'grupo' concatenando grado y letra si ambos existen
             grupo: alumno.grado && newLetra ? `${alumno.grado}${newLetra}` : ""
         });
     };
 
-    // Maneja la selección del padre en el <select>
-    const handleChangePadre = (e) => {
-        // Guardamos el Id_Usuario del padre seleccionado
-        const selectedTutorId = e.target.value ? parseInt(e.target.value) : null;
-        setAlumno({ ...alumno, tutorId: selectedTutorId });
+    // Función para buscar padres en base al término ingresado (autocompletado)
+    const fetchTutorOptions = async (inputValue) => {
+        if (!inputValue || inputValue.length < 2) {
+            setTutorOptions([]);
+            return;
+        }
+        try {
+            // Usamos el endpoint de autocompletar padres
+            const response = await axios.get(`/api/usuarios/autocompletePadres?termino=${inputValue}`);
+            const optionsData = response.data.map((padre) => ({
+                value: padre.id_Usuario,
+                label: `${padre.nombre} ${padre.apellidos} - ${padre.correo}`
+            }));
+            setTutorOptions(optionsData);
+        } catch (error) {
+            console.error("Error al buscar padres:", error);
+        }
     };
 
-    // Función para enviar los datos al backend
+    // Maneja el cambio de texto en el autocompletado
+    const handleTutorInputChange = (inputValue, { action }) => {
+        if (action === "input-change") {
+            fetchTutorOptions(inputValue);
+            return inputValue; // Retorna el valor escrito para que se muestre correctamente
+        }
+        return inputValue;
+    };
+
+    // Maneja la selección del tutor en el autocompletado
+    const handleTutorChangeSelect = (selectedOption) => {
+        setSelectedTutor(selectedOption);
+        setAlumno({ ...alumno, tutorId: selectedOption ? selectedOption.value : null });
+    };
+
+    // Función para enviar los datos del alumno al backend
     const handleSubmit = async (e) => {
-        e.preventDefault(); // Evita el comportamiento por defecto del formulario
+        e.preventDefault();
 
         // Verificar que el grupo seleccionado exista
         try {
-            const gruposResponse = await axios.get("http://localhost:5099/api/grupos");
+            const gruposResponse = await axios.get("/api/grupos");
             const gruposExistentes = gruposResponse.data;
-            // Buscamos un grupo cuyo grado y letra concuerde con el alumno
             const grupoEncontrado = gruposExistentes.find(
                 (g) =>
                     g.grado.toString() === alumno.grado &&
@@ -96,11 +109,10 @@ const AgregarAlumno = () => {
             return;
         }
 
-        // Si el grupo existe, enviamos los datos del alumno al backend
         try {
-            // Enviamos todos los datos, incluyendo tutorId
-            const response = await axios.post("http://localhost:5099/api/alumnos/registro", alumno);
-            alert(response.data.mensaje); // Mostrar mensaje de éxito
+            // Enviamos los datos del alumno, incluyendo tutorId
+            const response = await axios.post("/api/alumnos/registro", alumno);
+            alert(response.data.mensaje);
 
             // Limpiar formulario
             setAlumno({
@@ -113,6 +125,8 @@ const AgregarAlumno = () => {
                 domicilio: "",
                 tutorId: null
             });
+            setSelectedTutor(null);
+            setTutorOptions([]);
         } catch (error) {
             console.error("Error al registrar:", error);
             alert("❌ No se pudo registrar al alumno.");
@@ -123,7 +137,6 @@ const AgregarAlumno = () => {
         <div className="agregar-alumno-container">
             <div className="agregar-alumno-content">
                 <h2 className="agregar-alumno-title">📑 Registra un Alumno</h2>
-
                 <form onSubmit={handleSubmit}>
                     {/* Nombre */}
                     <div className="agregar-alumno-group">
@@ -137,7 +150,6 @@ const AgregarAlumno = () => {
                             required
                         />
                     </div>
-
                     {/* Apellidos */}
                     <div className="agregar-alumno-group">
                         <label>👨🏻‍🎓 Apellidos:</label>
@@ -150,8 +162,7 @@ const AgregarAlumno = () => {
                             required
                         />
                     </div>
-
-                    {/* Grado y Letra (reemplaza el input de grupo) */}
+                    {/* Grado y Letra */}
                     <div className="agregar-alumno-group-selects">
                         <div>
                             <label>Grado:</label>
@@ -167,7 +178,6 @@ const AgregarAlumno = () => {
                                 ))}
                             </select>
                         </div>
-
                         <div>
                             <label>Grupo:</label>
                             <select
@@ -183,23 +193,19 @@ const AgregarAlumno = () => {
                             </select>
                         </div>
                     </div>
-                    {/* NUEVO: Seleccionar padre/tutor */}
+                    {/* Autocompletado para seleccionar padre/tutor */}
                     <div className="agregar-alumno-group">
                         <label>Seleccionar padre del alumno:</label>
-                        <select
-                            name="tutorId"
-                            value={alumno.tutorId || ""}
-                            onChange={handleChangePadre}
-                        >
-                            <option value="">-- Ninguno --</option>
-                            {padres.map((padre) => (
-                                <option key={padre.id_Usuario} value={padre.id_Usuario}>
-                                    {padre.nombre} {padre.apellidos} - {padre.correo}
-                                </option>
-                            ))}
-                        </select>
+                        <Select
+                            classNamePrefix="my-select"
+                            value={selectedTutor}
+                            onChange={handleTutorChangeSelect}
+                            onInputChange={handleTutorInputChange}
+                            options={tutorOptions}
+                            placeholder="Escriba el nombre del tutor..."
+                            noOptionsMessage={() => "No se encontraron coincidencias"}
+                        />
                     </div>
-
                     {/* Domicilio */}
                     <div className="agregar-alumno-group">
                         <label>🏠 Domicilio:</label>
@@ -212,7 +218,6 @@ const AgregarAlumno = () => {
                             required
                         />
                     </div>
-
                     {/* Botones */}
                     <div className="button-container">
                         <button type="submit" className="agregar-alumno-btn">

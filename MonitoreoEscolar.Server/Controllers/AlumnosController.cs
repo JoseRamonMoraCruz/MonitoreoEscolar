@@ -57,6 +57,24 @@ namespace MonitoreoEscolar.Server.Controllers
             }
         }
 
+        [HttpGet("buscar")]
+        public async Task<IActionResult> BuscarAlumnos([FromQuery] string termino)
+        {
+            if (string.IsNullOrWhiteSpace(termino))
+                return BadRequest(new { mensaje = "El término de búsqueda no puede estar vacío." });
+
+            // Convertimos el término a minúsculas
+            var lowerTerm = termino.ToLower();
+
+            var alumnos = await _context.Alumnos
+                .Where(a => EF.Functions.Collate(a.NombreCompleto.ToLower(), "Latin1_General_CI_AI")
+                                .Contains(lowerTerm))
+                .Select(a => new { a.Id, a.NombreCompleto })
+                .ToListAsync();
+
+            return Ok(alumnos);
+        }
+
         //  OBTENER ALUMNOS DE UN GRUPO ESPECÍFICO (Sin cambios)
         [HttpGet("grupo/{grupoStr}")]
         public async Task<IActionResult> ObtenerAlumnosPorGrupo(string grupoStr)

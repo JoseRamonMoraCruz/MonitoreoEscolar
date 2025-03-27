@@ -88,3 +88,64 @@
     .generar-reportes-btn:hover {
         background-color: #6a00cc;
     }
+
+/* ==================== REACT-SELECT (my-select) ==================== */
+
+/* Contenedor principal del input de react-select */
+.my-select__control {
+    background-color: #D9D9D9 !important;
+    border-radius: 8px !important;
+    min-height: 45px !important;
+    border: none !important;
+    box-shadow: none !important;
+    font-size: 16px;
+}
+
+.my-select__control--is-focused {
+    outline: none !important;
+    border: 2px solid #8800ff !important; /* Borde morado al enfocar */
+}
+
+.my-select__value-container {
+    padding: 0 10px;
+}
+
+/* Placeholder */
+.my-select__placeholder {
+    color: #666 !important;
+}
+
+/* Valor seleccionado (texto dentro del input) */
+.my-select__single-value {
+    color: #333 !important; /* Texto negro */
+    font-size: 16px;
+}
+
+/* Menu desplegable */
+.my-select__menu {
+    background-color: #fff !important;
+    border-radius: 8px !important;
+    margin-top: 2px !important;
+    z-index: 9999 !important;
+}
+
+/* Cada opción en la lista */
+.my-select__option {
+    color: #333 !important; /* Texto negro */
+    font-size: 16px !important;
+    background-color: #fff !important;
+    padding: 10px !important;
+    cursor: pointer;
+}
+
+/* Hover/focus en las opciones */
+.my-select__option--is-focused {
+    background-color: #f0f0f0 !important;
+    color: #333 !important;
+}
+
+/* Opción seleccionada */
+.my-select__option--is-selected {
+    background-color: #ddd !important;
+    color: #333 !important;
+}

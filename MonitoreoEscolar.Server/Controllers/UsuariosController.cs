@@ -127,6 +127,35 @@ namespace MonitoreoEscolar.Server.Controllers
 
             return Ok(padres);
         }
+        //SE BUSCA A PAPA PARA REGISTRAR A ALUMNO
+
+        [HttpGet("autocompletePadres")]
+        public async Task<IActionResult> AutocompletePadres([FromQuery] string termino)
+        {
+            if (string.IsNullOrWhiteSpace(termino))
+            {
+                return Ok(new List<object>());
+            }
+
+            // Convertir el término a minúsculas para la comparación
+            var lowerTerm = termino.ToLower();
+
+            var padres = await _context.Usuarios
+                .Where(u => u.Tipo_Usuario.ToLower() == "padre" &&
+                            EF.Functions.Collate((u.Nombre + " " + u.Apellidos).ToLower(), "Latin1_General_CI_AI")
+                                .Contains(lowerTerm))
+                .Select(u => new
+                {
+                    id_Usuario = u.Id_Usuario,
+                    nombre = u.Nombre,
+                    apellidos = u.Apellidos,
+                    correo = u.Correo,
+                    nombreCompleto = u.Nombre + " " + u.Apellidos
+                })
+                .ToListAsync();
+
+            return Ok(padres);
+        }
 
         // BUSCAR PADRE POR NOMBRE O APELLIDOS (sin importar acentos ni mayúsculas/minúsculas)
         [HttpGet("buscarPadre")]

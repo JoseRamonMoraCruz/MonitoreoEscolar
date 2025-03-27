@@ -18,7 +18,7 @@ namespace MonitoreoEscolar.Server.Controllers
             _context = context;
             _logger = logger;
         }
-
+        //PARA SUBIR LAS CALIFICACIONES A LA BASE DE DATOS CON UN ARCHIVO EXCEL
         [HttpPost("subirCalificaciones")]
         public async Task<IActionResult> SubirCalificaciones(IFormFile file)
         {
@@ -102,13 +102,30 @@ namespace MonitoreoEscolar.Server.Controllers
                         continue;
                     }
 
+                    string materia = worksheet.Cells[row, 2].Text.Trim();
+                    string parcialUnidad = worksheet.Cells[row, 5].Text.Trim();
+
+                    // Validación contra duplicados
+                    bool yaExiste = await _context.Calificaciones.AnyAsync(c =>
+                        c.AlumnoId == alumno.Id &&
+                        c.Materia == materia &&
+                        c.GrupoId == grupoEncontrado.Id &&
+                        c.ParcialUnidad == parcialUnidad
+                    );
+
+                    if (yaExiste)
+                    {
+                        _logger.LogWarning($"⚠️ Dato duplicado. Ya existe calificación para '{nombreAlumno}', materia '{materia}', grupo '{grupoStr}', unidad '{parcialUnidad}' en fila {row}.");
+                        continue;
+                    }
+
                     var calificacion = new Calificacion
                     {
                         Nombre = nombreAlumno,
-                        Materia = worksheet.Cells[row, 2].Text,
+                        Materia = materia,
                         CalificacionValor = calificacionValor,
                         GrupoId = grupoEncontrado.Id,
-                        ParcialUnidad = worksheet.Cells[row, 5].Text,
+                        ParcialUnidad = parcialUnidad,
                         AlumnoId = alumno.Id
                     };
 
@@ -118,9 +135,15 @@ namespace MonitoreoEscolar.Server.Controllers
 
                 await _context.SaveChangesAsync();
 
+                //  Si no se guardó ninguna calificación, muestra un mensaje especial
+                if (calificacionesGuardadas.Count == 0)
+                {
+                    return BadRequest("❌ No se subieron las calificaciones porque hubo datos duplicados. Revisa el archivo Excel por favor antes de subirlo.");
+                }
+
                 return Ok(new
                 {
-                    mensaje = "Calificaciones cargadas correctamente.",
+                    mensaje = " Calificaciones cargadas correctamente.",
                     cantidad = calificacionesGuardadas.Count,
                     calificaciones = calificacionesGuardadas.Select(c => new
                     {
@@ -131,6 +154,7 @@ namespace MonitoreoEscolar.Server.Controllers
                         parcialUnidad = c.ParcialUnidad
                     }).ToList()
                 });
+
             }
             catch (Exception ex)
             {
@@ -138,6 +162,7 @@ namespace MonitoreoEscolar.Server.Controllers
                 return StatusCode(500, $"Error interno del servidor: {ex.Message} {ex.InnerException?.Message}");
             }
         }
+
 
         //PARA OBTENER LAS CALIFICACIONES DE LA BASE DE DATOS
         [HttpGet("obtenerCalificaciones")]

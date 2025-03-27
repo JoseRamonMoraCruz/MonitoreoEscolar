@@ -1,93 +1,98 @@
-import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+﻿import { useState, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import axios from "axios";
 import "./Padre.css";
 
 const Padre = () => {
-    const [calificaciones, setCalificaciones] = useState([]);
-    const [asistencias, setAsistencias] = useState([]);
-    const [malaConducta, setMalaConducta] = useState("");
+    const [hijosConCalificaciones, setHijosConCalificaciones] = useState([]);
+    const [expandedAlumnoId, setExpandedAlumnoId] = useState(null);
+    const navigate = useNavigate();
 
     useEffect(() => {
-        setCalificaciones([
-            { materia: "Matematicas", calificacion: 10, grupo: "1 A", parcial: "Primera" },
-            { materia: "Ciencias Naturales", calificacion: 9, grupo: "1 A", parcial: "Primera" },
-            { materia: "Fisica", calificacion: 9, grupo: "1 A", parcial: "Primera" }
-        ]);
+        const idPadre = localStorage.getItem("idPadre");
 
-        setAsistencias([
-            { fecha: "26/03/2025", nombre: "Juan Manuel Marquez Marquez", asistencia: "Presente", grupo: "A" }
-        ]);
+        if (!idPadre) {
+            alert("🔒 Debes iniciar sesión.");
+            navigate("/");
+            return;
+        }
 
-        setMalaConducta("Agresion a docente escolar");
-    }, []);
+        const obtenerCalificaciones = async () => {
+            try {
+                const response = await axios.get(`http://localhost:5099/api/padres/obtener-calificaciones-hijos/${idPadre}`);
+                setHijosConCalificaciones(response.data);
+            } catch (error) {
+                console.error("❌ Error al obtener calificaciones:", error);
+            }
+        };
+
+        obtenerCalificaciones();
+    }, [navigate]);
+
+    const toggleExpand = (alumnoId) => {
+        if (expandedAlumnoId === alumnoId) {
+            setExpandedAlumnoId(null); // cerrar
+        } else {
+            setExpandedAlumnoId(alumnoId); // abrir
+        }
+    };
 
     return (
         <>
-            {/* L�nea negra tipo men� */}
             <nav className="menu-bar">
                 <ul className="menu-list">
-                    <li><Link to="/" className="logout-link">Cerrar Sesion</Link></li>
+                    <li><Link to="/" className="logout-link">Cerrar Sesión</Link></li>
                 </ul>
             </nav>
 
             <div className="padre-container">
                 <h1 className="titulo-seccion">Reportes Escolares</h1>
 
-                {/* Calificaciones */}
-                <div className="seccion">
-                    <h2>Calificaciones</h2>
-                    <table className="styled-table">
-                        <thead>
-                            <tr>
-                                <th>Materia</th>
-                                <th>Calificacion</th>
-                                <th>Grupo</th>
-                                <th>Parcial</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {calificaciones.map((item, index) => (
-                                <tr key={index}>
-                                    <td>{item.materia}</td>
-                                    <td>{item.calificacion}</td>
-                                    <td>{item.grupo}</td>
-                                    <td>{item.parcial}</td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                </div>
+                {hijosConCalificaciones.map((hijo) => (
+                    <div key={hijo.alumnoId} className="seccion">
+                        <h2
+                            style={{ cursor: "pointer", color: "#1D4ED8" }}
+                            onClick={() => toggleExpand(hijo.alumnoId)}
+                        >
+                            Información del alumno: {hijo.nombreCompleto} {expandedAlumnoId === hijo.alumnoId ? "▲" : "▼"}
+                        </h2>
 
-                {/* Reportes de Asistencia */}
-                <div className="seccion">
-                    <h2>Reportes de Asistencia</h2>
-                    <table className="styled-table">
-                        <thead>
-                            <tr>
-                                <th>Fecha</th>
-                                <th>Nombre</th>
-                                <th>Asistencia</th>
-                                <th>Grupo</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {asistencias.map((item, index) => (
-                                <tr key={index}>
-                                    <td>{item.fecha}</td>
-                                    <td>{item.nombre}</td>
-                                    <td>{item.asistencia}</td>
-                                    <td>{item.grupo}</td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                </div>
+                        {expandedAlumnoId === hijo.alumnoId && (
+                            <>
+                                {/* Calificaciones */}
+                                <h3 style={{ marginTop: "10px" }}>📘 Calificaciones</h3>
+                                <table className="styled-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Materia</th>
+                                            <th>Calificación</th>
+                                            <th>Grupo</th>
+                                            <th>Parcial</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {hijo.calificaciones.map((calif, idx) => (
+                                            <tr key={idx}>
+                                                <td>{calif.materia}</td>
+                                                <td>{calif.calificacion}</td>
+                                                <td>{calif.grupo}</td>
+                                                <td>{calif.parcial}</td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
 
-                {/* Reporte de Mala Conducta */}
-                <div className="seccion">
-                    <h2>Reporte de Mala Conducta</h2>
-                    <p><strong>Situacion:</strong> {malaConducta}</p>
-                </div>
+                                {/* Reportes de Asistencia */}
+                                <h3 style={{ marginTop: "20px" }}>📅 Reportes de Asistencia</h3>
+                                <p>🚧 Aún no disponible.</p>
+
+                                {/* Mala conducta */}
+                                <h3 style={{ marginTop: "20px" }}>⚠️ Reporte de Mala Conducta</h3>
+                                <p><strong>Situación:</strong> Sin reportes registrados.</p>
+                            </>
+                        )}
+                    </div>
+                ))}
             </div>
         </>
     );

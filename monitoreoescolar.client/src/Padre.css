@@ -126,3 +126,23 @@
     color: #6B7280;
     margin-top: 10px;
 }
+
+/* Hacer el título de alumno expandible más interactivo */
+.seccion h2 {
+    cursor: pointer;
+    transition: color 0.2s ease;
+}
+
+    .seccion h2:hover {
+        color: #2563eb; /* azul un poco más fuerte */
+    }
+
+/* Estilo opcional para subtítulos internos (Calificaciones, Asistencia, etc.) */
+.seccion h3 {
+    font-size: 17px;
+    font-weight: bold;
+    color: #1f2937;
+    margin-top: 15px;
+    margin-bottom: 10px;
+}
+

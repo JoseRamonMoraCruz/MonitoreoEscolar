@@ -26,6 +26,7 @@ const Login = () => {
             if (usuario.tipo_Usuario === "personal") {
                 navigate("/menu"); // Redirige al menú si es Personal Escolar
             } else if (usuario.tipo_Usuario === "padre") {
+                localStorage.setItem("idPadre", usuario.id_Usuario); //  AQUI SE GUARDA EL ID DEL PADRE PARA SU INICIO DE SESION
                 navigate("/padre"); // Para padres 
             }
         } catch (error) {

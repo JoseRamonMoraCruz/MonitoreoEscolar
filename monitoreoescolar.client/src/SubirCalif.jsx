@@ -69,7 +69,13 @@ const SubirCalif = () => {
 
         } catch (error) {
             console.error("❌ Error al subir el archivo:", error.response ? error.response.data : error.message);
-            alert(`❌ Error al subir el archivo: ${error.message}`);
+
+            const mensajeError =
+                error.response?.data && typeof error.response.data === "string"
+                    ? error.response.data
+                    : "❌ Error al subir el archivo. Intenta nuevamente.";
+
+            alert(mensajeError);
         } finally {
             setCargando(false);
         }

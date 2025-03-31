@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using MonitoreoEscolar.Server.Data;
 using MonitoreoEscolar.Server.Models;
-using OfficeOpenXml; // EPPlus
+using OfficeOpenXml; // EPPlus para exportar a Excel
 using System.Globalization;
 using System.Text;
 
@@ -105,11 +105,11 @@ namespace MonitoreoEscolar.Server.Controllers
             _context.Alumnos.Remove(alumno);
             await _context.SaveChangesAsync();
 
-            return Ok(new { mensaje = "✅ Alumno eliminado correctamente." });
+            return Ok(new { mensaje = "Alumno eliminado correctamente." });
         }
 
 
-        // 🔹 FUNCIÓN PARA ELIMINAR ACENTOS Y CARACTERES ESPECIALES
+        // FUNCIÓN PARA ELIMINAR ACENTOS Y CARACTERES ESPECIALES
         private static string RemoveDiacritics(string text)
         {
             if (string.IsNullOrEmpty(text)) return text;
@@ -128,7 +128,7 @@ namespace MonitoreoEscolar.Server.Controllers
             return sb.ToString().Normalize(NormalizationForm.FormC);
         }
 
-        // 🔹 EDITAR ALUMNO
+        // EDITAR ALUMNO
         [HttpPut("editar/{id}")]
         public async Task<IActionResult> EditarAlumno(int id, [FromBody] Alumno alumnoEditado)
         {
@@ -153,7 +153,7 @@ namespace MonitoreoEscolar.Server.Controllers
                 // Guardar cambios
                 await _context.SaveChangesAsync();
 
-                return Ok(new { mensaje = "✅ Alumno actualizado correctamente.", alumno = alumnoExistente });
+                return Ok(new { mensaje = "Alumno actualizado correctamente.", alumno = alumnoExistente });
             }
             catch (Exception ex)
             {

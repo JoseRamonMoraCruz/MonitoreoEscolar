@@ -2,8 +2,6 @@
 using Microsoft.EntityFrameworkCore;
 using MonitoreoEscolar.Server.Data;
 using MonitoreoEscolar.Server.Models;
-using System.Threading.Tasks;
-using System.Collections.Generic;
 
 namespace MonitoreoEscolar.Server.Controllers
 {
@@ -35,13 +33,13 @@ namespace MonitoreoEscolar.Server.Controllers
 
             if (grupoExistente != null)
             {
-                return BadRequest(new { mensaje = "❌ El grupo ya está registrado." });
+                return BadRequest(new { mensaje = " El grupo ya está registrado." });
             }
 
             _context.Grupos.Add(grupo);
             await _context.SaveChangesAsync();
 
-            return Ok(new { mensaje = "✅ Grupo agregado exitosamente." });
+            return Ok(new { mensaje = " Grupo agregado exitosamente." });
         }
 
         // Endpoint para eliminar un grupo y sus alumnos asociados
@@ -52,7 +50,7 @@ namespace MonitoreoEscolar.Server.Controllers
             var grupo = await _context.Grupos.FindAsync(id);
             if (grupo == null)
             {
-                return NotFound(new { mensaje = "❌ Grupo no encontrado." });
+                return NotFound(new { mensaje = "Grupo no encontrado." });
             }
 
             // Construir el string que representa el grupo (ejemplo: "1A")
@@ -71,7 +69,7 @@ namespace MonitoreoEscolar.Server.Controllers
             _context.Grupos.Remove(grupo);
             await _context.SaveChangesAsync();
 
-            return Ok(new { mensaje = "✅ Grupo eliminado exitosamente." });
+            return Ok(new { mensaje = "Grupo eliminado exitosamente." });
         }
 
     }

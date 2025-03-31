@@ -53,7 +53,11 @@ namespace MonitoreoEscolar.Server.Controllers
             var usuarioExistente = await _context.Usuarios.FirstOrDefaultAsync(u => u.Correo == request.Correo);
             if (usuarioExistente != null)
             {
-                return BadRequest(new { mensaje = "❌ El correo ya está registrado." });
+                return BadRequest(new { mensaje = " El correo ya está registrado." });
+            }
+            if (request.Tipo_Usuario == "personal" && !request.Correo.EndsWith("@escuela.edu.mx"))
+            {
+                return BadRequest(new { mensaje = "Solo se permite el registro con correos institucionales." });
             }
 
             var nuevoUsuario = new Usuario
@@ -72,7 +76,7 @@ namespace MonitoreoEscolar.Server.Controllers
             _context.Usuarios.Add(nuevoUsuario);
             await _context.SaveChangesAsync();
 
-            return Ok(new { mensaje = "✅ Usuario registrado exitosamente", usuario = nuevoUsuario });
+            return Ok(new { mensaje = "Usuario registrado exitosamente", usuario = nuevoUsuario });
         }
 
         //  LOGIN
@@ -82,16 +86,16 @@ namespace MonitoreoEscolar.Server.Controllers
             var usuario = await _context.Usuarios.FirstOrDefaultAsync(u => u.Correo == request.Correo);
             if (usuario == null)
             {
-                return Unauthorized(new { mensaje = "❌ Usuario o contraseña incorrectos" });
+                return Unauthorized(new { mensaje = " Usuario o contraseña incorrectos" });
             }
 
             var resultado = _passwordHasher.VerifyHashedPassword(usuario, usuario.Contrasena, request.Contrasena);
             if (resultado != PasswordVerificationResult.Success)
             {
-                return Unauthorized(new { mensaje = "❌ Usuario o contraseña incorrectos" });
+                return Unauthorized(new { mensaje = " Usuario o contraseña incorrectos" });
             }
 
-            return Ok(new { mensaje = "✅ Inicio de sesión exitoso", usuario });
+            return Ok(new { mensaje = "Inicio de sesión exitoso", usuario });
         }
 
         //  ACTUALIZAR CONTRASEÑA (método directo)

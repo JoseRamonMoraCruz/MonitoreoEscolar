@@ -24,13 +24,13 @@ namespace MonitoreoEscolar.Server.Controllers
         {
             if (file == null || file.Length <= 0)
             {
-                _logger.LogWarning("❌ Archivo no válido o vacío.");
-                return BadRequest("❌ Archivo no válido o vacío.");
+                _logger.LogWarning("Archivo no válido o vacío.");
+                return BadRequest("Archivo no válido o vacío.");
             }
 
             try
             {
-                _logger.LogInformation($"📂 Archivo recibido: {file.FileName}, Tamaño: {file.Length} bytes");
+                _logger.LogInformation($"Archivo recibido: {file.FileName}, Tamaño: {file.Length} bytes");
 
                 ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
                 using var stream = new MemoryStream();
@@ -40,17 +40,17 @@ namespace MonitoreoEscolar.Server.Controllers
 
                 if (worksheet == null)
                 {
-                    _logger.LogWarning("❌ No se encontró una hoja en el archivo Excel.");
-                    return BadRequest("❌ No se encontró una hoja en el archivo Excel.");
+                    _logger.LogWarning("No se encontró una hoja en el archivo Excel.");
+                    return BadRequest("No se encontró una hoja en el archivo Excel.");
                 }
 
                 var rowCount = worksheet.Dimension?.Rows ?? 0;
-                _logger.LogInformation($"📊 Total de filas en Excel: {rowCount}");
+                _logger.LogInformation($"Total de filas en Excel: {rowCount}");
 
                 if (rowCount < 2)
                 {
-                    _logger.LogWarning("❌ El archivo Excel no tiene suficientes filas de datos.");
-                    return BadRequest("❌ El archivo Excel no tiene suficientes filas de datos.");
+                    _logger.LogWarning("El archivo Excel no tiene suficientes filas de datos.");
+                    return BadRequest("El archivo Excel no tiene suficientes filas de datos.");
                 }
 
                 List<Calificacion> calificacionesGuardadas = new List<Calificacion>();
@@ -58,11 +58,11 @@ namespace MonitoreoEscolar.Server.Controllers
                 for (int row = 2; row <= rowCount; row++)
                 {
                     string grupoStr = worksheet.Cells[row, 4].Text.Trim();
-                    _logger.LogInformation($"🔍 Fila {row} - Grupo en Excel: '{grupoStr}'");
+                    _logger.LogInformation($" Fila {row} - Grupo en Excel: '{grupoStr}'");
 
                     if (string.IsNullOrEmpty(grupoStr) || grupoStr.Length < 2)
                     {
-                        _logger.LogWarning($"⚠️ Grupo inválido o con formato incorrecto en fila {row}: '{grupoStr}'");
+                        _logger.LogWarning($" Grupo inválido o con formato incorrecto en fila {row}: '{grupoStr}'");
                         continue;
                     }
 
@@ -71,7 +71,7 @@ namespace MonitoreoEscolar.Server.Controllers
 
                     if (!int.TryParse(gradoStr, out int grado))
                     {
-                        _logger.LogWarning($"⚠️ No se pudo extraer el grado en fila {row}: '{grupoStr}'");
+                        _logger.LogWarning($" No se pudo extraer el grado en fila {row}: '{grupoStr}'");
                         continue;
                     }
 
@@ -79,7 +79,7 @@ namespace MonitoreoEscolar.Server.Controllers
 
                     if (grupoEncontrado == null)
                     {
-                        _logger.LogWarning($"⚠️ Grupo '{grupoStr}' no encontrado en la BD para la fila {row}.");
+                        _logger.LogWarning($" Grupo '{grupoStr}' no encontrado en la BD para la fila {row}.");
                         continue;
                     }
 
@@ -91,14 +91,14 @@ namespace MonitoreoEscolar.Server.Controllers
 
                     if (alumno == null)
                     {
-                        _logger.LogWarning($"⚠️ Alumno '{nombreAlumno}' no encontrado en fila {row}.");
+                        _logger.LogWarning($"Alumno '{nombreAlumno}' no encontrado en fila {row}.");
                         continue;
                     }
 
                     string calificacionTexto = worksheet.Cells[row, 3].Text.Trim();
                     if (!int.TryParse(calificacionTexto, out int calificacionValor))
                     {
-                        _logger.LogWarning($"⚠️ Calificación inválida en fila {row}: '{calificacionTexto}'");
+                        _logger.LogWarning($" Calificación inválida en fila {row}: '{calificacionTexto}'");
                         continue;
                     }
 
@@ -115,7 +115,7 @@ namespace MonitoreoEscolar.Server.Controllers
 
                     if (yaExiste)
                     {
-                        _logger.LogWarning($"⚠️ Dato duplicado. Ya existe calificación para '{nombreAlumno}', materia '{materia}', grupo '{grupoStr}', unidad '{parcialUnidad}' en fila {row}.");
+                        _logger.LogWarning($" Dato duplicado. Ya existe calificación para '{nombreAlumno}', materia '{materia}', grupo '{grupoStr}', unidad '{parcialUnidad}' en fila {row}.");
                         continue;
                     }
 
@@ -138,7 +138,7 @@ namespace MonitoreoEscolar.Server.Controllers
                 //  Si no se guardó ninguna calificación, muestra un mensaje especial
                 if (calificacionesGuardadas.Count == 0)
                 {
-                    return BadRequest("❌ No se subieron las calificaciones porque hubo datos duplicados. Revisa el archivo Excel por favor antes de subirlo.");
+                    return BadRequest(" No se subieron las calificaciones porque hubo datos duplicados. Revisa el archivo Excel por favor antes de subirlo.");
                 }
 
                 return Ok(new
@@ -158,7 +158,7 @@ namespace MonitoreoEscolar.Server.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"❌ ERROR en SubirCalificaciones: {ex}");
+                _logger.LogError($" ERROR en SubirCalificaciones: {ex}");
                 return StatusCode(500, $"Error interno del servidor: {ex.Message} {ex.InnerException?.Message}");
             }
         }
@@ -181,7 +181,7 @@ namespace MonitoreoEscolar.Server.Controllers
                 .ToListAsync();
 
             // Verifica en la consola si la API está devolviendo datos
-            Console.WriteLine("📊 Datos obtenidos desde la BD:");
+            Console.WriteLine(" Datos obtenidos desde la BD:");
             foreach (var cal in calificaciones)
             {
                 Console.WriteLine($"➡ {cal.Nombre} - {cal.Materia} - {cal.CalificacionValor} - {cal.Grupo} - {cal.ParcialUnidad}");
@@ -211,7 +211,7 @@ namespace MonitoreoEscolar.Server.Controllers
 
             await _context.SaveChangesAsync();
 
-            return Ok($"✅ Se actualizaron {actualizadas} calificaciones con su AlumnoId.");
+            return Ok($" Se actualizaron {actualizadas} calificaciones con su AlumnoId.");
         }
         //PARA NORMALIZAR EL NOMBRE DEL ALUMNO
         private string Normalizar(string input)

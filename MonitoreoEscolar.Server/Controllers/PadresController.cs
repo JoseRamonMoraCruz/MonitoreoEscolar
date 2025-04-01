@@ -15,7 +15,7 @@ namespace MonitoreoEscolar.Server.Controllers
             _context = context;
         }
 
-
+        // ENDPOINT PARA OBTENER LAS CALIFICACIONES DE LOS HIJOS DE UN PADRE
         [HttpGet("obtener-calificaciones-hijos/{idPadre}")]
         public async Task<IActionResult> ObtenerInformacionHijos(int idPadre)
 
@@ -55,6 +55,27 @@ namespace MonitoreoEscolar.Server.Controllers
             }
 
             return Ok(resultado);
+        }
+
+        // ENDPOINT PARA OBTENER LOS REPORTES DE UN HIJO
+        [HttpGet("obtener-reportes-hijo/{alumnoId}")]
+        public async Task<IActionResult> ObtenerReportesDeHijo(int alumnoId)
+        {
+            var alumnoExiste = await _context.Alumnos.AnyAsync(a => a.Id == alumnoId);
+            if (!alumnoExiste)
+            {
+                return NotFound("El alumno no fue encontrado.");
+            }
+
+            var reportes = await _context.Reportes
+                .Where(r => r.AlumnoId == alumnoId)
+                .Select(r => new
+                {
+                    r.Motivo
+                })
+                .ToListAsync();
+
+            return Ok(reportes);
         }
     }
 }

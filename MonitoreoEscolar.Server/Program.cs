@@ -57,10 +57,10 @@ using (var scope = app.Services.CreateScope())
     var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
     try
     {
-        Console.WriteLine("🔍 Intentando conectar a SQL Server...");
+        Console.WriteLine(" Intentando conectar a SQL Server...");
 
         var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
-        Console.WriteLine($"🔗 Cadena de conexión utilizada: {connectionString}");
+        Console.WriteLine($" Cadena de conexión utilizada: {connectionString}");
 
         if (context.Database.CanConnect())
         {
@@ -78,14 +78,14 @@ using (var scope = app.Services.CreateScope())
     catch (Exception ex)
     {
         Console.ForegroundColor = ConsoleColor.Red;
-        Console.WriteLine($"❌ ERROR de conexión a SQL Server: {ex.Message}");
+        Console.WriteLine($" ERROR de conexión a SQL Server: {ex.Message}");
 
         if (ex.InnerException != null)
         {
-            Console.WriteLine($"➡️ Detalles internos: {ex.InnerException.Message}");
+            Console.WriteLine($" Detalles internos: {ex.InnerException.Message}");
         }
 
-        Console.WriteLine($"🔍 StackTrace: {ex.StackTrace}");
+        Console.WriteLine($" StackTrace: {ex.StackTrace}");
         Console.ResetColor();
     }
 }

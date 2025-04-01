@@ -29,7 +29,11 @@ export default function Registro() {
             setError("❌ Ingresa un correo válido.");
             return;
         }
-
+        // Validar que el correo sea institucional
+        if (tipoUsuario === "personal" && !correo.endsWith("@escuela.edu.mx")) {
+            setError("❌ Solo se permite el registro con correos institucionales.");
+            return;
+        }
         if (tipoUsuario === "padre" && !nombreAlumno) {
             setError("❌ Ingresa el nombre del alumno.");
             return;
@@ -48,7 +52,7 @@ export default function Registro() {
         };
 
         try {
-            const response = await axios.post("/api/usuarios/registro", usuario);
+            const response = await axios.post("http://localhost:5099/api/usuarios/registro", usuario);
             alert(response.data.mensaje);
             navigate("/"); // Redirige al login tras el registro
         } catch (error) {

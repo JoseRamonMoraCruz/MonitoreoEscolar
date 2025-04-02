@@ -32,6 +32,10 @@
         const [tutorOptionsEdit, setTutorOptionsEdit] = useState([]);
         const [selectedTutorEdit, setSelectedTutorEdit] = useState(null);
 
+        // Estados para el menú de edición del grupo (solo para editar el nombre del docente)
+        const [menuGrupo, setMenuGrupo] = useState(null); // Guardará el grupo que tenga abierto el menú
+        const [modalEditarDocente, setModalEditarDocente] = useState(false);
+        const [grupoDocenteEditado, setGrupoDocenteEditado] = useState(null);
 
         useEffect(() => {
             obtenerGrupos();
@@ -303,6 +307,47 @@
             })
             : grupos;
 
+        // Abre el menú de edición para el grupo seleccionado
+        const abrirMenuGrupo = (grupo, e) => {
+            e.stopPropagation(); // Evita que se active otro evento (por ejemplo, la expansión de la carta)
+            setMenuGrupo(grupo);
+        };
+
+        // Cierra el menú de edición
+        const cerrarMenuGrupo = () => {
+            setMenuGrupo(null);
+        };
+
+        // Abre el modal para editar el nombre del docente utilizando el grupo seleccionado del menú
+        const abrirModalEditarDocente = (grupo) => {
+            setGrupoDocenteEditado(grupo);
+            setModalEditarDocente(true);
+            cerrarMenuGrupo();
+        };
+
+        const cerrarModalEditarDocente = () => {
+            setModalEditarDocente(false);
+            setGrupoDocenteEditado(null);
+        };
+
+        // Función para actualizar el nombre del docente (suponiendo un endpoint PUT /api/grupos/editar/{id})
+        const actualizarNombreDocente = async () => {
+            if (!grupoDocenteEditado.nombreDocente) {
+                alert("Por favor, ingrese un nombre para el docente.");
+                return;
+            }
+            try {
+                const response = await axios.put(`/api/grupos/editar/${grupoDocenteEditado.id}`, grupoDocenteEditado);
+                alert(response.data.mensaje);
+                obtenerGrupos(); // Actualiza la lista de grupos
+                cerrarModalEditarDocente();
+            } catch (error) {
+                console.error("Error al actualizar el nombre del docente:", error.response?.data || error.message);
+                alert("❌ No se pudo actualizar el nombre del docente.");
+            }
+        };
+
+
         return (
             <div className="lista-container">
                 <div className="lista-content">
@@ -345,17 +390,46 @@
                                     >
                                         <div className="grupo-header">
                                             <h3>
-                                                {grupo.grado}
-                                                {grupo.letra}
+                                                {grupo.grado}{grupo.letra}
                                             </h3>
                                             {grupo.nombreDocente && <p>Docente: {grupo.nombreDocente}</p>}
-                                            <img
-                                                src={deleteIcon}
-                                                alt="Eliminar Grupo"
-                                                className="delete-icon"
-                                                onClick={(e) => handleDeleteClick(e, grupo)}
-                                            />
+                                            <div className="acciones-grupo" style={{ display: "flex", gap: "10px" }}>
+                                                {/* Icono para mostrar el menú (puedes reemplazar el contenido por una imagen si la tienes) */}
+                                                <span
+                                                    style={{ cursor: "pointer", fontSize: "24px" }}
+                                                    onClick={(e) => abrirMenuGrupo(grupo, e)}
+                                                >
+                                                    ⋮
+                                                </span>
+                                                <img
+                                                    src={deleteIcon}
+                                                    alt="Eliminar Grupo"
+                                                    className="delete-icon"
+                                                    onClick={(e) => handleDeleteClick(e, grupo)}
+                                                />
+                                            </div>
+                                            {/* Menú desplegable para el grupo */}
+                                            {menuGrupo && menuGrupo.id === grupo.id && (
+                                                <div className="menu-editar-grupo" style={{
+                                                    position: "absolute",
+                                                    background: "#fff",
+                                                    boxShadow: "0px 2px 5px rgba(0,0,0,0.3)",
+                                                    borderRadius: "5px",
+                                                    padding: "5px 10px",
+                                                    zIndex: "1100",
+                                                    right: "50px", // Ajusta según la posición deseada
+                                                    top: "10px"
+                                                }}>
+                                                    <p
+                                                        style={{ cursor: "pointer", margin: 0 }}
+                                                        onClick={() => abrirModalEditarDocente(grupo)}
+                                                    >
+                                                        Editar nombre del Docente
+                                                    </p>
+                                                </div>
+                                            )}
                                         </div>
+
                                         {tableData ? (
                                             tableData.length === 0 ? (
                                                 <p>No hay alumnos registrados en este grupo.</p>
@@ -644,6 +718,30 @@
                                     <img src={rechazarIcon} alt="Cancelar" />
                                 </button>
                             </div>
+                        </div>
+                    </div>
+                )}
+
+                {modalEditarDocente && grupoDocenteEditado && (
+                    <div className="modal-overlay">
+                        <div className="modal-content">
+                            <button className="close-button" onClick={cerrarModalEditarDocente}>
+                                ✖
+                            </button>
+                            <h2 className="modal-title">Editar Nombre del Docente</h2>
+                            <div className="input-container">
+                                <label>Nombre del Docente:</label>
+                                <input
+                                    type="text"
+                                    value={grupoDocenteEditado.nombreDocente}
+                                    onChange={(e) =>
+                                        setGrupoDocenteEditado({ ...grupoDocenteEditado, nombreDocente: e.target.value })
+                                    }
+                                />
+                            </div>
+                            <button className="save-button" onClick={actualizarNombreDocente}>
+                                Guardar Cambios
+                            </button>
                         </div>
                     </div>
                 )}

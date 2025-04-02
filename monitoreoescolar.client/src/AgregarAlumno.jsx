@@ -202,7 +202,7 @@ const AgregarAlumno = () => {
                             onChange={handleTutorChangeSelect}
                             onInputChange={handleTutorInputChange}
                             options={tutorOptions}
-                            placeholder="Escriba el nombre del tutor..."
+                            placeholder="Escriba el nombre del padre..."
                             noOptionsMessage={() => "No se encontraron coincidencias"}
                         />
                     </div>

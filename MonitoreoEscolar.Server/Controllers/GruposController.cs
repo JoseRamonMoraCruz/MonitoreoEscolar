@@ -77,6 +77,26 @@ namespace MonitoreoEscolar.Server.Controllers
             return Ok(new { mensaje = "Grupo eliminado exitosamente." });
         }
 
+        // Endpoint para editar el grupo (actualiza el nombre del docente)
+        [HttpPut("editar/{id}")]
+        public async Task<IActionResult> EditarGrupo(int id, [FromBody] Grupo grupoEditado)
+        {
+            var grupo = await _context.Grupos.FindAsync(id);
+            if (grupo == null)
+            {
+                return NotFound(new { mensaje = "Grupo no encontrado." });
+            }
+
+            // Actualizamos únicamente el nombre del docente
+            grupo.NombreDocente = grupoEditado.NombreDocente;
+
+            // Si lo deseas, también puedes actualizar otros campos permitidos, por ejemplo:
+            // grupo.Grado = grupoEditado.Grado;
+            // grupo.Letra = grupoEditado.Letra;
+
+            await _context.SaveChangesAsync();
+            return Ok(new { mensaje = "Grupo actualizado exitosamente." });
+        }
     }
-   
+
 }

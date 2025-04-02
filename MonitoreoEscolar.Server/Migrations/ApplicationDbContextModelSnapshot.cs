@@ -214,7 +214,8 @@ namespace MonitoreoEscolar.Server.Migrations
                 {
                     b.HasOne("Alumno", "Alumno")
                         .WithMany()
-                        .HasForeignKey("AlumnoId");
+                        .HasForeignKey("AlumnoId")
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("Grupo", "Grupo")
                         .WithMany()

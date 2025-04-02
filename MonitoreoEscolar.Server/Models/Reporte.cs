@@ -14,8 +14,7 @@ namespace MonitoreoEscolar.Server.Models
         [Required]
         public string Motivo { get; set; } = string.Empty;
 
-        // Clave foránea para asociar el reporte a un alumno
-        [Required]
+        // Clave foránea para asociar el reporte a un alumno(se quito required)
         public int AlumnoId { get; set; }
 
         [ForeignKey("AlumnoId")]

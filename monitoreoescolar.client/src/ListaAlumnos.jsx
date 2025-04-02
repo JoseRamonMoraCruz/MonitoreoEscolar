@@ -8,6 +8,8 @@
     import removeIcon from "./assets/eliminar-informacion.png";
     import aceptarIcon from "./assets/aceptar.png"; // Ícono de aceptar
     import rechazarIcon from "./assets/rechazar.png"; // Ícono de rechazar
+    import WhatsappIcon from "./assets/whatsapp.png";
+
 
     const ListaAlumnos = () => {
         const [grupos, setGrupos] = useState([]);
@@ -303,6 +305,11 @@
             })
             : grupos;
 
+            // Constante para la parte del whats
+        const abrirWhatsApp = (telefono) => {
+            window.open(`https://wa.me/${telefono}?text=`, "_blank");
+        };
+
         return (
             <div className="lista-container">
                 <div className="lista-content">
@@ -369,35 +376,46 @@
                                                             <th>Acciones</th>
                                                         </tr>
                                                     </thead>
-                                                    <tbody>
-                                                        {tableData.map((alumno) => (
-                                                            <tr key={alumno.id}>
-                                                                <td>
-                                                                    {alumno.nombre} {alumno.apellidos}
-                                                                </td>
-                                                                <td>
-                                                                    {alumno.tutorUsuario
-                                                                        ? `${alumno.tutorUsuario.nombre} ${alumno.tutorUsuario.apellidos}`
-                                                                        : "Sin Tutor"}
-                                                                </td>
-                                                                <td>{alumno.domicilio}</td>
-                                                                <td className="acciones">
-                                                                    <img
-                                                                        src={editIcon}
-                                                                        alt="Editar"
-                                                                        className="accion-icon editar"
-                                                                        onClick={() => abrirModalEditarAlumno(alumno)}
-                                                                    />
-                                                                    <img
-                                                                        src={removeIcon}
-                                                                        alt="Eliminar"
-                                                                        className="accion-icon eliminar"
-                                                                        onClick={() => abrirModalEliminarAlumno(alumno)}
-                                                                    />
-                                                                </td>
-                                                            </tr>
-                                                        ))}
-                                                    </tbody>
+                                                        <tbody>{ /*ELIMINAR POR SI LAS DUDAS POR SI NO FUNCIONA*/}
+                                                            {tableData.map((alumno) => {
+                                                                console.log("ALUMNO:", alumno); // 👈 Esto muestra en consola los datos recibidos
+                                                                return (
+                                                                    <tr key={alumno.id}>
+                                                                        <td>
+                                                                            {alumno.nombre} {alumno.apellidos}
+                                                                        </td>
+                                                                        <td className="padre-whatsapp">
+                                                                            {alumno.tutorUsuario?.telefono && (
+                                                                                <img
+                                                                                    src={WhatsappIcon}
+                                                                                    alt="WhatsApp"
+                                                                                    className="accion-icon whatsapp"
+                                                                                    onClick={() => abrirWhatsApp(alumno.tutorUsuario.telefono)}
+                                                                                />
+                                                                            )}
+                                                                            {alumno.tutorUsuario
+                                                                                ? `${alumno.tutorUsuario.nombre} ${alumno.tutorUsuario.apellidos}`
+                                                                                : "Sin Tutor"}
+                                                                        </td>
+                                                                        <td>{alumno.domicilio}</td>
+                                                                        <td className="acciones">
+                                                                            <img
+                                                                                src={editIcon}
+                                                                                alt="Editar"
+                                                                                className="accion-icon editar"
+                                                                                onClick={() => abrirModalEditarAlumno(alumno)}
+                                                                            />
+                                                                            <img
+                                                                                src={removeIcon}
+                                                                                alt="Eliminar"
+                                                                                className="accion-icon eliminar"
+                                                                                onClick={() => abrirModalEliminarAlumno(alumno)}
+                                                                            />
+                                                                        </td>
+                                                                    </tr>
+                                                                );
+                                                            })}
+                                                        </tbody>
                                                 </table>
                                             )
                                         ) : (
@@ -421,7 +439,16 @@
                                                                 <td>
                                                                     {alumno.nombre} {alumno.apellidos}
                                                                 </td>
-                                                                <td>
+                                                                {/*SECCION DE LA PARTE DEL WHATS, SI NO FUNCIONA DEBERIAS ELIMINARLO*/ }
+                                                                <td className="padre-whatsapp">
+                                                                    {alumno.tutorUsuario?.telefono && (
+                                                                        <img
+                                                                            src={WhatsappIcon}
+                                                                            alt="WhatsApp"
+                                                                            className="accion-icon whatsapp"
+                                                                            onClick={() => abrirWhatsApp(alumno.tutorUsuario.telefono)}
+                                                                        />
+                                                                    )}
                                                                     {alumno.tutorUsuario
                                                                         ? `${alumno.tutorUsuario.nombre} ${alumno.tutorUsuario.apellidos}`
                                                                         : "Sin Tutor"}

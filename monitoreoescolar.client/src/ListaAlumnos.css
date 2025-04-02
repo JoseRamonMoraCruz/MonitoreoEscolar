@@ -213,14 +213,24 @@
     margin-top: 15px;
 }
 
-    .tabla-alumnos th,
-    .tabla-alumnos td {
+    .tabla-alumnos th {
         border: 1px solid #ccc;
         padding: 8px;
         text-align: left;
         color: black;
-        background-color: white;
+        background-color: #f2f2f2;
+        font-weight: bold;
     }
+
+    .tabla-alumnos td {
+        border: 1px solid #ccc;
+        padding: 6px 8px; /* más compacto */
+        text-align: left;
+        color: black;
+        background-color: white;
+        vertical-align: middle; /* clave para que el ícono y nombre se alineen bien */
+    }
+
 
     .tabla-alumnos th {
         background-color: #f2f2f2;
@@ -441,4 +451,27 @@ input {
         transform: scale(1);
     }
 }
+
+/* Estilos para WhatsApp junto al nombre del padre */
+.padre-whatsapp {
+    font-weight: 600;
+    font-size: 16px;
+    color: #000;
+    white-space: nowrap;
+    line-height: 1; /*  esto evita que se agrande la altura */
+    vertical-align: middle; /*  alinea con el resto de celdas */
+}
+
+    .padre-whatsapp img {
+        width: 22px; /* antes era 18px */
+        height: 22px;
+        margin-right: 6px;
+        vertical-align: middle;
+        cursor: pointer;
+        transition: transform 0.2s ease-in-out;
+    }
+
+        .padre-whatsapp img:hover {
+            transform: scale(1.15);
+        }
 

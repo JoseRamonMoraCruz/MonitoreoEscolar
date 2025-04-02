@@ -9,7 +9,7 @@ namespace MonitoreoEscolar.Server.Models
         public int Id { get; set; }
 
         [Required]
-        public DateTime Fecha { get; set; }
+        public DateTime Fecha { get; set; }//NOTA MODIFICARLO DE DATETIME A DATE PARA QUE NO SE GUARDE LA HORA
 
         [Required]
         public string Motivo { get; set; } = string.Empty;

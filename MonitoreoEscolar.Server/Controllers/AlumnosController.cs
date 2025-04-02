@@ -6,6 +6,7 @@ using OfficeOpenXml; // EPPlus para exportar a Excel
 using System.Globalization;
 using System.Text;
 
+
 namespace MonitoreoEscolar.Server.Controllers
 {
     [ApiController]
@@ -85,6 +86,22 @@ namespace MonitoreoEscolar.Server.Controllers
                     .Include(a => a.TutorUsuario)
                     .Where(a => a.Grupo == grupoStr)
                     .OrderBy(a => a.NombreCompleto)
+                    .Select(a => new
+                    {
+                        id = a.Id,
+                        nombre = a.Nombre,
+                        apellidos = a.Apellidos,
+                        domicilio = a.Domicilio,
+                        grupo = a.Grupo,
+                        tutorUsuario = a.TutorUsuario == null ? null : new
+                        {
+                            id_Usuario = a.TutorUsuario.Id_Usuario,
+                            nombre = a.TutorUsuario.Nombre,
+                            apellidos = a.TutorUsuario.Apellidos,
+                            telefono = a.TutorUsuario.Telefono, // ⚠️ Asegúrate de incluir esto
+                            correo = a.TutorUsuario.Correo
+                        }
+                    })
                     .ToListAsync();
 
                 return Ok(alumnos);
@@ -94,6 +111,7 @@ namespace MonitoreoEscolar.Server.Controllers
                 return StatusCode(500, new { mensaje = " Error al obtener alumnos por grupo.", error = ex.Message });
             }
         }
+
 
         // 🔹 ELIMINAR ALUMNO
         [HttpDelete("eliminar/{id}")]

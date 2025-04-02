@@ -442,3 +442,17 @@ input {
     }
 }
 
+/* Es la seccion del whats */
+.accion-icon.whatsapp {
+    width: 25px;
+    height: 25px;
+    cursor: pointer;
+    margin-left: 8px;
+    transition: transform 0.2s ease-in-out;
+}
+
+    .accion-icon.whatsapp:hover {
+        transform: scale(1.2);
+    }
+
+

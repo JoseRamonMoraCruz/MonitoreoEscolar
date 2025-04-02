@@ -12,7 +12,7 @@
     const ListaAlumnos = () => {
         const [grupos, setGrupos] = useState([]);
         const [modalGrupo, setModalGrupo] = useState(false);
-        const [nuevoGrupo, setNuevoGrupo] = useState({ grado: "", letra: "" });
+        const [nuevoGrupo, setNuevoGrupo] = useState({ grado: "", letra: "", nombreDocente: "" });
         const [expandedGroup, setExpandedGroup] = useState(null);
         const [alumnosGrupo, setAlumnosGrupo] = useState([]);
         const [modalEliminarAlumno, setModalEliminarAlumno] = useState(false); 
@@ -193,14 +193,14 @@
         };
 
         const agregarGrupo = async () => {
-            if (!nuevoGrupo.grado || !nuevoGrupo.letra) {
-                alert("Por favor, seleccione el grado y la letra del grupo.");
+            if (!nuevoGrupo.grado || !nuevoGrupo.letra || !nuevoGrupo.nombreDocente) {
+                alert("Por favor, complete todos los campos.");
                 return;
             }
             try {
                 await axios.post("/api/grupos/agregar", nuevoGrupo);
                 alert("✅ Grupo agregado correctamente.");
-                obtenerGrupos();
+                obtenerGrupos(); // Actualiza la lista de grupos
                 cerrarModalGrupo();
             } catch (error) {
                 console.error("Error al agregar grupo:", error);
@@ -348,6 +348,7 @@
                                                 {grupo.grado}
                                                 {grupo.letra}
                                             </h3>
+                                            {grupo.nombreDocente && <p>Docente: {grupo.nombreDocente}</p>}
                                             <img
                                                 src={deleteIcon}
                                                 alt="Eliminar Grupo"
@@ -363,7 +364,7 @@
                                                     <thead>
                                                         <tr>
                                                             <th>Nombre Completo</th>
-                                                            <th>Tutor</th>
+                                                            <th>Padre</th>
                                                             <th>Domicilio</th>
                                                             <th>Acciones</th>
                                                         </tr>
@@ -409,7 +410,7 @@
                                                     <thead>
                                                         <tr>
                                                             <th>Nombre Completo</th>
-                                                            <th>Tutor</th>
+                                                            <th>Padre</th>
                                                             <th>Domicilio</th>
                                                             <th>Acciones</th>
                                                         </tr>
@@ -463,28 +464,40 @@
                                 ✖
                             </button>
                             <h2 className="modal-title">Agregar Grupo</h2>
-                            <div className="select-container">
-                                <div>
-                                    <label>Grado:</label>
-                                    <select name="grado" value={nuevoGrupo.grado} onChange={handleChange}>
-                                        <option value="">Seleccione</option>
-                                        {[1, 2, 3, 4, 5, 6].map((grado) => (
-                                            <option key={grado} value={grado}>
-                                                {grado}
-                                            </option>
-                                        ))}
-                                    </select>
+                            <div className="form-group">
+                                <div className="select-container">
+                                    <div className="input-group">
+                                        <label>Grado:</label>
+                                        <select name="grado" value={nuevoGrupo.grado} onChange={handleChange}>
+                                            <option value="">Seleccione</option>
+                                            {[1, 2, 3, 4, 5, 6].map((grado) => (
+                                                <option key={grado} value={grado}>
+                                                    {grado}
+                                                </option>
+                                            ))}
+                                        </select>
+                                    </div>
+                                    <div className="input-group">
+                                        <label>Grupo:</label>
+                                        <select name="letra" value={nuevoGrupo.letra} onChange={handleChange}>
+                                            <option value="">Seleccione</option>
+                                            {["A", "B", "C", "D", "E", "F"].map((letra) => (
+                                                <option key={letra} value={letra}>
+                                                    {letra}
+                                                </option>
+                                            ))}
+                                        </select>
+                                    </div>
                                 </div>
-                                <div>
-                                    <label>Grupo:</label>
-                                    <select name="letra" value={nuevoGrupo.letra} onChange={handleChange}>
-                                        <option value="">Seleccione</option>
-                                        {["A", "B", "C", "D", "E", "F"].map((letra) => (
-                                            <option key={letra} value={letra}>
-                                                {letra}
-                                            </option>
-                                        ))}
-                                    </select>
+                                <div className="input-group">
+                                    <label>Docente:</label>
+                                    <input
+                                        type="text"
+                                        name="nombreDocente"
+                                        value={nuevoGrupo.nombreDocente || ""}
+                                        onChange={handleChange}
+                                        placeholder="Nombre del docente"
+                                    />
                                 </div>
                             </div>
                             <button className="save-button" onClick={agregarGrupo}>
@@ -526,7 +539,9 @@
                             <h2>¿Estás seguro?</h2>
                             <p>
                                 ¿Deseas eliminar el grupo {grupoSeleccionado?.grado}
-                                {grupoSeleccionado?.letra}?
+                                {grupoSeleccionado?.letra}
+                                {grupoSeleccionado?.nombreDocente &&
+                                    `, asignado al docente ${grupoSeleccionado.nombreDocente}`}?
                             </p>
                             <div className="modal-buttons">
                                 <button className="confirm-button" onClick={eliminarGrupo}>
@@ -599,14 +614,14 @@
 
                             {/* Selección del tutor en el modal de edición */}
                             <div className="input-container">
-                                <label>Tutor:</label>
+                                <label>Padre:</label>
                                 <Select
                                     classNamePrefix="my-select"
                                     value={selectedTutorEdit}
                                     onChange={handleTutorChangeSelect}
                                     onInputChange={handleTutorInputChangeEdit}
                                     options={tutorOptionsEdit}
-                                    placeholder="Escriba el nombre del tutor..."
+                                    placeholder="Escriba el nombre del nuevo padre..."
                                     noOptionsMessage={() => "No se encontraron coincidencias"}
                                 />
                             </div>

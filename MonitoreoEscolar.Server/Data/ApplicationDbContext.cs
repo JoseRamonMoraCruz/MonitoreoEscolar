@@ -38,8 +38,8 @@ namespace MonitoreoEscolar.Server.Data
                 .HasOne(a => a.TutorUsuario)
                 .WithMany(u => u.Alumnos)
                 .HasForeignKey(a => a.TutorId)
-                .IsRequired(false); // Al ser nullable, no es obligatoria
+                .IsRequired(false)
+                .OnDelete(DeleteBehavior.SetNull); // Aquí se indica que se ponga NULL al eliminar
         }
-
     }
 }

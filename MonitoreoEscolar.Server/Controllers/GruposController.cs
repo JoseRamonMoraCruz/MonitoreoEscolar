@@ -27,19 +27,24 @@ namespace MonitoreoEscolar.Server.Controllers
         [HttpPost("agregar")]
         public async Task<IActionResult> AgregarGrupo([FromBody] Grupo grupo)
         {
-            // Verificar si el grupo ya existe
+            // Validación opcional para el nombre del docente
+            if (string.IsNullOrWhiteSpace(grupo.NombreDocente))
+            {
+                return BadRequest(new { mensaje = "El nombre del docente es requerido." });
+            }
+
             var grupoExistente = await _context.Grupos
                 .FirstOrDefaultAsync(g => g.Grado == grupo.Grado && g.Letra == grupo.Letra);
 
             if (grupoExistente != null)
             {
-                return BadRequest(new { mensaje = " El grupo ya está registrado." });
+                return BadRequest(new { mensaje = "El grupo ya está registrado." });
             }
 
             _context.Grupos.Add(grupo);
             await _context.SaveChangesAsync();
 
-            return Ok(new { mensaje = " Grupo agregado exitosamente." });
+            return Ok(new { mensaje = "Grupo agregado exitosamente." });
         }
 
         // Endpoint para eliminar un grupo y sus alumnos asociados
@@ -67,7 +72,7 @@ namespace MonitoreoEscolar.Server.Controllers
             }
 
             _context.Grupos.Remove(grupo);
-            await _context.SaveChangesAsync();
+            await _context.SaveChangesAsync();  
 
             return Ok(new { mensaje = "Grupo eliminado exitosamente." });
         }

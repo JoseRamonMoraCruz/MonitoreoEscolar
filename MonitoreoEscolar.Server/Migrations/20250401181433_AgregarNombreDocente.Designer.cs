@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using MonitoreoEscolar.Server.Data;
 
@@ -11,9 +12,11 @@ using MonitoreoEscolar.Server.Data;
 namespace MonitoreoEscolar.Server.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250401181433_AgregarNombreDocente")]
+    partial class AgregarNombreDocente
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -22,7 +25,31 @@ namespace MonitoreoEscolar.Server.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("Alumno", b =>
+            modelBuilder.Entity("Grupo", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("Grado")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Letra")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("NombreDocente")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Grupos");
+                });
+
+            modelBuilder.Entity("MonitoreoEscolar.Server.Models.Alumno", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -57,7 +84,7 @@ namespace MonitoreoEscolar.Server.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("TutorId")
+                    b.Property<int>("TutorId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
@@ -67,30 +94,6 @@ namespace MonitoreoEscolar.Server.Migrations
                     b.HasIndex("TutorId");
 
                     b.ToTable("Alumnos");
-                });
-
-            modelBuilder.Entity("Grupo", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("Grado")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Letra")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("NombreDocente")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Grupos");
                 });
 
             modelBuilder.Entity("MonitoreoEscolar.Server.Models.Calificacion", b =>
@@ -196,7 +199,7 @@ namespace MonitoreoEscolar.Server.Migrations
                     b.ToTable("Usuarios");
                 });
 
-            modelBuilder.Entity("Alumno", b =>
+            modelBuilder.Entity("MonitoreoEscolar.Server.Models.Alumno", b =>
                 {
                     b.HasOne("Grupo", null)
                         .WithMany("Alumnos")
@@ -204,15 +207,14 @@ namespace MonitoreoEscolar.Server.Migrations
 
                     b.HasOne("MonitoreoEscolar.Server.Models.Usuario", "TutorUsuario")
                         .WithMany("Alumnos")
-                        .HasForeignKey("TutorId")
-                        .OnDelete(DeleteBehavior.SetNull);
+                        .HasForeignKey("TutorId");
 
                     b.Navigation("TutorUsuario");
                 });
 
             modelBuilder.Entity("MonitoreoEscolar.Server.Models.Calificacion", b =>
                 {
-                    b.HasOne("Alumno", "Alumno")
+                    b.HasOne("MonitoreoEscolar.Server.Models.Alumno", "Alumno")
                         .WithMany()
                         .HasForeignKey("AlumnoId");
 
@@ -229,7 +231,7 @@ namespace MonitoreoEscolar.Server.Migrations
 
             modelBuilder.Entity("MonitoreoEscolar.Server.Models.Reporte", b =>
                 {
-                    b.HasOne("Alumno", "Alumno")
+                    b.HasOne("MonitoreoEscolar.Server.Models.Alumno", "Alumno")
                         .WithMany()
                         .HasForeignKey("AlumnoId")
                         .OnDelete(DeleteBehavior.Cascade)

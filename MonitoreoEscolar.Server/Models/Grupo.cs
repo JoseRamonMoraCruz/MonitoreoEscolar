@@ -1,21 +1,22 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.Collections.Generic;
+﻿using MonitoreoEscolar.Server.Models;
+using System.ComponentModel.DataAnnotations;
 
-namespace MonitoreoEscolar.Server.Models
+public class Grupo
 {
-    public class Grupo
-    {
-        [Key]
-        public int Id { get; set; }
+    [Key]
+    public int Id { get; set; }
 
-        [Required]
-        public int Grado { get; set; } // 1, 2, 3, 4, 5, 6
+    [Required]
+    public int Grado { get; set; }
 
-        [Required]
-        public string Letra { get; set; } = string.Empty; // A, B, C
+    [Required]
+    public string Letra { get; set; } = string.Empty;
 
-        public string NombreGrupo => $"{Grado}{Letra}"; // Genera el nombre del grupo automáticamente
+    public string NombreGrupo => $"{Grado}{Letra}";
 
-        public List<Alumno>? Alumnos { get; set; } // Relación con los alumnos
-    }
+    [Required]
+    // Nueva propiedad para el docente
+    public string NombreDocente { get; set; } = string.Empty;
+
+    public List<Alumno>? Alumnos { get; set; }
 }

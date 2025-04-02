@@ -20,8 +20,7 @@ namespace MonitoreoEscolar.Server.Models
         [ForeignKey("Grupo")]
         public int GrupoId { get; set; }
 
-        // Relación con Grupo
-        [Required]
+        // Relación con Grupo(se quito required)
         public Grupo Grupo { get; set; }
 
         [Required]

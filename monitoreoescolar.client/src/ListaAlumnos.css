@@ -463,8 +463,8 @@ input {
 }
 
     .padre-whatsapp img {
-        width: 22px; /* antes era 18px */
-        height: 22px;
+        width: 22px; /*  aquí cambias el ancho */
+        height: 22px; /*  aquí cambias la altura */
         margin-right: 6px;
         vertical-align: middle;
         cursor: pointer;

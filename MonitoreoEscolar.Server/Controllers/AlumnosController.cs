@@ -165,8 +165,12 @@ namespace MonitoreoEscolar.Server.Controllers
                 alumnoExistente.Grupo = alumnoEditado.Grupo.Trim();
                 alumnoExistente.Domicilio = alumnoEditado.Domicilio.Trim();
 
-                // Actualiza el TutorId para cambiar el tutor
-                alumnoExistente.TutorId = alumnoEditado.TutorId;
+                // Actualiza el TutorId solo si se proporciona un nuevo valor (no es null)
+                if (alumnoEditado.TutorId != null)
+                {
+                    alumnoExistente.TutorId = alumnoEditado.TutorId;
+                }
+                // Si TutorId viene como null, se deja el actual sin cambios
 
                 // Guardar cambios
                 await _context.SaveChangesAsync();

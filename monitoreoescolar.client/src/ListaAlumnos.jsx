@@ -164,8 +164,10 @@
             }
 
             try {
+                // Desestructuramos para excluir TutorUsuario
+                const { tutorUsuario: _unused, ...alumnoSinTutor } = alumno;
                 const alumnoParaActualizar = {
-                    ...alumno,
+                    ...alumnoSinTutor,
                     Grupo: `${alumno.grado}${alumno.grupo}`,
                 };
 
@@ -192,6 +194,7 @@
                 );
             }
         };
+
         /*FIN DE EDITAR */
 
         const handleChange = (e) => {
@@ -348,7 +351,10 @@
                 alert("❌ No se pudo actualizar el nombre del docente.");
             }
         };
-
+        // Constante para la parte del whats
+        const abrirWhatsApp = (telefono) => {
+            window.open(`https://wa.me/${telefono}?text=`,"_blank");
+        };
 
         return (
             <div className="lista-container">
@@ -419,8 +425,8 @@
                                                     borderRadius: "5px",
                                                     padding: "5px 10px",
                                                     zIndex: "1100",
-                                                    right: "50px", // Ajusta según la posición deseada
-                                                    top: "10px"
+                                                    right: "10px", // Ajusta según la posición deseada
+                                                    top: "30px"
                                                 }}>
                                                     <p
                                                         style={{ cursor: "pointer", margin: 0 }}
@@ -440,7 +446,7 @@
                                                     <thead>
                                                         <tr>
                                                             <th>Nombre Completo</th>
-                                                            <th>Padre</th>
+                                                            <th>Tutor</th>
                                                             <th>Domicilio</th>
                                                             <th>Acciones</th>
                                                         </tr>
@@ -497,7 +503,7 @@
                                                     <thead>
                                                         <tr>
                                                             <th>Nombre Completo</th>
-                                                            <th>Padre</th>
+                                                            <th>Tutor</th>
                                                             <th>Domicilio</th>
                                                             <th>Acciones</th>
                                                         </tr>
@@ -710,7 +716,7 @@
 
                             {/* Selección del tutor en el modal de edición */}
                             <div className="input-container">
-                                <label>Padre:</label>
+                                <label>Tutor:</label>
                                 <Select
                                     classNamePrefix="my-select"
                                     value={selectedTutorEdit}

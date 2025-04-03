@@ -78,6 +78,7 @@
 
 /* Estilo de las cartas */
 .grupo-card {
+    position: relative; /*si no jala se quita*/
     background: white;
     border-radius: 10px;
     width: 90vw;

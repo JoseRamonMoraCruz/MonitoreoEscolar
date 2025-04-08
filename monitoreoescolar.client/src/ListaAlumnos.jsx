@@ -51,7 +51,7 @@
                         const groupString = `${grupo.grado}${grupo.letra}`;
                         try {
                             // Asegúrate de que este endpoint incluya TutorUsuario (usando Include en el backend)
-                            const response = await axios.get(`/api/alumnos/grupo/${groupString}`);
+                            const response = await axios.get(`http://localhost:5099/api/alumnos/grupo/${groupString}`);
                             newAlumnosPorGrupo[grupo.id] = response.data;
                         } catch (error) {
                             console.error("Error al obtener alumnos para el grupo", grupo, error);
@@ -70,7 +70,7 @@
                 return;
             }
             try {
-                const response = await axios.get(`/api/usuarios/autocompletePadres?termino=${inputValue}`);
+                const response = await axios.get(`http://localhost:5099/api/usuarios/autocompletePadres?termino=${inputValue}`);
                 const optionsData = response.data.map((padre) => ({
                     value: padre.id_Usuario,
                     label: `${padre.nombre} ${padre.apellidos} - ${padre.correo}`
@@ -99,7 +99,7 @@
 
         const obtenerGrupos = async () => {
             try {
-                const response = await axios.get("/api/grupos");
+                const response = await axios.get("http://localhost:5099/api/grupos");
                 const gruposOrdenados = response.data.sort((a, b) => {
                     const gradeA = parseInt(a.grado, 10);
                     const gradeB = parseInt(b.grado, 10);
@@ -164,7 +164,8 @@
             }
 
             try {
-                // Desestructuramos para excluir TutorUsuario
+                // Desestructuramos para excluir TutorUsuario (si falla algo, quitar el comentario de abajo)
+                // eslint-disable-next-line no-unused-vars
                 const { tutorUsuario: _unused, ...alumnoSinTutor } = alumno;
                 const alumnoParaActualizar = {
                     ...alumnoSinTutor,
@@ -172,7 +173,7 @@
                 };
 
                 const response = await axios.put(
-                    `/api/alumnos/editar/${alumno.id}`,
+                    `http://localhost:5099/api/alumnos/editar/${alumno.id}`,
                     alumnoParaActualizar
                 );
 
@@ -207,7 +208,7 @@
                 return;
             }
             try {
-                await axios.post("/api/grupos/agregar", nuevoGrupo);
+                await axios.post("http://localhost:5099/api/grupos/agregar", nuevoGrupo);
                 alert("✅ Grupo agregado correctamente.");
                 obtenerGrupos(); // Actualiza la lista de grupos
                 cerrarModalGrupo();
@@ -229,7 +230,7 @@
                 return;
             }
             try {
-                const response = await axios.get(`/api/alumnos/grupo/${groupString}`);
+                const response = await axios.get(`http://localhost:5099/api/alumnos/grupo/${groupString}`);
                 setAlumnosGrupo(response.data);
                 setExpandedGroup(grupo);
             } catch (error) {
@@ -253,7 +254,7 @@
         const eliminarGrupo = async () => {
             if (!grupoSeleccionado) return;
             try {
-                await axios.delete(`/api/grupos/eliminar/${grupoSeleccionado.id}`);
+                await axios.delete(`http://localhost:5099/api/grupos/eliminar/${grupoSeleccionado.id}`);
                 alert("✅ Grupo eliminado exitosamente.");
                 setGrupos(grupos.filter((g) => g.id !== grupoSeleccionado.id));
                 if (expandedGroup && expandedGroup.id === grupoSeleccionado.id) {
@@ -281,7 +282,7 @@
         const eliminarAlumno = async () => {
             if (!alumnoSeleccionado) return;
             try {
-                await axios.delete(`/api/alumnos/eliminar/${alumnoSeleccionado.id}`);
+                await axios.delete(`http://localhost:5099/api/alumnos/eliminar/${alumnoSeleccionado.id}`);
                 alert("✅ Alumno eliminado correctamente.");
                 setAlumnosGrupo(alumnosGrupo.filter((al) => al.id !== alumnoSeleccionado.id));
                 cerrarModalEliminarAlumno();
@@ -342,7 +343,7 @@
                 return;
             }
             try {
-                const response = await axios.put(`/api/grupos/editar/${grupoDocenteEditado.id}`, grupoDocenteEditado);
+                const response = await axios.put(`http://localhost:5099/api/grupos/editar/${grupoDocenteEditado.id}`, grupoDocenteEditado);
                 alert(response.data.mensaje);
                 obtenerGrupos(); // Actualiza la lista de grupos
                 cerrarModalEditarDocente();
@@ -353,8 +354,12 @@
         };
         // Constante para la parte del whats
         const abrirWhatsApp = (telefono) => {
-            window.open(`https://wa.me/${telefono}?text=`,"_blank");
+            const mensaje = `Hola!, nos comunicamos desde la escuela de tu hij@ por el siguiente asunto:\n\nEl asunto es......`; // Mensaje predeterminado
+            const mensajeCodificado = encodeURIComponent(mensaje);
+            window.open(`https://wa.me/${telefono}?text=${mensajeCodificado}`, "_blank");
         };
+       
+   
 
         return (
             <div className="lista-container">

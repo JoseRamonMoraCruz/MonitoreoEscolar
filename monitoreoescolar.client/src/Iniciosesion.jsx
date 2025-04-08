@@ -2,7 +2,7 @@
 import axios from 'axios';
 import { useNavigate, Link } from 'react-router-dom';
 import './Iniciosesion.css';
-import birreteIcon from './assets/sombrero-de-graduado.png'; //Carpeta de las imagenes con su icono
+import birreteIcon from './assets/sombrero-de-graduado.png'; 
 
 const Login = () => {
     const [email, setEmail] = useState('');
@@ -24,10 +24,10 @@ const Login = () => {
             alert(response.data.mensaje);
 
             if (usuario.tipo_Usuario === "personal") {
-                navigate("/menu"); // Redirige al menú si es Personal Escolar
+                navigate("/menu"); 
             } else if (usuario.tipo_Usuario === "padre") {
-                localStorage.setItem("idPadre", usuario.id_Usuario); //  AQUI SE GUARDA EL ID DEL PADRE PARA SU INICIO DE SESION
-                navigate("/padre"); // Para padres 
+                localStorage.setItem("idPadre", usuario.id_Usuario); // 
+                navigate("/padre"); 
             }
         } catch (error) {
             setError(error.response?.data?.mensaje || "❌ Error en el inicio de sesión.");

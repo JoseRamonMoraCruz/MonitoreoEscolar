@@ -1,4 +1,4 @@
-﻿    import { useState, useEffect } from "react";
+﻿    import { useState, useEffect, useRef } from "react";
     import axios from "axios";
     import "./ListaAlumnos.css";
     import addIcon from "./assets/agregar-grupo.png";
@@ -38,6 +38,7 @@
         const [menuGrupo, setMenuGrupo] = useState(null); // Guardará el grupo que tenga abierto el menú
         const [modalEditarDocente, setModalEditarDocente] = useState(false);
         const [grupoDocenteEditado, setGrupoDocenteEditado] = useState(null);
+        const menuRef = useRef(null); // Referencia para el menú
 
         useEffect(() => {
             obtenerGrupos();
@@ -63,6 +64,26 @@
                 fetchAllStudents();
             }
         }, [grupos]);
+
+        //Es pa ver si el usuario hizo click afuera se cierre el menu de los puntitos
+        useEffect(() => {
+            const handleClickOutside = (event) => {
+                // Verifica si el menú está abierto y si el click ocurrió fuera del contenedor
+                if (menuRef.current && !menuRef.current.contains(event.target)) {
+                    cerrarMenuGrupo();
+                }
+            };
+
+            // Si el menú está abierto, agrega el event listener
+            if (menuGrupo) {
+                document.addEventListener("mousedown", handleClickOutside);
+            }
+
+            // Limpia el listener al desmontar o al cambiar el estado
+            return () => {
+                document.removeEventListener("mousedown", handleClickOutside);
+            };
+        }, [menuGrupo]);
 
         const fetchTutorOptionsEdit = async (inputValue) => {
             if (!inputValue || inputValue.length < 2) {
@@ -335,22 +356,49 @@
             setGrupoDocenteEditado(null);
         };
 
-        // Función para actualizar el nombre del docente (suponiendo un endpoint PUT /api/grupos/editar/{id})
-        const actualizarNombreDocente = async () => {
-            if (!grupoDocenteEditado.nombreDocente) {
-                alert("Por favor, ingrese un nombre para el docente.");
+        // Función para editar el grupo
+        const actualizarGrupoDocente = async () => {
+            // Puedes agregar validaciones adicionales si es necesario
+            if (!grupoDocenteEditado.grado || !grupoDocenteEditado.letra) {
+                alert("❌ Por favor, seleccione el grado y el grupo.");
                 return;
             }
             try {
-                const response = await axios.put(`/api/grupos/editar/${grupoDocenteEditado.id}`, grupoDocenteEditado);
+                const response = await axios.put(
+                    `/api/grupos/editar/${grupoDocenteEditado.id}`,
+                    grupoDocenteEditado
+                );
                 alert(response.data.mensaje);
                 obtenerGrupos(); // Actualiza la lista de grupos
                 cerrarModalEditarDocente();
             } catch (error) {
-                console.error("Error al actualizar el nombre del docente:", error.response?.data || error.message);
-                alert("❌ No se pudo actualizar el nombre del docente.");
+                console.error(
+                    "Error al actualizar grupo y docente:",
+                    error.response?.data || error.message
+                );
+                alert(
+                    "❌ No se pudo actualizar el grupo y el docente. " +
+                    (error.response?.data.mensaje || error.message)
+                );
             }
         };
+        //FUNCION PARA LA CONFIRMACION DE ELIMINAR DOCENTE
+        const confirmarEliminarDocente = async (grupo) => {
+            const confirmacion = window.confirm("¿Está seguro que desea eliminar el docente?");
+            if (!confirmacion) return;
+
+            try {
+                // Llamada al nuevo endpoint para eliminar el docente
+                const response = await axios.put(`/api/grupos/eliminarDocente/${grupo.id}`);
+                alert(response.data.mensaje);
+                obtenerGrupos(); // Actualiza la lista de grupos
+                cerrarMenuGrupo();
+            } catch (error) {
+                console.error("Error al eliminar el docente:", error.response?.data || error.message);
+                alert("❌ No se pudo eliminar el docente: " + (error.response?.data.mensaje || error.message));
+            }
+        };
+
         // Constante para la parte del whats
         const abrirWhatsApp = (telefono) => {
             window.open(`https://wa.me/${telefono}?text=`,"_blank");
@@ -418,21 +466,34 @@
                                             </div>
                                             {/* Menú desplegable para el grupo */}
                                             {menuGrupo && menuGrupo.id === grupo.id && (
-                                                <div className="menu-editar-grupo" style={{
-                                                    position: "absolute",
-                                                    background: "#fff",
-                                                    boxShadow: "0px 2px 5px rgba(0,0,0,0.3)",
-                                                    borderRadius: "5px",
-                                                    padding: "5px 10px",
-                                                    zIndex: "1100",
-                                                    right: "10px", // Ajusta según la posición deseada
-                                                    top: "30px"
-                                                }}>
+                                                <div
+                                                    ref={menuRef}
+                                                    className="menu-editar-grupo"
+                                                    style={{
+                                                        position: "absolute",
+                                                        background: "#fff",
+                                                        boxShadow: "0px 2px 5px rgba(0,0,0,0.3)",
+                                                        borderRadius: "5px",
+                                                        padding: "5px 10px",
+                                                        zIndex: "1100",
+                                                        right: "10px", // Ajusta según la posición deseada
+                                                        top: "30px",   // Ajusta según la posición deseada
+                                                    }}
+                                                >
                                                     <p
-                                                        style={{ cursor: "pointer", margin: 0 }}
-                                                        onClick={() => abrirModalEditarDocente(grupo)}
+                                                        style={{ cursor: "pointer", margin: 0, padding: "5px 0" }}
+                                                        onClick={() => {
+                                                            abrirModalEditarDocente(grupo);
+                                                            cerrarMenuGrupo();
+                                                        }}
                                                     >
-                                                        Editar nombre del Docente
+                                                        Editar Grupo
+                                                    </p>
+                                                    <p
+                                                        style={{ cursor: "pointer", margin: 0, padding: "5px 0", color: "red" }}
+                                                        onClick={() => confirmarEliminarDocente(grupo)}
+                                                    >
+                                                        Eliminar Docente
                                                     </p>
                                                 </div>
                                             )}
@@ -445,8 +506,8 @@
                                                 <table className="tabla-alumnos">
                                                     <thead>
                                                         <tr>
-                                                            <th>Nombre Completo</th>
-                                                            <th>Tutor</th>
+                                                            <th>Nombre Alumno</th>
+                                                            <th>Padre</th>
                                                             <th>Domicilio</th>
                                                             <th>Acciones</th>
                                                         </tr>
@@ -502,8 +563,8 @@
                                                 <table className="tabla-alumnos">
                                                     <thead>
                                                         <tr>
-                                                            <th>Nombre Completo</th>
-                                                            <th>Tutor</th>
+                                                            <th>Nombre Alumno</th>
+                                                            <th>Padre</th>
                                                             <th>Domicilio</th>
                                                             <th>Acciones</th>
                                                         </tr>
@@ -644,6 +705,8 @@
                                 {grupoSeleccionado?.letra}
                                 {grupoSeleccionado?.nombreDocente &&
                                     `, asignado al docente ${grupoSeleccionado.nombreDocente}`}?
+                                <br /><br />
+                                <strong>Atención:</strong> Al eliminar este grupo se eliminarán todos los alumnos asociados.
                             </p>
                             <div className="modal-buttons">
                                 <button className="confirm-button" onClick={eliminarGrupo}>
@@ -657,7 +720,7 @@
                     </div>
                 )}
 
-                {/* MODAL DE EDITAR */}
+                {/* MODAL DE EDITAR ALUMNO */}
                 {modalEditarAlumno && alumnoSeleccionado && (
                     <div className="modal-overlay">
                         <div className="modal-content">
@@ -756,20 +819,70 @@
                             <button className="close-button" onClick={cerrarModalEditarDocente}>
                                 ✖
                             </button>
-                            <h2 className="modal-title">Editar Nombre del Docente</h2>
-                            <div className="input-container">
-                                <label>Nombre del Docente:</label>
-                                <input
-                                    type="text"
-                                    value={grupoDocenteEditado.nombreDocente}
-                                    onChange={(e) =>
-                                        setGrupoDocenteEditado({ ...grupoDocenteEditado, nombreDocente: e.target.value })
-                                    }
-                                />
+                            <h2 className="modal-title">Editar Grupo</h2>
+                            <div className="form-group">
+                                <div className="select-container">
+                                    <div className="input-group">
+                                        <label>Grado:</label>
+                                        <select
+                                            name="grado"
+                                            value={grupoDocenteEditado.grado}
+                                            onChange={(e) =>
+                                                setGrupoDocenteEditado({
+                                                    ...grupoDocenteEditado,
+                                                    grado: e.target.value,
+                                                })
+                                            }
+                                        >
+                                            <option value="">Seleccione</option>
+                                            {[1, 2, 3, 4, 5, 6].map((grado) => (
+                                                <option key={grado} value={grado}>
+                                                    {grado}
+                                                </option>
+                                            ))}
+                                        </select>
+                                    </div>
+                                    <div className="input-group">
+                                        <label>Grupo:</label>
+                                        <select
+                                            name="letra"
+                                            value={grupoDocenteEditado.letra}
+                                            onChange={(e) =>
+                                                setGrupoDocenteEditado({
+                                                    ...grupoDocenteEditado,
+                                                    letra: e.target.value,
+                                                })
+                                            }
+                                        >
+                                            <option value="">Seleccione</option>
+                                            {["A", "B", "C", "D", "E", "F"].map((letra) => (
+                                                <option key={letra} value={letra}>
+                                                    {letra}
+                                                </option>
+                                            ))}
+                                        </select>
+                                    </div>
+                                </div>
+                                <div className="input-container">
+                                    <label>Nombre del Docente:</label>
+                                    <input
+                                        type="text"
+                                        value={grupoDocenteEditado.nombreDocente}
+                                        onChange={(e) =>
+                                            setGrupoDocenteEditado({
+                                                ...grupoDocenteEditado,
+                                                nombreDocente: e.target.value,
+                                            })
+                                        }
+                                        placeholder="Nombre del docente"
+                                    />
+                                </div>
                             </div>
-                            <button className="save-button" onClick={actualizarNombreDocente}>
-                                Guardar Cambios
-                            </button>
+                            <div className="modal-buttons" style={{ justifyContent: "center", gap: "20px" }}>
+                                <button className="save-button" onClick={actualizarGrupoDocente}>
+                                    Guardar Cambios
+                                </button>
+                            </div>
                         </div>
                     </div>
                 )}

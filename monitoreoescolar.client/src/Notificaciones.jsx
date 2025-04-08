@@ -21,7 +21,7 @@ const Notificaciones = () => {
         setMensaje("");
         try {
             const nombreBusqueda = nombre.trim();
-            const response = await axios.get("/api/usuarios/buscarPadre", { params: { nombre: nombreBusqueda } });
+            const response = await axios.get("http://localhost:5099/api/usuarios/buscarPadre", { params: { nombre: nombreBusqueda } });
             console.log("Respuesta de la API:", response.data);
 
             setResultados(response.data);
@@ -45,7 +45,9 @@ const Notificaciones = () => {
 
     //  Función para abrir WhatsApp con el número
     const enviarWhatsApp = (telefono) => {
-        window.open(`https://wa.me/${telefono}?text=`, "_blank");
+        const mensaje = `Hola!, nos comunicamos desde la escuela de tu hij@ por el siguiente asunto:\n\nEl asunto es......`; // Mensaje predeterminado
+        const mensajeCodificado = encodeURIComponent(mensaje);
+        window.open(`https://wa.me/${telefono}?text=${mensajeCodificado}`, "_blank");
     };
 
     return (

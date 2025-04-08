@@ -185,7 +185,8 @@
             }
 
             try {
-                // Desestructuramos para excluir TutorUsuario
+                // Desestructuramos para excluir TutorUsuario (si falla algo, quitar el comentario de abajo)
+                // eslint-disable-next-line no-unused-vars
                 const { tutorUsuario: _unused, ...alumnoSinTutor } = alumno;
                 const alumnoParaActualizar = {
                     ...alumnoSinTutor,
@@ -401,8 +402,12 @@
 
         // Constante para la parte del whats
         const abrirWhatsApp = (telefono) => {
-            window.open(`https://wa.me/${telefono}?text=`,"_blank");
+            const mensaje = `Hola!, nos comunicamos desde la escuela de tu hij@ por el siguiente asunto:\n\nEl asunto es......`; // Mensaje predeterminado
+            const mensajeCodificado = encodeURIComponent(mensaje);
+            window.open(`https://wa.me/${telefono}?text=${mensajeCodificado}`, "_blank");
         };
+       
+   
 
         return (
             <div className="lista-container">

@@ -10,6 +10,7 @@ import Padre from "./Padre";
 import ActualizarPassword from './ActualizarPassword';
 import ListaAlumnos from "./ListaAlumnos";
 
+
 function App() {
     return (
         <>

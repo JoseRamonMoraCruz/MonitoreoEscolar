@@ -1,6 +1,6 @@
 ﻿import { useState } from "react";
 import axios from "axios";
-import Select from "react-select"; // Importamos react-select
+import Select from "react-select"; 
 import "./AgregarAlumno.css";
 import huellaIcon from "./assets/huella-dactilar.png";
 import agregarIcon from "./assets/agregar-alumno.png";
@@ -10,20 +10,17 @@ const AgregarAlumno = () => {
     const [alumno, setAlumno] = useState({
         nombre: "",
         apellidos: "",
-        grupo: "",   // Se genera automáticamente (ej: "1A")
-        grado: "",   // Para controlar el grado
-        letra: "",   // Para controlar la letra (A, B, C, …)
+        grupo: "",   
+        grado: "",   
+        letra: "",   
         tutor: "",
         domicilio: "",
-        tutorId: null // Campo para almacenar el Id_Usuario del padre
+        tutorId: null 
     });
 
-    // Estado para las opciones del autocompletado de padres (se cargarán al escribir)
     const [tutorOptions, setTutorOptions] = useState([]);
-    // Estado para la opción seleccionada en el autocompletado
     const [selectedTutor, setSelectedTutor] = useState(null);
 
-    // Maneja cambios en los campos de texto (nombre, apellidos, domicilio, etc.)
     const handleChange = (e) => {
         setAlumno({
             ...alumno,
@@ -31,7 +28,6 @@ const AgregarAlumno = () => {
         });
     };
 
-    // Maneja el cambio de Grado (ej: 1, 2, 3, …)
     const handleChangeGrado = (e) => {
         const newGrado = e.target.value;
         setAlumno({
@@ -41,7 +37,7 @@ const AgregarAlumno = () => {
         });
     };
 
-    // Maneja el cambio de Letra (ej: A, B, C, …)
+    // Maneja el cambio de Letra 
     const handleChangeLetra = (e) => {
         const newLetra = e.target.value;
         setAlumno({
@@ -74,7 +70,7 @@ const AgregarAlumno = () => {
     const handleTutorInputChange = (inputValue, { action }) => {
         if (action === "input-change") {
             fetchTutorOptions(inputValue);
-            return inputValue; // Retorna el valor escrito para que se muestre correctamente
+            return inputValue; 
         }
         return inputValue;
     };
@@ -134,6 +130,7 @@ const AgregarAlumno = () => {
     };
 
     return (
+      <div className="bootstrap-scope">
         <div className="agregar-alumno-container">
             <div className="agregar-alumno-content">
                 <h2 className="agregar-alumno-title">📑 Registra un Alumno</h2>
@@ -230,6 +227,7 @@ const AgregarAlumno = () => {
                         </button>
                     </div>
                 </form>
+            </div>
             </div>
         </div>
     );

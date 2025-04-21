@@ -470,34 +470,16 @@
                                                 />
                                             </div>
                                             {/* Menú desplegable para el grupo */}
+                                            {/* Menú desplegable para el grupo */}
                                             {menuGrupo && menuGrupo.id === grupo.id && (
-                                                <div
-                                                    ref={menuRef}
-                                                    className="menu-editar-grupo"
-                                                    style={{
-                                                        position: "absolute",
-                                                        background: "#fff",
-                                                        boxShadow: "0px 2px 5px rgba(0,0,0,0.3)",
-                                                        borderRadius: "5px",
-                                                        padding: "5px 10px",
-                                                        zIndex: "1100",
-                                                        right: "10px", // Ajusta según la posición deseada
-                                                        top: "30px",   // Ajusta según la posición deseada
-                                                    }}
-                                                >
-                                                    <p
-                                                        style={{ cursor: "pointer", margin: 0, padding: "5px 0" }}
-                                                        onClick={() => {
-                                                            abrirModalEditarDocente(grupo);
-                                                            cerrarMenuGrupo();
-                                                        }}
-                                                    >
+                                                <div ref={menuRef} className="menu-editar-grupo">
+                                                    <p className="opcion-menu" onClick={() => {
+                                                        abrirModalEditarDocente(grupo);
+                                                        cerrarMenuGrupo();
+                                                    }}>
                                                         Editar Grupo
                                                     </p>
-                                                    <p
-                                                        style={{ cursor: "pointer", margin: 0, padding: "5px 0", color: "red" }}
-                                                        onClick={() => confirmarEliminarDocente(grupo)}
-                                                    >
+                                                    <p className="opcion-menu eliminar" onClick={() => confirmarEliminarDocente(grupo)}>
                                                         Eliminar Docente
                                                     </p>
                                                 </div>

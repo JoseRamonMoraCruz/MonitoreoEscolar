@@ -1,18 +1,18 @@
 ﻿import { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import familiaIcon from "./assets/familia.png"; // Imagen para "Padre"
-import escuelaIcon from "./assets/edificio-escolar.png"; // Imagen para "Personal Escolar"
+import familiaIcon from "./assets/familia.png"; 
+import escuelaIcon from "./assets/edificio-escolar.png"; 
 import AtrasIcon from './assets/hacia-atras.png'; 
 
 export default function Registro() {
-    const [tipoUsuario, setTipoUsuario] = useState("personal"); // Por defecto en "Personal Escolar"
+    const [tipoUsuario, setTipoUsuario] = useState("personal"); 
     const [nombre, setNombre] = useState("");
     const [apellidos, setApellidos] = useState("");
     const [correo, setCorreo] = useState("");
     const [telefono, setTelefono] = useState("");
     const [contrasena, setContrasena] = useState("");
-    const [nombreAlumno, setNombreAlumno] = useState(""); // Nuevo campo para Padres
+    const [nombreAlumno, setNombreAlumno] = useState(""); 
     const [error, setError] = useState("");
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();

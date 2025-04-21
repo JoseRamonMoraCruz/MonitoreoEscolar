@@ -13,15 +13,14 @@
     border-radius: 15px;
     box-shadow: 10px 10px 20px rgba(0, 0, 0, 1);
     text-align: center;
-    width: 450px; /* Tamaño base */
-    position: relative; /* Para posicionar la flecha */
-    transition: all 0.3s ease-in-out; /* Animación suave */
+    width: 450px; 
+    position: relative; 
+    transition: all 0.3s ease-in-out; 
 }
 
-    /* Si el usuario es Padre, reducimos un poco el tamaño */
     .register-container.padre {
-        width: 420px; /* Reducido un poco */
-        padding: 25px; /* Un poco menos de padding */
+        width: 420px; 
+        padding: 25px; 
     }
 
 
@@ -40,9 +39,8 @@
         transform: scale(1.2);
     }
 
-/* 🔹 Estilo de la imagen del botón */
 .back-icon {
-    width: 35px; /* Ajusta el tamaño según sea necesario */
+    width: 35px; 
     height: 35px;
 }
 

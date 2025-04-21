@@ -7,7 +7,7 @@ import "./SubirCalif.css";
 const SubirCalif = () => {
     const [archivo, setArchivo] = useState(null);
     const [nombreArchivo, setNombreArchivo] = useState("");
-    const [datos, setDatos] = useState([]); //  Aquí guardaremos las calificaciones
+    const [datos, setDatos] = useState([]); 
     const [cargando, setCargando] = useState(false);
     const fileInputRef = useRef(null);
 
@@ -15,14 +15,14 @@ const SubirCalif = () => {
     useEffect(() => {
         const cargarCalificaciones = async () => {
             try {
-                const response = await axios.get("/api/calificaciones"); // ⬅️ Endpoint GET para traer datos
-                setDatos(response.data); //  Guardamos los datos en el estado
+                const response = await axios.get("/api/calificaciones"); 
+                setDatos(response.data); 
             } catch (error) {
                 console.error(" Error cargando calificaciones:", error);
             }
         };
 
-        cargarCalificaciones(); //  Se ejecuta cuando se monta el componente
+        cargarCalificaciones(); 
     }, []);
 
     const handleFileSelect = (event) => {
@@ -53,16 +53,16 @@ const SubirCalif = () => {
 
             console.log("📥 Respuesta del servidor:", response.data);
 
-            // ✅ Mostrar solo las calificaciones recién subidas
+            //  Mostrar solo las calificaciones recién subidas
             if (response.data && response.data.calificaciones) {
                 setDatos(response.data.calificaciones);
             } else {
-                setDatos([]); // fallback por si no vino nada
+                setDatos([]); 
             }
 
             alert(`✅ ${response.data.mensaje}`);
 
-            // 🧼 Limpia el archivo después de subir
+            //  Limpia el archivo después de subir
             setArchivo(null);
             setNombreArchivo("");
             fileInputRef.current.value = null;
@@ -119,7 +119,7 @@ const SubirCalif = () => {
                         />
                     </div>
 
-                    {/* 🔹 Contenedor de los botones */}
+                    {/*  Contenedor de los botones */}
                     <div className="contenedor-botones">
                         <button className="boton-reiniciar" onClick={handleReset}>
                             <img src={reiniciarIcono} alt="Reiniciar" className="icono-reiniciar" />

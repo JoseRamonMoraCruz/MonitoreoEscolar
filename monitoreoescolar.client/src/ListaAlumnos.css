@@ -475,4 +475,25 @@ input {
         .padre-whatsapp img:hover {
             transform: scale(1.15);
         }
+/*Seccion para el menu*/
+.menu-editar-grupo {
+    position: absolute;
+    background-color: #fff;
+    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.3);
+    border-radius: 5px;
+    padding: 5px 10px;
+    z-index: 1100;
+    right: 10px;
+    top: 30px;
+}
+
+.opcion-menu {
+    cursor: pointer;
+    margin: 0;
+    padding: 5px 0;
+}
+
+    .opcion-menu.eliminar {
+        color: red;
+    }
 

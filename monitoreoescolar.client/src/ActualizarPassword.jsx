@@ -13,7 +13,7 @@ function ActualizarPassword() {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            const response = await axios.post("/api/usuarios/actualizar-password", { correo, newPassword });
+            const response = await axios.post(" http://localhost:5099/api/usuarios/actualizar-password", { correo, newPassword });
             setMessage(response.data.mensaje);
             setError('');
             // Opcional: redirigir al login después de unos segundos

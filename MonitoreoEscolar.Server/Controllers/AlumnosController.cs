@@ -98,7 +98,7 @@ namespace MonitoreoEscolar.Server.Controllers
                             id_Usuario = a.TutorUsuario.Id_Usuario,
                             nombre = a.TutorUsuario.Nombre,
                             apellidos = a.TutorUsuario.Apellidos,
-                            telefono = a.TutorUsuario.Telefono, // ⚠️ Asegúrate de incluir esto
+                            telefono = a.TutorUsuario.Telefono,  
                             correo = a.TutorUsuario.Correo
                         }
                     })

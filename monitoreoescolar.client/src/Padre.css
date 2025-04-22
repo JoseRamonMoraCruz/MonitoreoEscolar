@@ -1,9 +1,15 @@
 ﻿html, body {
-    height: 100%;
+    min-height: 100vh; 
+    height: auto; 
     margin: 0;
+    padding: 0;
     font-family: Arial, sans-serif;
-    background: linear-gradient(135deg, #89f7fe, #66a6ff); /* Fondo */
+    background: linear-gradient(135deg, #89f7fe, #66a6ff);
+    box-sizing: border-box;
+    overflow-x: hidden;
 }
+
+
 
 /* Línea negra tipo menú en la parte superior */
 .menu-bar {

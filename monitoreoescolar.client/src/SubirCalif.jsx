@@ -15,7 +15,7 @@ const SubirCalif = () => {
     useEffect(() => {
         const cargarCalificaciones = async () => {
             try {
-                const response = await axios.get(" http://localhost:5099/api/calificaciones"); 
+                const response = await axios.get("/api/calificaciones"); 
                 setDatos(response.data); 
             } catch (error) {
                 console.error(" Error cargando calificaciones:", error);
@@ -32,7 +32,7 @@ const SubirCalif = () => {
             setNombreArchivo(file.name);
         }
     };
-
+    
     const handleUpload = async () => {
         if (!archivo) {
             alert(" Selecciona un archivo Excel primero.");
@@ -47,7 +47,7 @@ const SubirCalif = () => {
         try {
             console.log("📤 Enviando archivo:", archivo.name);
 
-            const response = await axios.post(" http://localhost:5099/api/calificaciones/subirCalificaciones", formData, {
+            const response = await axios.post("/api/calificaciones/subirCalificaciones", formData, {
                 headers: { "Content-Type": "multipart/form-data" }
             });
 

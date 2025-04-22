@@ -35,8 +35,8 @@
 
 /* Estilos del link "Cerrar Sesión" */
 .logout-link {
-    color: white; 
-    text-decoration: none; 
+    color: white;
+    text-decoration: none;
     font-size: 16px;
     font-weight: bold;
     padding: 10px 15px;
@@ -46,7 +46,7 @@
 
     /* Cambio de color al pasar el mouse */
     .logout-link:hover {
-        background: #ff4d4d; 
+        background: #ff4d4d;
         color: white;
     }
 

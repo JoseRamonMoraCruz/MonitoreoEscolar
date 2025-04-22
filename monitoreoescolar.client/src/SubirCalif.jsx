@@ -32,7 +32,7 @@ const SubirCalif = () => {
             setNombreArchivo(file.name);
         }
     };
-
+    
     const handleUpload = async () => {
         if (!archivo) {
             alert(" Selecciona un archivo Excel primero.");

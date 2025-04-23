@@ -11,7 +11,7 @@ const Padre = () => {
 
     const descargarPDF = async (alumnoId) => { // función para descargar el PDF
         try {
-            const response = await axios.get(`http://localhost:5099/api/padres/descargar-reporte/${alumnoId}`, {
+            const response = await axios.get(`/api/padres/descargar-reporte/${alumnoId}`, {
                 responseType: "blob", // importante para archivos binarios
             });
 
@@ -39,7 +39,7 @@ const Padre = () => {
         
         const obtenerCalificaciones = async () => {
             try {
-                const response = await axios.get(`http://localhost:5099/api/padres/obtener-calificaciones-hijos/${idPadre}`);
+                const response = await axios.get(`/api/padres/obtener-calificaciones-hijos/${idPadre}`);
                 setHijosConCalificaciones(response.data);
             } catch (error) {
                 console.error("❌ Error al obtener calificaciones:", error);
@@ -60,7 +60,7 @@ const Padre = () => {
         // Solo pedir reportes si no se han cargado aún
         if (!reportesPorAlumno[alumnoId]) {
             try {
-                const response = await axios.get(`http://localhost:5099/api/padres/obtener-reportes-hijo/${alumnoId}`);
+                const response = await axios.get(`/api/padres/obtener-reportes-hijo/${alumnoId}`);
                 
                 console.log("📥 Reportes recibidos del backend:", response.data); // 👉 Verifica lo que llega del backend
 

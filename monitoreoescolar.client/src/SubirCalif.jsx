@@ -1,4 +1,4 @@
-﻿import { useState, useRef, useEffect } from "react";
+﻿import { useState, useRef, useEffect, useMemo } from "react";
 import reiniciarIcono from "./assets/reiniciar.png";
 import axios from "axios";
 import "./SubirCalif.css";
@@ -24,7 +24,17 @@ const SubirCalif = () => {
 
         cargarCalificaciones(); 
     }, []);
-
+    const materiasUnicas = useMemo(() => {
+        const materias = new Set();
+        datos.forEach(alumno => {
+            Object.keys(alumno).forEach(key => {
+                if (!["alumno", "grupo", "parcialUnidad"].includes(key)) {
+                    materias.add(key);
+                }
+            });
+        });
+        return Array.from(materias);
+    }, [datos]);
     const handleFileSelect = (event) => {
         const file = event.target.files[0];
         if (file) {
@@ -54,11 +64,10 @@ const SubirCalif = () => {
             console.log("📥 Respuesta del servidor:", response.data);
 
             //  Mostrar solo las calificaciones recién subidas
-            if (response.data && response.data.calificaciones) {
-                setDatos(response.data.calificaciones);
-            } else {
-                setDatos([]); 
-            }
+            // 🔄 Después de subir, vuelve a cargar el resumen real
+            const resumen = await axios.get("http://localhost:5099/api/calificaciones/obtenerCalificaciones");
+            setDatos(resumen.data);
+
 
             alert(`✅ ${response.data.mensaje}`);
 
@@ -80,19 +89,6 @@ const SubirCalif = () => {
             setCargando(false);
         }
     };
-
-
-
-   /* // Nueva función para obtener calificaciones desde la API
-    const fetchCalificaciones = async () => {
-        try {
-            const response = await axios.get("/api/calificaciones/obtenerCalificaciones");
-            setDatos(response.data); // ✅ Actualiza la tabla con los datos de la BD
-            console.log("📊 Calificaciones obtenidas:", response.data);
-        } catch (error) {
-            console.error("⚠ Error al obtener calificaciones:", error);
-        }
-    };*/
 
     // Función para limpiar la tabla sin afectar la base de datos
     const handleReset = () => {
@@ -136,29 +132,33 @@ const SubirCalif = () => {
                         <thead>
                             <tr>
                                 <th>Alumno</th>
-                                <th>Materia</th>
-                                <th>Calificación</th>
+                                {materiasUnicas.map((materia, index) => (
+                                    <th key={index}>{materia}</th>
+                                ))}
                                 <th>Grupo</th>
                                 <th>Parcial/Unidad</th>
                             </tr>
                         </thead>
+
                         <tbody>
                             {datos && datos.length > 0 ? (
                                 datos.map((alumno, index) => (
                                     <tr key={index}>
-                                        <td>{alumno.nombre}</td>
-                                        <td>{alumno.materia}</td>
-                                        <td>{alumno.calificacionValor || "N/A"}</td>
+                                        <td>{alumno.alumno}</td>
+                                        {materiasUnicas.map((materia, idx) => (
+                                            <td key={idx}>{alumno[materia] ?? "N/A"}</td>
+                                        ))}
                                         <td>{alumno.grupo}</td>
-                                        <td>{alumno.parcialUnidad || "N/A"}</td>
+                                        <td>{alumno.parcialUnidad}</td>
                                     </tr>
                                 ))
                             ) : (
                                 <tr>
-                                    <td colSpan="5">No hay datos cargados aún.</td>
+                                    <td colSpan={materiasUnicas.length + 3}>No hay datos cargados aún.</td>
                                 </tr>
                             )}
                         </tbody>
+
                     </table>
                 </div>
             </div>

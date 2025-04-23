@@ -23,15 +23,10 @@ namespace MonitoreoEscolar.Server.Controllers
         public async Task<IActionResult> SubirCalificaciones(IFormFile file)
         {
             if (file == null || file.Length <= 0)
-            {
-                _logger.LogWarning("Archivo no válido o vacío.");
                 return BadRequest("Archivo no válido o vacío.");
-            }
 
             try
             {
-                _logger.LogInformation($"Archivo recibido: {file.FileName}, Tamaño: {file.Length} bytes");
-
                 ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
                 using var stream = new MemoryStream();
                 await file.CopyToAsync(stream);
@@ -39,111 +34,81 @@ namespace MonitoreoEscolar.Server.Controllers
                 var worksheet = package.Workbook.Worksheets[0];
 
                 if (worksheet == null)
-                {
-                    _logger.LogWarning("No se encontró una hoja en el archivo Excel.");
                     return BadRequest("No se encontró una hoja en el archivo Excel.");
-                }
 
                 var rowCount = worksheet.Dimension?.Rows ?? 0;
-                _logger.LogInformation($"Total de filas en Excel: {rowCount}");
 
-                if (rowCount < 2)
-                {
-                    _logger.LogWarning("El archivo Excel no tiene suficientes filas de datos.");
-                    return BadRequest("El archivo Excel no tiene suficientes filas de datos.");
-                }
+                // Cache alumnos y grupos para mejor rendimiento
+                var alumnosDict = await _context.Alumnos.ToDictionaryAsync(a => Normalizar(a.NombreCompleto));
+                var gruposDict = await _context.Grupos.ToDictionaryAsync(
+                    g => $"{g.Grado}{g.Letra}".ToUpper()
+                );
 
-                List<Calificacion> calificacionesGuardadas = new List<Calificacion>();
+                var calificacionesGuardadas = new List<Calificacion>();
 
                 for (int row = 2; row <= rowCount; row++)
                 {
-                    string grupoStr = worksheet.Cells[row, 4].Text.Trim();
-                    _logger.LogInformation($" Fila {row} - Grupo en Excel: '{grupoStr}'");
-
-                    if (string.IsNullOrEmpty(grupoStr) || grupoStr.Length < 2)
-                    {
-                        _logger.LogWarning($" Grupo inválido o con formato incorrecto en fila {row}: '{grupoStr}'");
-                        continue;
-                    }
-
-                    string gradoStr = grupoStr.Substring(0, grupoStr.Length - 1);
-                    string letra = grupoStr.Substring(grupoStr.Length - 1, 1);
-
-                    if (!int.TryParse(gradoStr, out int grado))
-                    {
-                        _logger.LogWarning($" No se pudo extraer el grado en fila {row}: '{grupoStr}'");
-                        continue;
-                    }
-
-                    var grupoEncontrado = await _context.Grupos.FirstOrDefaultAsync(g => g.Grado == grado && g.Letra == letra);
-
-                    if (grupoEncontrado == null)
-                    {
-                        _logger.LogWarning($" Grupo '{grupoStr}' no encontrado en la BD para la fila {row}.");
-                        continue;
-                    }
-
                     string nombreAlumno = worksheet.Cells[row, 1].Text.Trim();
+                    string grupoStr = worksheet.Cells[row, worksheet.Dimension.Columns - 1].Text.Trim();
+                    string parcialUnidad = worksheet.Cells[row, worksheet.Dimension.Columns].Text.Trim();
+
+                    if (string.IsNullOrWhiteSpace(nombreAlumno) || string.IsNullOrWhiteSpace(grupoStr))
+                        continue;
+
                     string nombreNormalizado = Normalizar(nombreAlumno);
 
-                    var alumno = await _context.Alumnos
-                        .FirstOrDefaultAsync(a => a.NombreCompletoNormalizado == nombreNormalizado);
-
-                    if (alumno == null)
-                    {
-                        _logger.LogWarning($"Alumno '{nombreAlumno}' no encontrado en fila {row}.");
+                    if (!alumnosDict.TryGetValue(nombreNormalizado, out var alumno))
                         continue;
-                    }
 
-                    string calificacionTexto = worksheet.Cells[row, 3].Text.Trim();
-                    if (!int.TryParse(calificacionTexto, out int calificacionValor))
-                    {
-                        _logger.LogWarning($" Calificación inválida en fila {row}: '{calificacionTexto}'");
+                    if (!gruposDict.TryGetValue(grupoStr.ToUpper(), out var grupo))
                         continue;
-                    }
 
-                    string materia = worksheet.Cells[row, 2].Text.Trim();
-                    string parcialUnidad = worksheet.Cells[row, 5].Text.Trim();
-
-                    // Validación contra duplicados
-                    bool yaExiste = await _context.Calificaciones.AnyAsync(c =>
-                        c.AlumnoId == alumno.Id &&
-                        c.Materia == materia &&
-                        c.GrupoId == grupoEncontrado.Id &&
-                        c.ParcialUnidad == parcialUnidad
-                    );
-
-                    if (yaExiste)
+                    // Leer dinámicamente columnas tipo Materia N / Calificación de Materia N
+                    for (int col = 2; col < worksheet.Dimension.Columns - 2; col += 2)
                     {
-                        _logger.LogWarning($" Dato duplicado. Ya existe calificación para '{nombreAlumno}', materia '{materia}', grupo '{grupoStr}', unidad '{parcialUnidad}' en fila {row}.");
-                        continue;
+                        string materia = worksheet.Cells[row, col].Text.Trim();
+                        string calificacionTexto = worksheet.Cells[row, col + 1].Text.Trim();
+
+                        if (string.IsNullOrWhiteSpace(materia) || string.IsNullOrWhiteSpace(calificacionTexto))
+                            continue;
+
+                        if (!int.TryParse(calificacionTexto, out int calificacionValor))
+                            continue;
+
+                        // Evitar duplicados
+                        bool yaExiste = await _context.Calificaciones.AnyAsync(c =>
+                            c.AlumnoId == alumno.Id &&
+                            c.Materia == materia &&
+                            c.GrupoId == grupo.Id &&
+                            c.ParcialUnidad == parcialUnidad
+                        );
+
+                        if (yaExiste)
+                            continue;
+
+                        var calificacion = new Calificacion
+                        {
+                            Nombre = nombreAlumno,
+                            Materia = materia,
+                            CalificacionValor = calificacionValor,
+                            GrupoId = grupo.Id,
+                            ParcialUnidad = parcialUnidad,
+                            AlumnoId = alumno.Id
+                        };
+
+                        calificacionesGuardadas.Add(calificacion);
                     }
-
-                    var calificacion = new Calificacion
-                    {
-                        Nombre = nombreAlumno,
-                        Materia = materia,
-                        CalificacionValor = calificacionValor,
-                        GrupoId = grupoEncontrado.Id,
-                        ParcialUnidad = parcialUnidad,
-                        AlumnoId = alumno.Id
-                    };
-
-                    _context.Calificaciones.Add(calificacion);
-                    calificacionesGuardadas.Add(calificacion);
                 }
 
+                _context.Calificaciones.AddRange(calificacionesGuardadas);
                 await _context.SaveChangesAsync();
 
-                //  Si no se guardó ninguna calificación, muestra un mensaje especial
                 if (calificacionesGuardadas.Count == 0)
-                {
-                    return BadRequest(" No se subieron las calificaciones porque hubo datos duplicados. Revisa el archivo Excel por favor antes de subirlo.");
-                }
+                    return BadRequest("No se subió ninguna calificación. Revisa duplicados o formato.");
 
                 return Ok(new
                 {
-                    mensaje = " Calificaciones cargadas correctamente.",
+                    mensaje = "Calificaciones cargadas correctamente.",
                     cantidad = calificacionesGuardadas.Count,
                     calificaciones = calificacionesGuardadas.Select(c => new
                     {
@@ -154,41 +119,43 @@ namespace MonitoreoEscolar.Server.Controllers
                         parcialUnidad = c.ParcialUnidad
                     }).ToList()
                 });
-
             }
             catch (Exception ex)
             {
-                _logger.LogError($" ERROR en SubirCalificaciones: {ex}");
-                return StatusCode(500, $"Error interno del servidor: {ex.Message} {ex.InnerException?.Message}");
+                return StatusCode(500, $"Error interno: {ex.Message} {ex.InnerException?.Message}");
             }
         }
 
 
         //PARA OBTENER LAS CALIFICACIONES DE LA BASE DE DATOS
         [HttpGet("obtenerCalificaciones")]
-        public async Task<IActionResult> ObtenerCalificaciones()
+        public async Task<IActionResult> ObtenerCalificacionesResumen()
         {
             var calificaciones = await _context.Calificaciones
                 .Include(c => c.Grupo)
-                .Select(c => new
-                {
-                    c.Nombre,
-                    c.Materia,
-                    c.CalificacionValor,
-                    Grupo = $"{c.Grupo.Grado}{c.Grupo.Letra}",
-                    c.ParcialUnidad
-                })
+                .GroupBy(c => new { c.Nombre, c.Grupo.Grado, c.Grupo.Letra, c.ParcialUnidad })
                 .ToListAsync();
 
-            // Verifica en la consola si la API está devolviendo datos
-            Console.WriteLine(" Datos obtenidos desde la BD:");
-            foreach (var cal in calificaciones)
+            var resumen = calificaciones.Select(grupo =>
             {
-                Console.WriteLine($"➡ {cal.Nombre} - {cal.Materia} - {cal.CalificacionValor} - {cal.Grupo} - {cal.ParcialUnidad}");
-            }
+                var datosAlumno = new Dictionary<string, object>
+                {
+                    ["alumno"] = grupo.Key.Nombre,
+                    ["grupo"] = $"{grupo.Key.Grado}{grupo.Key.Letra}",
+                    ["parcialUnidad"] = grupo.Key.ParcialUnidad
+                };
 
-            return Ok(calificaciones);
+                foreach (var calificacion in grupo)
+                {
+                    datosAlumno[calificacion.Materia] = calificacion.CalificacionValor;
+                }
+
+                return datosAlumno;
+            });
+
+            return Ok(resumen);
         }
+
 
         //PARA ASIGNAR EL ID DEL ALUMNO A LAS CALIFICACIONES SOLO ES NECESARIO EJECUTAR ESTE METODO UNA VEZ
         [HttpPost("asignar-alumno-id")]

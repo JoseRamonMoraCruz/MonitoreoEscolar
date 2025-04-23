@@ -24,7 +24,7 @@ const GenerarReportes = () => {
             return;
         }
         try {
-            const response = await axios.get(`/api/alumnos/buscar?termino=${inputValue}`);
+            const response = await axios.get(`http://localhost:5099/api/alumnos/buscar?termino=${inputValue}`);
             const optionsData = response.data.map((alumno) => ({
                 value: alumno.id,
                 label: alumno.nombreCompleto
@@ -69,7 +69,7 @@ const GenerarReportes = () => {
             return;
         }
         try {
-            const response = await axios.post("/api/reportes/generar", reporte);
+            const response = await axios.post("http://localhost:5099/api/reportes/generar", reporte);
             alert(response.data.mensaje);
             // Limpiar formulario
             setReporte({
@@ -90,32 +90,34 @@ const GenerarReportes = () => {
             <div className="generar-reportes-content">
                 <h2 className="generar-reportes-title">📑 Generar Reportes</h2>
                 <form className="generar-reportes-form" onSubmit={handleSubmit}>
-                    <div className="generar-reportes-group">
-                        <label>👨🏻‍🎓 Alumno:</label>
-                        <Select
-                            classNamePrefix="my-select"
-                            value={selectedAlumno}
-                            onChange={handleChangeSelect}
-                            onInputChange={handleInputChange}
-                            options={options}
-                            placeholder="Escriba el nombre completo..."
-                            noOptionsMessage={() => "No se encontraron coincidencias"}
-                        />
+                    <div className="generar-reportes-row">
+                        <div className="generar-reportes-group">
+                            <label>Nombre del Alumno:</label>
+                            <Select
+                                classNamePrefix="my-select"
+                                value={selectedAlumno}
+                                onChange={handleChangeSelect}
+                                onInputChange={handleInputChange}
+                                options={options}
+                                placeholder="Escriba el nombre completo..."
+                                noOptionsMessage={() => "No se encontraron coincidencias"}
+                            />
+                        </div>
+
+                        <div className="generar-reportes-group">
+                            <label>Fecha:</label>
+                            <input
+                                type="date"
+                                name="fecha"
+                                value={reporte.fecha}
+                                onChange={handleChange}
+                                required
+                            />
+                        </div>
                     </div>
 
                     <div className="generar-reportes-group">
-                        <label>📅 Fecha:</label>
-                        <input
-                            type="date"
-                            name="fecha"
-                            value={reporte.fecha}
-                            onChange={handleChange}
-                            required
-                        />
-                    </div>
-
-                    <div className="generar-reportes-group">
-                        <label>📝 Motivo:</label>
+                        <label>Motivo del Reporte:</label>
                         <textarea
                             name="motivo"
                             value={reporte.motivo}
@@ -125,9 +127,11 @@ const GenerarReportes = () => {
                         />
                     </div>
 
-                    <button className="generar-reportes-btn" type="submit">
-                        ➕ Generar
-                    </button>
+                    <div className="generar-reportes-btn-container">
+                        <button className="generar-reportes-btn" type="submit">
+                            💾 Enviar
+                        </button>
+                    </div>
                 </form>
             </div>
         </div>

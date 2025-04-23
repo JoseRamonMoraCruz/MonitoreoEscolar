@@ -1,92 +1,96 @@
-﻿.generar-reportes-container {
+﻿/* Centrado general */
+.generar-reportes-container {
     display: flex;
     justify-content: center;
     align-items: center;
-    padding: 20px;
-    background: linear-gradient(135deg, #89f7fe, #66a6ff); /* Fondo */
+    min-height: calc(100vh - 75px); /* menos altura del menú */
+    background: linear-gradient(135deg, #89f7fe, #66a6ff);
+    padding: 40px 20px;
 }
 
+/* Caja blanca moderna */
 .generar-reportes-content {
     background-color: #2d3e50;
-    padding: 30px;
-    border-radius: 15px;
-    box-shadow: 10px 10px 20px rgba(0, 0, 0, 1);
-    color: white;
-    width: 550px; /* Ancho ajustado */
-    text-align: left;
+    padding: 40px;
+    border-radius: 12px;
+    box-shadow: 0px 5px 12px rgba(0, 0, 0, 0.25);
+    box-shadow: 10px 10px 30px rgba(0, 0, 0, 1);
+    width: 90%;
+    max-width: 850px;
+    color: #333;
 }
 
-/* ✅ Título */
+/* Título centrado */
 .generar-reportes-title {
     font-size: 22px;
-    font-weight: bold;
-    margin-bottom: 34px;
+    font-weight: 600;
+    text-align: center;
+    margin-bottom: 30px;
 }
 
-/* ✅ Formulario */
-.generar-reportes-form {
+/* Nueva fila de inputs */
+.generar-reportes-row {
     display: flex;
-    flex-direction: column;
-    gap: 5px; /* Se reduce el espacio entre los campos */
+    gap: 20px;
+    flex-wrap: wrap;
 }
 
-/* ✅ Contenedor de cada input alineado */
+/* Campos individuales */
 .generar-reportes-group {
     display: flex;
     flex-direction: column;
-    align-items: flex-start;
-    text-align: left;
-    margin-bottom: 10px; /* Se reduce el margen inferior para juntar los campos */
+    flex: 1;
+    margin-bottom: 20px;
 }
 
     .generar-reportes-group label {
-        font-weight: bold;
-        font-size: 16px;
-        color: #F4E4BA; /* Color del texto */
-        margin-bottom: 5px;
-        display: flex;
-        align-items: center;
-        gap: 8px; /* Espaciado entre icono y texto */
+        font-weight: 600;
+        margin-bottom: 8px;
+        color: white;
     }
 
-    /* ✅ Inputs y Textarea */
+    /* Inputs y textarea */
     .generar-reportes-group input,
     .generar-reportes-group textarea {
-        width: 100%;
-        padding: 10px;
+        padding: 12px;
         border-radius: 8px;
-        border: none;
-        background-color: #D9D9D9;
-        font-size: 16px;
+        border: 1px solid #ccc;
+        font-size: 15px;
+        font-family: inherit;
     }
 
     .generar-reportes-group textarea {
-        height: 100px;
         resize: none;
+        height: 120px;
     }
 
-/* ✅ Botón de generar alineado */
+/* Contenedor del botón */
+.generar-reportes-btn-container {
+    display: flex;
+    justify-content: center;
+    margin-top: 10px;
+}
+
+/* Botón verde centrado */
 .generar-reportes-btn {
-    padding: 12px;
-    font-size: 16px;
-    font-weight: bold;
+    background-color: #00c17b;
+    color: white;
+    font-weight: 600;
     border: none;
     border-radius: 8px;
+    padding: 12px 30px;
+    font-size: 16px;
     cursor: pointer;
-    background-color: #8800ff;
-    color: white;
-    transition: background-color 0.3s ease-in-out;
-    width: 130px;
-    align-self: flex-end;
     display: flex;
     align-items: center;
-    justify-content: center;
-    gap: 8px;
+    gap: 10px;
+    transition: background-color 0.2s ease-in-out;
 }
 
     .generar-reportes-btn:hover {
-        background-color: #6a00cc;
+        background-color: #00975f;
     }
+
 
 /* ==================== REACT-SELECT (my-select) ==================== */
 

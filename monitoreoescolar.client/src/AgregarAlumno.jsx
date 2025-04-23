@@ -55,7 +55,7 @@ const AgregarAlumno = () => {
         }
         try {
             // Usamos el endpoint de autocompletar padres
-            const response = await axios.get(`/api/usuarios/autocompletePadres?termino=${inputValue}`);
+            const response = await axios.get(`http://localhost:5099/api/usuarios/autocompletePadres?termino=${inputValue}`);
             const optionsData = response.data.map((padre) => ({
                 value: padre.id_Usuario,
                 label: `${padre.nombre} ${padre.apellidos} - ${padre.correo}`
@@ -87,7 +87,7 @@ const AgregarAlumno = () => {
 
         // Verificar que el grupo seleccionado exista
         try {
-            const gruposResponse = await axios.get("/api/grupos");
+            const gruposResponse = await axios.get("http://localhost:5099/api/grupos");
             const gruposExistentes = gruposResponse.data;
             const grupoEncontrado = gruposExistentes.find(
                 (g) =>
@@ -107,7 +107,7 @@ const AgregarAlumno = () => {
 
         try {
             // Enviamos los datos del alumno, incluyendo tutorId
-            const response = await axios.post("/api/alumnos/registro", alumno);
+            const response = await axios.post("http://localhost:5099/api/alumnos/registro", alumno);
             alert(response.data.mensaje);
 
             // Limpiar formulario

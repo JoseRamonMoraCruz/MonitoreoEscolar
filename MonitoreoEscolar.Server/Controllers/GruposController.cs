@@ -77,36 +77,6 @@ namespace MonitoreoEscolar.Server.Controllers
             return Ok(new { mensaje = "Grupo eliminado exitosamente." });
         }
 
-        // Endpoint para editar el grupo 
-        [HttpPut("editar/{id}")]
-        public async Task<IActionResult> EditarGrupo(int id, [FromBody] Grupo grupoEditado)
-        {
-            var grupo = await _context.Grupos.FindAsync(id);
-            if (grupo == null)
-            {
-                return NotFound(new { mensaje = "Grupo no encontrado." });
-            }
-
-            // Verificar si existe otro grupo (con distinto ID) con la misma combinación de Grado y Letra
-            var grupoExistente = await _context.Grupos
-                .FirstOrDefaultAsync(g => g.Grado == grupoEditado.Grado
-                    && g.Letra.ToLower() == grupoEditado.Letra.ToLower()
-                    && g.Id != id);
-
-            if (grupoExistente != null)
-            {
-                return BadRequest(new { mensaje = "El grupo ya está registrado." });
-            }
-
-            // Si no existe duplicado, se actualizan los campos
-            grupo.Grado = grupoEditado.Grado;
-            grupo.Letra = grupoEditado.Letra;
-            grupo.NombreDocente = grupoEditado.NombreDocente;
-
-            await _context.SaveChangesAsync();
-            return Ok(new { mensaje = "Grupo actualizado exitosamente." });
-        }
-
         // Endpoint para eliminar (quitar) el docente de un grupo
         [HttpPut("eliminarDocente/{id}")]
         public async Task<IActionResult> EliminarDocente(int id)

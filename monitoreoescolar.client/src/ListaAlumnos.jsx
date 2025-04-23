@@ -477,7 +477,7 @@
                                                         abrirModalEditarDocente(grupo);
                                                         cerrarMenuGrupo();
                                                     }}>
-                                                        Editar Grupo
+                                                        Editar Docente
                                                     </p>
                                                     <p className="opcion-menu eliminar" onClick={() => confirmarEliminarDocente(grupo)}>
                                                         Eliminar Docente
@@ -501,7 +501,7 @@
                                                     </thead>
                                                         <tbody>{ /*ELIMINAR POR SI LAS DUDAS POR SI NO FUNCIONA*/}
                                                             {tableData.map((alumno) => {
-                                                                console.log("ALUMNO:", alumno); // 👈 Esto muestra en consola los datos recibidos
+                                                                console.log("ALUMNO:", alumno); // Esto muestra en consola los datos recibidos
                                                                 return (
                                                                     <tr key={alumno.id}>
                                                                         <td>
@@ -806,50 +806,11 @@
                             <button className="close-button" onClick={cerrarModalEditarDocente}>
                                 ✖
                             </button>
-                            <h2 className="modal-title">Editar Grupo</h2>
+                            <h2 className="modal-title">Editar Docente</h2>
                             <div className="form-group">
                                 <div className="select-container">
-                                    <div className="input-group">
-                                        <label>Grado:</label>
-                                        <select
-                                            name="grado"
-                                            value={grupoDocenteEditado.grado}
-                                            onChange={(e) =>
-                                                setGrupoDocenteEditado({
-                                                    ...grupoDocenteEditado,
-                                                    grado: e.target.value,
-                                                })
-                                            }
-                                        >
-                                            <option value="">Seleccione</option>
-                                            {[1, 2, 3, 4, 5, 6].map((grado) => (
-                                                <option key={grado} value={grado}>
-                                                    {grado}
-                                                </option>
-                                            ))}
-                                        </select>
-                                    </div>
-                                    <div className="input-group">
-                                        <label>Grupo:</label>
-                                        <select
-                                            name="letra"
-                                            value={grupoDocenteEditado.letra}
-                                            onChange={(e) =>
-                                                setGrupoDocenteEditado({
-                                                    ...grupoDocenteEditado,
-                                                    letra: e.target.value,
-                                                })
-                                            }
-                                        >
-                                            <option value="">Seleccione</option>
-                                            {["A", "B", "C", "D", "E", "F"].map((letra) => (
-                                                <option key={letra} value={letra}>
-                                                    {letra}
-                                                </option>
-                                            ))}
-                                        </select>
-                                    </div>
-                                </div>
+                                    {/* AQUI IRIA SI SE VUELVE  PONER LO DE EDITAR GRUPO*/}
+                                </div> 
                                 <div className="input-container">
                                     <label>Nombre del Docente:</label>
                                     <input

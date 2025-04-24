@@ -1,13 +1,13 @@
 ﻿.menu {
-    background: #101723;
+    background: #101417;
+    height: 75px;
     display: flex;
-    flex-wrap: wrap; /* 🔥 Esto permite que haga saltos de línea */
-    justify-content: space-between;
     align-items: center;
-    padding: 10px 30px;
-    gap: 10px; /* Da espacio al hacer wrap */
+    justify-content: space-between;
+    padding: 0 30px;
     box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.4);
     animation: slideDown 0.6s ease-out;
+    /* la fuente solo al menú */
     font-family: 'Poppins', sans-serif !important;
 }
 
@@ -19,21 +19,19 @@
 }
 
 .logo {
-    height: 80px;
+    height: 50px;
 }
 
 /* LINKS */
 .menu-links {
     list-style: none;
     display: flex;
-    flex-wrap: wrap; /* 🔥 Esto permite romper línea cuando hay poco espacio */
     align-items: center;
-    justify-content: center;
-    gap: 20px;
+    gap: 35px;
     margin: 0;
     padding: 0;
+    font-family: 'Poppins', sans-serif !important;
 }
-
 
     .menu-links li a {
         font-family: 'Poppins', sans-serif;
@@ -83,30 +81,5 @@
     to {
         transform: translateY(0);
         opacity: 1;
-    }
-}
-/*Para pantallas pequeñas*/
-@media (max-width: 800px) {
-    .menu {
-        flex-direction: column;
-        align-items: center;
-    }
-
-    .menu-links {
-        flex-direction: column;
-        width: 100%;
-        align-items: center;
-    }
-
-        .menu-links li a {
-            font-size: 14px;
-            width: 100%;
-            text-align: center;
-            padding: 10px 0;
-        }
-
-    .logo-section {
-        justify-content: center;
-        width: 100%;
     }
 }

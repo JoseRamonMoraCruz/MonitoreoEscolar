@@ -107,7 +107,7 @@ const GenerarReportes = () => {
                         <div className="generar-reportes-group">
                             <label>Fecha:</label>
                             <input
-                                type="date"
+                                type="datetime-local"
                                 name="fecha"
                                 value={reporte.fecha}
                                 onChange={handleChange}

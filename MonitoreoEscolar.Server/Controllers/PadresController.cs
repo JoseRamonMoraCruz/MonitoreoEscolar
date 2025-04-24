@@ -15,48 +15,7 @@ namespace MonitoreoEscolar.Server.Controllers
             _context = context;
         }
 
-        // ENDPOINT PARA OBTENER LAS CALIFICACIONES DE LOS HIJOS DE UN PADRE
-        [HttpGet("obtener-calificaciones-hijos/{idPadre}")]
-        public async Task<IActionResult> ObtenerInformacionHijos(int idPadre)
-
-        {
-            var hijos = await _context.Alumnos
-                .Where(a => a.TutorId == idPadre)
-                .Include(a => a.TutorUsuario)
-                .ToListAsync();
-
-            if (hijos == null || !hijos.Any())
-            {
-                return NotFound(" No se encontraron alumnos registrados para este padre.");
-            }
-
-            var resultado = new List<object>();
-
-            foreach (var hijo in hijos)
-            {
-                var calificaciones = await _context.Calificaciones
-                    .Where(c => c.AlumnoId == hijo.Id)
-                    .Include(c => c.Grupo)
-                    .Select(c => new
-                    {
-                        c.Materia,
-                        Calificacion = c.CalificacionValor,
-                        Grupo = $"{c.Grupo.Grado}{c.Grupo.Letra}",
-                        Parcial = c.ParcialUnidad
-                    })
-                    .ToListAsync();
-
-                resultado.Add(new
-                {
-                    AlumnoId = hijo.Id,
-                    NombreCompleto = $"{hijo.Nombre} {hijo.Apellidos}",
-                    Calificaciones = calificaciones
-                });
-            }
-
-            return Ok(resultado);
-        }
-
+        
         // ENDPOINT PARA OBTENER LOS REPORTES DE UN HIJO
         [HttpGet("obtener-reportes-hijo/{alumnoId}")]
         public async Task<IActionResult> ObtenerReportesDeHijo(int alumnoId)
@@ -71,11 +30,69 @@ namespace MonitoreoEscolar.Server.Controllers
                 .Where(r => r.AlumnoId == alumnoId)
                 .Select(r => new
                 {
-                    r.Motivo
+                    r.Motivo,
+                    Fecha = r.Fecha
                 })
                 .ToListAsync();
 
             return Ok(reportes);
         }
+
+        // ENDPOINT PARA OBTENER LOS HIJOS DE UN PADRE CON SU GRUPO
+        [HttpGet("obtener-hijos-con-grupo/{idPadre}")]
+        public async Task<IActionResult> ObtenerHijosConGrupo(int idPadre)
+        {
+            var hijos = await _context.Alumnos
+                .Where(a => a.TutorId == idPadre)
+                .Select(a => new
+                {
+                    AlumnoId = a.Id,
+                    NombreCompleto = a.Nombre + " " + a.Apellidos,
+                    Grupo = a.Grupo ?? "Sin grupo" // usa el campo Grupo directamente
+                })
+                .ToListAsync();
+
+            if (hijos == null || hijos.Count == 0)
+            {
+                return NotFound("No se encontraron alumnos registrados para este padre.");
+            }
+
+            return Ok(hijos);
+        }
+
+        /*OBTENER CALIFCACIONES DE LOS ALUMNOS*/
+        [HttpGet("obtener-calificaciones-alumno/{alumnoId}")]
+        public async Task<IActionResult> ObtenerCalificacionesPorAlumno(int alumnoId)
+        {
+            var calificaciones = await _context.Calificaciones
+                .Where(c => c.AlumnoId == alumnoId)
+                .Include(c => c.Grupo)
+                .ToListAsync();
+
+            if (!calificaciones.Any())
+                return Ok(new List<object>());
+
+            // Detectar el parcial más alto
+            var parcialMasReciente = calificaciones
+                .Select(c => int.TryParse(c.ParcialUnidad, out var n) ? n : 0)
+                .Max();
+
+            // Filtrar por ese parcial
+            var filtradas = calificaciones
+                .Where(c => int.TryParse(c.ParcialUnidad, out var n) && n == parcialMasReciente)
+                .Select(c => new
+                {
+                    c.Materia,
+                    Calificacion = c.CalificacionValor,
+                    Grupo = $"{c.Grupo.Grado}{c.Grupo.Letra}",
+                    Parcial = c.ParcialUnidad
+                })
+                .ToList();
+
+            return Ok(filtradas);
+        }
+
+       
+
     }
 }

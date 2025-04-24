@@ -102,10 +102,14 @@
 /* Contenedor para Grado y Letra en la misma línea */
 .agregar-alumno-group-selects {
     display: flex;
-    gap: 10px; /* Espacio horizontal reducido entre ambos selects */
+    gap: 20px; /* Espacio horizontal reducido entre ambos selects */
     margin-bottom: 8px; /* Se reduce la separación vertical */
     text-align: left; /* Alineación de las etiquetas a la izquierda */
 }
+
+    .agregar-alumno-group-selects div {
+        width: 50%; /* Hace que cada select ocupe la mitad del espacio disponible */
+    }
 
     /* Etiquetas dentro de este contenedor */
     .agregar-alumno-group-selects label {
@@ -176,4 +180,48 @@
 .my-select__option--is-selected {
     background-color: #ddd !important;
     color: #333 !important;
+}
+
+/* Estilo del modal de huella */
+.modal-huella {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1001;
+}
+
+.modal-content {
+    background: #fff;
+    padding: 20px;
+    border-radius: 10px;
+    width: 300px;
+    text-align: center;
+}
+
+.close {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    font-size: 20px;
+    cursor: pointer;
+}
+
+.huella-info img {
+    width: 80px;
+    height: 80px;
+}
+
+button {
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+    border-radius: 5px;
 }

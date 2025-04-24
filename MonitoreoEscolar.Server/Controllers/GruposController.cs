@@ -77,6 +77,23 @@ namespace MonitoreoEscolar.Server.Controllers
             return Ok(new { mensaje = "Grupo eliminado exitosamente." });
         }
 
+        // Endpoint para editar solo el nombre del docente (VA EN GRUPOS CONTROLLER)
+        [HttpPut("editar/{id}")]
+        public async Task<IActionResult> EditarNombreDocente(int id, [FromBody] Grupo grupoEditado)
+        {
+            var grupo = await _context.Grupos.FindAsync(id);
+            if (grupo == null)
+            {
+                return NotFound(new { mensaje = "Grupo no encontrado." });
+            }
+
+            // Se actualiza solo el nombre del docente, sin modificar el grado o la letra
+            grupo.NombreDocente = grupoEditado.NombreDocente;
+
+            await _context.SaveChangesAsync();
+            return Ok(new { mensaje = "Nombre del docente actualizado exitosamente." });
+        }
+
         // Endpoint para eliminar (quitar) el docente de un grupo
         [HttpPut("eliminarDocente/{id}")]
         public async Task<IActionResult> EliminarDocente(int id)

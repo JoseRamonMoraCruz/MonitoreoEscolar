@@ -1,44 +1,45 @@
 ﻿.menu {
     background: #101723;
     display: flex;
-    flex-wrap: wrap; /* 🔥 Esto permite que haga saltos de línea */
-    justify-content: space-between;
+    justify-content: center; /* Alinea el logo a la izquierda y los enlaces a la derecha */
     align-items: center;
     padding: 10px 30px;
     gap: 10px; /* Da espacio al hacer wrap */
     box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.4);
     animation: slideDown 0.6s ease-out;
     font-family: 'Poppins', sans-serif !important;
+    width: 100%;
 }
 
-
-/* LOGO */
+/* LOGO - Ajustado para alineación correcta */
 .logo-section {
     display: flex;
     align-items: center;
+    justify-content: flex-start; /* Logo alineado a la izquierda */
+    width: auto;
 }
 
 .logo {
-    height: 80px;
+    height: 60px; /* Ajusta el tamaño del logo */
+    width: auto; /* Mantiene la relación de aspecto original */
 }
 
 /* LINKS */
-.menu-links {
+.menu-links { 
     list-style: none;
     display: flex;
-    flex-wrap: wrap; /* 🔥 Esto permite romper línea cuando hay poco espacio */
+    flex-wrap: nowrap; /* Esto evitará que los enlaces se muevan a la siguiente línea */
     align-items: center;
-    justify-content: center;
+    justify-content: flex-end; /* Los enlaces se alinean a la derecha */
     gap: 20px;
     margin: 0;
     padding: 0;
 }
 
-
     .menu-links li a {
         font-family: 'Poppins', sans-serif;
         font-weight: 600; /* en vez de bold */
-        font-size: 15px;
+        font-size: 13px;
         text-transform: uppercase;
         text-decoration: none;
         color: white;
@@ -47,9 +48,7 @@
         position: relative;
         display: inline-block;
         border-radius: 8px;
-        font-family: 'Poppins', sans-serif !important;
     }
-
 
         .menu-links li a::after {
             content: "";
@@ -60,7 +59,6 @@
             height: 3px;
             background-color: #9AD3FE;
             transition: width 0.3s ease-in-out, left 0.3s ease-in-out;
-            font-family: 'Poppins', sans-serif !important;
         }
 
         .menu-links li a:hover::after {
@@ -85,7 +83,8 @@
         opacity: 1;
     }
 }
-/*Para pantallas pequeñas*/
+
+/* Para pantallas pequeñas */
 @media (max-width: 800px) {
     .menu {
         flex-direction: column;
@@ -106,7 +105,7 @@
         }
 
     .logo-section {
-        justify-content: center;
+        justify-content: flex-start;
         width: 100%;
     }
 }

@@ -71,7 +71,7 @@ const Padre = () => {
         const alumno = hijos.find(h => h.alumnoId === alumnoId);
         if (!alumno?.calificaciones) {
             try {
-                const response = await axios.get(`http://localhost:5099/api/padres/obtener-calificaciones-alumno/${alumnoId}`);
+                const response = await axios.get(`/api/padres/obtener-calificaciones-alumno/${alumnoId}`);
                 setHijos(prev =>
                     prev.map(h =>
                         h.alumnoId === alumnoId

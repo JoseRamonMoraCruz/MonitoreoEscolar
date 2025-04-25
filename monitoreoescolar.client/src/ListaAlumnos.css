@@ -256,6 +256,14 @@
     width: 100%;
 }
 
+.grupo-card .grupo {
+    font-size: 30px;
+}
+
+.grupo-card .docente {
+    font-size: 16px;
+}
+
 /* Icono para eliminar grupo */
 .delete-icon {
     width: 40px;

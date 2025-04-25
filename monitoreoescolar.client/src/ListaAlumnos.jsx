@@ -451,9 +451,10 @@
                                     >
                                         <div className="grupo-header">
                                             <h3>
-                                                {grupo.grado}{grupo.letra}
+                                                <div className="grupo">{grupo.grado}{grupo.letra}</div> 
+                                                <div className="docente">{grupo.nombreDocente && <p>Docente: {grupo.nombreDocente}</p>}</div>
                                             </h3>
-                                            {grupo.nombreDocente && <p>Docente: {grupo.nombreDocente}</p>}
+                                            
                                             <div className="acciones-grupo" style={{ display: "flex", gap: "10px" }}>
                                                 {/* Icono para mostrar el menú (puedes reemplazar el contenido por una imagen si la tienes) */}
                                                 <span

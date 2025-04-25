@@ -97,8 +97,8 @@ const Padre = () => {
                 {hijos.map((hijo) => (
                     <div key={hijo.alumnoId} className="seccion">
                         <div className="card-alumno" onClick={() => toggleExpand(hijo.alumnoId)}>
-                            <div className="grupo">{hijo.grupo}</div>
                             <div className="nombre">{hijo.nombreCompleto}</div>
+                            <div className="grupo">{hijo.grupo}</div>
                         </div>
 
                         {expandedAlumnoId === hijo.alumnoId && (

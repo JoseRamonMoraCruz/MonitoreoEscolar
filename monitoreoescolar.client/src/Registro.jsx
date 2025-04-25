@@ -12,7 +12,6 @@ export default function Registro() {
     const [correo, setCorreo] = useState("");
     const [telefono, setTelefono] = useState("");
     const [contrasena, setContrasena] = useState("");
-    const [nombreAlumno, setNombreAlumno] = useState(""); 
     const [error, setError] = useState("");
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
@@ -34,10 +33,7 @@ export default function Registro() {
             setError("❌ Solo se permite el registro con correos institucionales.");
             return;
         }
-        if (tipoUsuario === "padre" && !nombreAlumno) {
-            setError("❌ Ingresa el nombre del alumno.");
-            return;
-        }
+      
 
         setLoading(true);
 
@@ -47,12 +43,11 @@ export default function Registro() {
             correo,
             telefono,
             contrasena,
-            tipo_Usuario: tipoUsuario,
-            nombreAlumno: tipoUsuario === "padre" ? nombreAlumno : null //  Solo si es Padre
+            tipo_Usuario: tipoUsuario
         };
 
         try {
-            const response = await axios.post("/api/usuarios/registro", usuario);
+            const response = await axios.post("http://localhost:5099/api/usuarios/registro", usuario);
             alert(response.data.mensaje);
             navigate("/"); // Redirige al login tras el registro
         } catch (error) {
@@ -114,11 +109,6 @@ export default function Registro() {
                     <input type="password" placeholder="Contraseña" className="input-field" value={contrasena} onChange={(e) => setContrasena(e.target.value)} required />
                     <input type="tel" placeholder="Teléfono" className="input-field" value={telefono} onChange={(e) => setTelefono(e.target.value)} />
                     <input type="email" placeholder="Correo" className="input-field" value={correo} onChange={(e) => setCorreo(e.target.value)} required />
-
-                    {/* Este campo solo se muestra si el usuario es "Padre" */}
-                    {tipoUsuario === "padre" && (
-                        <input type="text" placeholder="Nombre del Alumn@" className="input-field" value={nombreAlumno} onChange={(e) => setNombreAlumno(e.target.value)} required />
-                    )}
 
                     <button type="submit" className="submit-button" disabled={loading}>
                         {loading ? "Creando cuenta..." : "CREAR CUENTA"}

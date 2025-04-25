@@ -55,6 +55,7 @@ namespace MonitoreoEscolar.Server.Controllers
             {
                 return BadRequest(new { mensaje = " El correo ya está registrado." });
             }
+
             if (request.Tipo_Usuario == "personal" && !request.Correo.EndsWith("@escuela.edu.mx"))
             {
                 return BadRequest(new { mensaje = "Solo se permite el registro con correos institucionales." });
@@ -66,11 +67,9 @@ namespace MonitoreoEscolar.Server.Controllers
                 Apellidos = NormalizarCadena(request.Apellidos),
                 Correo = request.Correo,
                 Telefono = request.Telefono,
-                Tipo_Usuario = request.Tipo_Usuario,
-                NombreAlumno = request.Tipo_Usuario == "padre" ? NormalizarCadena(request.NombreAlumno) : null
+                Tipo_Usuario = request.Tipo_Usuario
             };
 
-            // Hashear la contraseña antes de almacenarla
             nuevoUsuario.Contrasena = _passwordHasher.HashPassword(nuevoUsuario, request.Contrasena);
 
             _context.Usuarios.Add(nuevoUsuario);
@@ -78,6 +77,7 @@ namespace MonitoreoEscolar.Server.Controllers
 
             return Ok(new { mensaje = "Usuario registrado exitosamente", usuario = nuevoUsuario });
         }
+
 
         //  LOGIN
         [HttpPost("login")]

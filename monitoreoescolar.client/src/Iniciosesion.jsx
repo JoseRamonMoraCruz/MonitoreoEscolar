@@ -2,7 +2,7 @@
 import axios from 'axios';
 import { useNavigate, Link } from 'react-router-dom';
 import './Iniciosesion.css';
-import birreteIcon from './assets/sombrero-de-graduado.png'; 
+import birreteIcon from './assets/sombrero-de-graduado.png';
 
 const Login = () => {
     const [email, setEmail] = useState('');
@@ -14,7 +14,7 @@ const Login = () => {
         e.preventDefault();
 
         try {
-            const response = await axios.post("http://localhost:5099/api/usuarios/login", {//NOTA: Cuando se suba a un servidor se debe cambiar la url
+            const response = await axios.post("/api/usuarios/login", {//NOTA: Cuando se suba a un servidor se debe cambiar la url
                 correo: email,
                 contrasena: password
             });
@@ -23,11 +23,21 @@ const Login = () => {
 
             alert(response.data.mensaje);
 
+            // Guardamos los datos en localStorage
+            localStorage.setItem('idUsuario', usuario.id_Usuario); // Guardamos el id del usuario
+            localStorage.setItem('nombre', usuario.nombre); // Guardamos el nombre
+            localStorage.setItem('apellidos', usuario.apellidos); // Guardamos los apellidos
+            localStorage.setItem('correo', usuario.correo); // Guardamos el correo
+            localStorage.setItem('contraseña', usuario.contrasena);
+            localStorage.setItem('telefono', usuario.telefono); // Guardamos el teléfono
+            localStorage.setItem('tipo_Usuario', usuario.tipo_Usuario); // Guardamos el tipo de usuario
+
+            // Redirigir según el tipo de usuario
             if (usuario.tipo_Usuario === "personal") {
-                navigate("/menu"); 
+                navigate("/menu");
             } else if (usuario.tipo_Usuario === "padre") {
-                localStorage.setItem("idPadre", usuario.id_Usuario); // 
-                navigate("/padre"); 
+                localStorage.setItem("idPadre", usuario.id_Usuario);
+                navigate("/padre");
             }
         } catch (error) {
             setError(error.response?.data?.mensaje || "❌ Error en el inicio de sesión.");
@@ -38,8 +48,6 @@ const Login = () => {
         <div className="login-container-wrapper">
             <div className="login-box">
                 <h2>Iniciar Sesión</h2>
-
-                {/* Imagen del birrete */}
                 <img src={birreteIcon} alt="Birrete" className="birrete-icon" />
 
                 {error && <p className="error-message">{error}</p>}
@@ -64,14 +72,11 @@ const Login = () => {
                     <button type="submit" className="login-button">Iniciar sesión</button>
                 </form>
 
-                {/* Línea divisoria */}
                 <div className="separator"></div>
-
                 <div className="register-link">
                     <span>No tengo cuenta</span> <Link to="/registro">Registrarse</Link>
                 </div>
 
-                {/* Link para recuperar contraseña */}
                 <div className="forgot-password">
                     <Link to="/actualizar-password">¿Olvidaste tu contraseña?</Link>
                 </div>

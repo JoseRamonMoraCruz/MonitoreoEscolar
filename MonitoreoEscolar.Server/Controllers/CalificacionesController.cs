@@ -156,7 +156,6 @@ namespace MonitoreoEscolar.Server.Controllers
             return Ok(resumen);
         }
 
-
         //PARA ASIGNAR EL ID DEL ALUMNO A LAS CALIFICACIONES SOLO ES NECESARIO EJECUTAR ESTE METODO UNA VEZ
         [HttpPost("asignar-alumno-id")]
         public async Task<IActionResult> AsignarAlumnoIdACalificaciones()

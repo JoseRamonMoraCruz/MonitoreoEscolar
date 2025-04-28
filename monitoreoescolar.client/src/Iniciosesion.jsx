@@ -14,7 +14,7 @@ const Login = () => {
         e.preventDefault();
 
         try {
-            const response = await axios.post("http://localhost:5099/api/usuarios/login", {//NOTA: Cuando se suba a un servidor se debe cambiar la url
+            const response = await axios.post("http://localhost:5099/api/usuarios/login", {//NOTA: Cuando se suba a un servidor se debe cambiar la url del localhost a la del servidor
                 correo: email,
                 contrasena: password
             });
@@ -26,7 +26,7 @@ const Login = () => {
             if (usuario.tipo_Usuario === "personal") {
                 navigate("/menu"); 
             } else if (usuario.tipo_Usuario === "padre") {
-                localStorage.setItem("idPadre", usuario.id_Usuario); // 
+                localStorage.setItem("idPadre", usuario.id_Usuario); 
                 navigate("/padre"); 
             }
         } catch (error) {

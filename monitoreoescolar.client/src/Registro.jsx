@@ -33,7 +33,6 @@ export default function Registro() {
             setError("❌ Solo se permite el registro con correos institucionales.");
             return;
         }
-      
 
         setLoading(true);
 
@@ -43,7 +42,7 @@ export default function Registro() {
             correo,
             telefono,
             contrasena,
-            tipo_Usuario: tipoUsuario
+            Tipo_Usuario: tipoUsuario
         };
 
         try {
@@ -66,14 +65,12 @@ export default function Registro() {
                     <img src={AtrasIcon} alt="Volver" className="back-icon" />
                 </button>
 
-
                 <h2 className="register-title">Regístrate</h2>
 
                 {/* Botón para regresar al login con imagen personalizada */}
                 <button className="back-button" onClick={() => navigate("/")}>
                     <img src={AtrasIcon} alt="Volver" className="back-icon" />
                 </button>
-
 
                 {/* Imagen dinámica */}
                 <img
@@ -107,7 +104,7 @@ export default function Registro() {
                     <input type="text" placeholder="Nombre" className="input-field" value={nombre} onChange={(e) => setNombre(e.target.value)} required />
                     <input type="text" placeholder="Apellidos" className="input-field" value={apellidos} onChange={(e) => setApellidos(e.target.value)} required />
                     <input type="password" placeholder="Contraseña" className="input-field" value={contrasena} onChange={(e) => setContrasena(e.target.value)} required />
-                    <input type="tel" placeholder="Teléfono" className="input-field" value={telefono} onChange={(e) => setTelefono(e.target.value)} />
+                    <input type="tel" placeholder="Teléfono" className="input-field" value={telefono} onChange={(e) => setTelefono(e.target.value)} required />
                     <input type="email" placeholder="Correo" className="input-field" value={correo} onChange={(e) => setCorreo(e.target.value)} required />
 
                     <button type="submit" className="submit-button" disabled={loading}>

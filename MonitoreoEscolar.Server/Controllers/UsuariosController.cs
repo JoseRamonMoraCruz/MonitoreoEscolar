@@ -276,6 +276,66 @@ namespace MonitoreoEscolar.Server.Controllers
 
             return Ok(resultados);
         }
+
+        // ACTUALIZA DATOS DE PERFIL DEL PERSONAL ESCOLAR
+        [HttpPut("actualizar-perfil")]
+        public async Task<IActionResult> ActualizarPerfil([FromBody] ActualizarPerfilRequest request)
+        {
+            if (!ModelState.IsValid)
+            {
+                // Devuelve todos los errores de validación
+                return BadRequest(ModelState);
+            }
+
+            var usuario = await _context.Usuarios
+                .FirstOrDefaultAsync(u => u.Id_Usuario == request.Id_Usuario);
+
+            if (usuario == null)
+            {
+                return NotFound(new { mensaje = "Usuario no encontrado." });
+            }
+
+            // Actualizar sólo los campos permitidos
+            usuario.Nombre = request.Nombre;
+            usuario.Apellidos = request.Apellidos;
+            usuario.Correo = request.Correo;
+            usuario.Telefono = request.Telefono;
+
+            await _context.SaveChangesAsync();
+
+            return Ok(new { mensaje = "Perfil actualizado exitosamente." });
+        }
+
+        // Y ESTE OBTIENE LOS DATOS DEL USUARIO LOGEADO PARA ACTUALIZARLOS
+        [HttpGet("usuario-logueado")]
+        public async Task<IActionResult> ObtenerUsuarioLogueado()
+        {
+            // Obtén el usuario autenticado desde el contexto actual
+            var usuarioId = User?.FindFirstValue(ClaimTypes.NameIdentifier); // Suponiendo que usas JWT o un sistema de autenticación basado en Claims
+
+            if (usuarioId == null)
+            {
+                return Unauthorized(new { mensaje = "Usuario no autenticado." });
+            }
+
+            // Buscar al usuario en la base de datos por su ID
+            var usuario = await _context.Usuarios.FirstOrDefaultAsync(u => u.Id_Usuario.ToString() == usuarioId);
+
+            if (usuario == null)
+            {
+                return NotFound(new { mensaje = "Usuario no encontrado." });
+            }
+
+            // Devolver los datos del usuario
+            return Ok(new
+            {
+                usuario.Id_Usuario,
+                usuario.Nombre,
+                usuario.Apellidos,
+                usuario.Correo,
+                usuario.Telefono
+            });
+        }
     }
 
     public class LoginRequest

@@ -46,7 +46,7 @@ export default function Registro() {
         };
 
         try {
-            const response = await axios.post("http://localhost:5099/api/usuarios/registro", usuario);
+            const response = await axios.post("/api/usuarios/registro", usuario);
             alert(response.data.mensaje);
             navigate("/"); // Redirige al login tras el registro
         } catch (error) {
@@ -103,6 +103,7 @@ export default function Registro() {
                 <form onSubmit={handleRegistro}>
                     <input type="text" placeholder="Nombre" className="input-field" value={nombre} onChange={(e) => setNombre(e.target.value)} required />
                     <input type="text" placeholder="Apellidos" className="input-field" value={apellidos} onChange={(e) => setApellidos(e.target.value)} required />
+                    <input type="email" placeholder="Correo" className="input-field" value={correo} onChange={(e) => setCorreo(e.target.value)} required />
                     <input type="password" placeholder="Contraseña" className="input-field" value={contrasena} onChange={(e) => setContrasena(e.target.value)} required />
                     <input type="tel" placeholder="Teléfono" className="input-field" value={telefono} onChange={(e) => setTelefono(e.target.value)} required />
                     <input type="email" placeholder="Correo" className="input-field" value={correo} onChange={(e) => setCorreo(e.target.value)} required />

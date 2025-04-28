@@ -15,7 +15,7 @@ const SubirCalif = () => {
     useEffect(() => {
         const cargarCalificaciones = async () => {
             try {
-                const response = await axios.get("/api/calificaciones"); 
+                const response = await axios.get("http://localhost:5099/api/calificaciones"); 
                 setDatos(response.data); 
             } catch (error) {
                 console.error(" Error cargando calificaciones:", error);
@@ -57,16 +57,32 @@ const SubirCalif = () => {
         try {
             console.log("📤 Enviando archivo:", archivo.name);
 
-            const response = await axios.post("/api/calificaciones/subirCalificaciones", formData, {
+            const response = await axios.post("http://localhost:5099/api/calificaciones/subirCalificaciones", formData, {
                 headers: { "Content-Type": "multipart/form-data" }
             });
 
             console.log("📥 Respuesta del servidor:", response.data);
 
-            //  Mostrar solo las calificaciones recién subidas
-            // 🔄 Después de subir, vuelve a cargar el resumen real
-            const resumen = await axios.get("/api/calificaciones/obtenerCalificaciones");
-            setDatos(resumen.data);
+            const nuevasCalificaciones = response.data.calificaciones;
+
+            const datosFormateados = nuevasCalificaciones.reduce((acc, calif) => {
+                let alumnoExistente = acc.find(a => a.alumno === calif.nombre && a.grupo === calif.grupo && a.parcialUnidad === calif.parcialUnidad);
+
+                if (!alumnoExistente) {
+                    alumnoExistente = {
+                        alumno: calif.nombre,
+                        grupo: calif.grupo,
+                        parcialUnidad: calif.parcialUnidad
+                    };
+                    acc.push(alumnoExistente);
+                }
+
+                alumnoExistente[calif.materia] = calif.calificacionValor;
+                return acc;
+            }, []);
+
+            setDatos(datosFormateados);
+
 
 
             alert(`✅ ${response.data.mensaje}`);

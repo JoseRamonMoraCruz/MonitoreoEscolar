@@ -27,6 +27,10 @@ namespace MonitoreoEscolar.Server.Models
         [Required]
         public string Tipo_Usuario { get; set; } = string.Empty;
 
+        public string? CodigoVerificacion { get; set; }
+        public DateTime? FechaExpiracionCodigo { get; set; }
+
+
         // Colección de alumnos asociados (opcional, pero recomendable)
         [JsonIgnore]
         public ICollection<Alumno> Alumnos { get; set; } = new List<Alumno>();

@@ -2,8 +2,7 @@ import { useState, useEffect } from 'react';
 import axios from 'axios';
 import './ActualizarPassword.css';
 import { useNavigate } from 'react-router-dom';
-import AtrasIcon from './assets/flecha-hacia-atras.png'; // Ajusta la ruta si es distinta
-
+import AtrasIcon from './assets/flecha-hacia-atras.png';
 
 function ActualizarPassword() {
     const [correo, setCorreo] = useState('');

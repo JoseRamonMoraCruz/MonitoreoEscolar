@@ -1,5 +1,5 @@
 ﻿import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";  // Ahora sí lo usamos abajo
+import { Link } from "react-router-dom";  
 import axios from "axios";
 import "./Menu.css";
 import perfil from "./assets/perfil.png";

@@ -6,7 +6,7 @@ function ActualizarPassword() {
     const [correo, setCorreo] = useState('');
     const [codigo, setCodigo] = useState('');
     const [newPassword, setNewPassword] = useState('');
-    const [paso, setPaso] = useState(1); // 1: correo, 2: código, 3: nueva contraseña
+    const [paso, setPaso] = useState(1); 
     const [message, setMessage] = useState('');
     const [error, setError] = useState('');
     const [contador, setContador] = useState(0);
@@ -20,11 +20,11 @@ function ActualizarPassword() {
 
     const enviarCodigo = async () => {
         try {
-            await axios.post('http://localhost:5099/api/usuarios/enviar-codigo', { correo });
+            await axios.post('/api/usuarios/enviar-codigo', { correo });
             setMessage('Código enviado. Revisa tu correo.');
             setError('');
             setPaso(2);
-            setContador(15); // 15 segundos para reenviar
+            setContador(15); 
         } catch (err) {
             setError(err.response?.data?.mensaje || "Error al enviar código.");
             setMessage('');
@@ -33,7 +33,7 @@ function ActualizarPassword() {
 
     const validarCodigo = async () => {
         try {
-            await axios.post('http://localhost:5099/api/usuarios/validar-codigo', { correo, codigo });
+            await axios.post('/api/usuarios/validar-codigo', { correo, codigo });
             setMessage('Código válido. Ahora escribe tu nueva contraseña.');
             setError('');
             setPaso(3);
@@ -45,7 +45,7 @@ function ActualizarPassword() {
 
     const actualizarPassword = async () => {
         try {
-            await axios.post('http://localhost:5099/api/usuarios/actualizar-password', { correo, newPassword });
+            await axios.post('/api/usuarios/actualizar-password', { correo, newPassword });
             setMessage('Contraseña actualizada exitosamente. Redirigiendo...');
             setError('');
             setTimeout(() => {

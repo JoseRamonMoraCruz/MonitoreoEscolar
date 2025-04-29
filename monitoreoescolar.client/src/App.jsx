@@ -32,7 +32,7 @@ function App() {
 function DashboardLayout() {
     return (
         <div className="dashboard-container">
-            <Menu /> {/* ✅ Asegura que el menú siempre esté presente */}
+            <Menu /> {/*  Asegura que el menú siempre esté presente */}
             <div className="content">
                 <Routes>
                     <Route path="/subir-calif" element={<SubirCalif />} />

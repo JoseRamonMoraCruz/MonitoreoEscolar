@@ -2,12 +2,12 @@
     import axios from "axios";
     import "./ListaAlumnos.css";
     import addIcon from "./assets/agregar-grupo.png";
-    import Select from "react-select"; // Importamos react-select
+    import Select from "react-select"; 
     import deleteIcon from "./assets/borrar.png";
     import editIcon from "./assets/editar-informacion.png";
     import removeIcon from "./assets/eliminar-informacion.png";
-    import aceptarIcon from "./assets/aceptar.png"; // Ícono de aceptar
-    import rechazarIcon from "./assets/rechazar.png"; // Ícono de rechazar
+    import aceptarIcon from "./assets/aceptar.png";
+    import rechazarIcon from "./assets/rechazar.png"; 
     import WhatsappIcon from "./assets/whatsapp.png";
 
 
@@ -38,7 +38,7 @@
         const [menuGrupo, setMenuGrupo] = useState(null); // Guardará el grupo que tenga abierto el menú
         const [modalEditarDocente, setModalEditarDocente] = useState(false);
         const [grupoDocenteEditado, setGrupoDocenteEditado] = useState(null);
-        const menuRef = useRef(null); // Referencia para el menú
+        const menuRef = useRef(null); 
 
         useEffect(() => {
             obtenerGrupos();
@@ -104,7 +104,7 @@
         const handleTutorInputChangeEdit = (inputValue, { action }) => {
             if (action === "input-change") {
                 fetchTutorOptionsEdit(inputValue);
-                return inputValue; // Retorna el valor escrito para que se muestre correctamente
+                return inputValue; 
             }
             return inputValue;
         };
@@ -231,7 +231,7 @@
             try {
                 await axios.post("/api/grupos/agregar", nuevoGrupo);
                 alert("✅ Grupo agregado correctamente.");
-                obtenerGrupos(); // Actualiza la lista de grupos
+                obtenerGrupos(); 
                 cerrarModalGrupo();
             } catch (error) {
                 console.error("Error al agregar grupo:", error);

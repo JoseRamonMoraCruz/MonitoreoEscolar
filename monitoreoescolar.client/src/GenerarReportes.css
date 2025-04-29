@@ -3,12 +3,10 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    min-height: calc(100vh - 75px); /* menos altura del menú */
+    min-height: calc(100vh - 75px); 
     background: linear-gradient(135deg, #89f7fe, #66a6ff);
     padding: 40px 20px;
 }
-
-/* Caja blanca moderna */
 .generar-reportes-content {
     background-color: #2d3e50;
     padding: 40px;
@@ -19,8 +17,6 @@
     max-width: 850px;
     color: #333;
 }
-
-/* Título centrado */
 .generar-reportes-title {
     font-size: 22px;
     font-weight: 600;
@@ -28,7 +24,6 @@
     margin-bottom: 30px;
 }
 
-/* Nueva fila de inputs */
 .generar-reportes-row {
     display: flex;
     gap: 20px;
@@ -106,21 +101,20 @@
 
 .my-select__control--is-focused {
     outline: none !important;
-    border: 2px solid #8800ff !important; /* Borde morado al enfocar */
+    border: 2px solid #8800ff !important; 
 }
 
 .my-select__value-container {
     padding: 0 10px;
 }
 
-/* Placeholder */
 .my-select__placeholder {
     color: #666 !important;
 }
 
 /* Valor seleccionado (texto dentro del input) */
 .my-select__single-value {
-    color: #333 !important; /* Texto negro */
+    color: #333 !important; 
     font-size: 16px;
 }
 
@@ -134,7 +128,7 @@
 
 /* Cada opción en la lista */
 .my-select__option {
-    color: #333 !important; /* Texto negro */
+    color: #333 !important;
     font-size: 16px !important;
     background-color: #fff !important;
     padding: 10px !important;

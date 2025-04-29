@@ -24,20 +24,22 @@ const Login = () => {
             alert(response.data.mensaje);
 
             // Guardamos los datos en localStorage
-            localStorage.setItem('idUsuario', usuario.id_Usuario); // Guardamos el id del usuario
-            localStorage.setItem('nombre', usuario.nombre); // Guardamos el nombre
-            localStorage.setItem('apellidos', usuario.apellidos); // Guardamos los apellidos
-            localStorage.setItem('correo', usuario.correo); // Guardamos el correo
+            localStorage.setItem('idUsuario', usuario.id_Usuario); 
+            localStorage.setItem('nombre', usuario.nombre); 
+            localStorage.setItem('apellidos', usuario.apellidos); 
+            localStorage.setItem('correo', usuario.correo); 
             localStorage.setItem('contraseña', usuario.contrasena);
-            localStorage.setItem('telefono', usuario.telefono); // Guardamos el teléfono
-            localStorage.setItem('tipo_Usuario', usuario.tipo_Usuario); // Guardamos el tipo de usuario
+            localStorage.setItem('telefono', usuario.telefono); 
+            localStorage.setItem('tipo_Usuario', usuario.tipo_Usuario); 
 
             // Redirigir según el tipo de usuario
             if (usuario.tipo_Usuario === "personal") {
                 navigate("/menu");
             } else if (usuario.tipo_Usuario === "padre") {
-                localStorage.setItem("idPadre", usuario.id_Usuario); 
-                navigate("/padre"); 
+                localStorage.setItem("idPadre", usuario.id_Usuario);
+                localStorage.setItem("nombrePadre", usuario.nombre); 
+                localStorage.setItem("apellidosPadre", usuario.apellidos);
+                navigate("/padre");
             }
         } catch (error) {
             setError(error.response?.data?.mensaje || "❌ Error en el inicio de sesión.");

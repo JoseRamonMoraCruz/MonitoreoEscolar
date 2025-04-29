@@ -9,6 +9,18 @@ const Padre = () => {
     const [expandedAlumnoId, setExpandedAlumnoId] = useState(null);
     const navigate = useNavigate();
 
+    const [nombrePadre, setNombrePadre] = useState("");
+    const [showToast, setShowToast] = useState(false);
+
+    useEffect(() => {
+        // Carga el nombre del padre y dispara el toast 3s
+        const nombre = localStorage.getItem("nombrePadre") || "";
+        setNombrePadre(nombre);
+        setShowToast(true);
+        const timer = setTimeout(() => setShowToast(false), 3000);
+        return () => clearTimeout(timer);
+    }, []);
+
     const descargarPDF = async (alumnoId) => {
         try {
             const response = await axios.get(`http://localhost:5099/api/padres/descargar-reporte/${alumnoId}`, {
@@ -71,7 +83,7 @@ const Padre = () => {
         const alumno = hijos.find(h => h.alumnoId === alumnoId);
         if (!alumno?.calificaciones) {
             try {
-                const response = await axios.get(`http://localhost:5099/api/padres/obtener-calificaciones-alumno/${alumnoId}`);
+                const response = await axios.get(`/api/padres/obtener-calificaciones-alumno/${alumnoId}`);
                 setHijos(prev =>
                     prev.map(h =>
                         h.alumnoId === alumnoId
@@ -91,6 +103,12 @@ const Padre = () => {
                 <ul className="menu-list">
                     <li><Link to="/" className="logout-link">Cerrar Sesión</Link></li>
                 </ul>
+                {/* Toast de bienvenida para el padre */}
+                {showToast && (
+                    <div className="welcome-toast">
+                        ¡Bienvenido, <strong>{nombrePadre}</strong>!
+                    </div>
+                )}
             </nav>
 
             <div className="padre-container">

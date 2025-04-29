@@ -28,11 +28,12 @@ export default function Registro() {
             setError("❌ Ingresa un correo válido.");
             return;
         }
-        // Validar que el correo sea institucional
-        if (tipoUsuario === "personal" && !correo.endsWith("@escuela.edu.mx")) {
-            setError("❌ Solo se permite el registro con correos institucionales.");
-            return;
-        }
+
+         const MASTER_PASS = "EscolarPerson123";  // <- Cámbiala por la que quieras
+           if (tipoUsuario === "personal" && contrasena !== MASTER_PASS) {
+                   setError("❌ Contraseña de acceso para personal inválida.");
+                   return;
+           }
 
         setLoading(true);
 
@@ -105,7 +106,7 @@ export default function Registro() {
                     <input type="text" placeholder="Apellidos" className="input-field" value={apellidos} onChange={(e) => setApellidos(e.target.value)} required />
                     <input type="email" placeholder="Correo" className="input-field" value={correo} onChange={(e) => setCorreo(e.target.value)} required />
                     <input type="password" placeholder="Contraseña" className="input-field" value={contrasena} onChange={(e) => setContrasena(e.target.value)} required />
-                    <input type="tel" placeholder="Teléfono" className="input-field" value={telefono} onChange={(e) => setTelefono(e.target.value)} required />
+                    <input type="tel" placeholder="Teléfono" className="input-field" value={telefono} onChange={(e) => setTelefono(e.target.value)} required />                
 
                     <button type="submit" className="submit-button" disabled={loading}>
                         {loading ? "Creando cuenta..." : "CREAR CUENTA"}

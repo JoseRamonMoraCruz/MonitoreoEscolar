@@ -11,10 +11,7 @@ const GenerarReportes = () => {
         motivo: ""
     });
 
-    // Opciones del autocompletado (react-select)
     const [options, setOptions] = useState([]);
-
-    // Valor seleccionado en el Select
     const [selectedAlumno, setSelectedAlumno] = useState(null);
 
     // Función para hacer la búsqueda de alumnos
@@ -24,7 +21,7 @@ const GenerarReportes = () => {
             return;
         }
         try {
-            const response = await axios.get(`http://localhost:5099/api/alumnos/buscar?termino=${inputValue}`);
+            const response = await axios.get(`/api/alumnos/buscar?termino=${inputValue}`);
             const optionsData = response.data.map((alumno) => ({
                 value: alumno.id,
                 label: alumno.nombreCompleto
@@ -69,7 +66,7 @@ const GenerarReportes = () => {
             return;
         }
         try {
-            const response = await axios.post("http://localhost:5099/api/reportes/generar", reporte);
+            const response = await axios.post("/api/reportes/generar", reporte);
             alert(response.data.mensaje);
             // Limpiar formulario
             setReporte({

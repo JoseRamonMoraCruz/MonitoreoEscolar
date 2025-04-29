@@ -9,6 +9,7 @@ using System.Text.RegularExpressions;
 using MonitoreoEscolar.Server.DTOs;
 using MimeKit;
 using MailKit.Net.Smtp;
+using MonitoreoEscolar.Server.DTOs;
 using MonitoreoEscolar.Server.DTOS;
 using System.Security.Claims;
 
@@ -62,10 +63,15 @@ namespace MonitoreoEscolar.Server.Controllers
                 return BadRequest(new { mensaje = " El correo ya está registrado." });
             }
 
-            if (request.Tipo_Usuario == "personal" && !request.Correo.EndsWith("@escuela.edu.mx"))
-            {
-                return BadRequest(new { mensaje = "Solo se permite el registro con correos institucionales." });
-            }
+            // Sólo el Personal Escolar debe conocer la clave maestra para registrarse:
+               if (request.Tipo_Usuario == "personal")
+                   {
+                    var masterPass = "EscolarPerson123";  // idéntica a la del frontend
+                       if (request.Contrasena != masterPass)
+                           {
+                               return BadRequest(new { mensaje = "Contraseña de acceso para personal inválida." });
+                       }
+               }
 
             var nuevoUsuario = new Usuario
             {

@@ -3,7 +3,7 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import familiaIcon from "./assets/familia.png"; 
 import escuelaIcon from "./assets/edificio-escolar.png"; 
-import AtrasIcon from './assets/hacia-atras.png'; 
+import AtrasIcon from './assets/flecha-hacia-atras.png'; 
 
 export default function Registro() {
     const [tipoUsuario, setTipoUsuario] = useState("personal"); 
@@ -106,7 +106,6 @@ export default function Registro() {
                     <input type="email" placeholder="Correo" className="input-field" value={correo} onChange={(e) => setCorreo(e.target.value)} required />
                     <input type="password" placeholder="Contraseña" className="input-field" value={contrasena} onChange={(e) => setContrasena(e.target.value)} required />
                     <input type="tel" placeholder="Teléfono" className="input-field" value={telefono} onChange={(e) => setTelefono(e.target.value)} required />
-                    <input type="email" placeholder="Correo" className="input-field" value={correo} onChange={(e) => setCorreo(e.target.value)} required />
 
                     <button type="submit" className="submit-button" disabled={loading}>
                         {loading ? "Creando cuenta..." : "CREAR CUENTA"}

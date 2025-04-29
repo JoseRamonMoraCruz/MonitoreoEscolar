@@ -1,6 +1,9 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import './ActualizarPassword.css';
+import { useNavigate } from 'react-router-dom';
+import AtrasIcon from './assets/flecha-hacia-atras.png'; // Ajusta la ruta si es distinta
+
 
 function ActualizarPassword() {
     const [correo, setCorreo] = useState('');
@@ -10,6 +13,7 @@ function ActualizarPassword() {
     const [message, setMessage] = useState('');
     const [error, setError] = useState('');
     const [contador, setContador] = useState(0);
+    const navigate = useNavigate();
 
     useEffect(() => {
         if (contador > 0) {
@@ -60,7 +64,12 @@ function ActualizarPassword() {
     return (
         <div className="update-container-wrapper">
             <div className="update-box">
-                <h2>Actualizar Contraseña</h2>
+                <button className="back-button" onClick={() => window.location.href = '/'}>
+                    <img src={AtrasIcon} alt="Volver" className="back-icon" />
+                </button>
+
+                <h2 className="register-title">Actualizar Contraseña</h2>
+
 
                 {message && <p className="success-message">{message}</p>}
                 {error && <p className="error-message">{error}</p>}

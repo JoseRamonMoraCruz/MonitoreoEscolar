@@ -3,7 +3,7 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import familiaIcon from "./assets/familia.png"; 
 import escuelaIcon from "./assets/edificio-escolar.png"; 
-import AtrasIcon from './assets/hacia-atras.png'; 
+import AtrasIcon from './assets/flecha-hacia-atras.png'; 
 
 export default function Registro() {
     const [tipoUsuario, setTipoUsuario] = useState("personal"); 

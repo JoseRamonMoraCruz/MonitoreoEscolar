@@ -210,32 +210,32 @@
 .tabla-alumnos {
     width: 100%;
     border-collapse: collapse;
+    font-size: 16px;
+    background-color: white;
+    border-radius: 10px;
+    overflow: hidden;
     margin-top: 15px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
 
     .tabla-alumnos th {
-        border: 1px solid #ccc;
-        padding: 8px;
-        text-align: left;
-        color: black;
-        background-color: #f2f2f2;
+        background-color: #f5f5f5;
+        color: #555;
         font-weight: bold;
+        padding: 12px;
+        text-align: left;
     }
 
     .tabla-alumnos td {
-        border: 1px solid #ccc;
-        padding: 6px 8px; /* más compacto */
-        text-align: left;
+        padding: 12px;
+        border-bottom: 1px solid #eee;
         color: black;
-        background-color: white;
-        vertical-align: middle; /* clave para que el ícono y nombre se alineen bien */
+        transition: background-color 0.3s ease-in-out;
+    }
+    .tabla-alumnos tr:hover {
+        background-color: #f0f8ff;
     }
 
-
-    .tabla-alumnos th {
-        background-color: #f2f2f2;
-        font-weight: bold;
-    }
 
 /* Contenedor para la sección expandida del grupo */
 .grupo-details {

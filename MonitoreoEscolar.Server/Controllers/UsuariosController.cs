@@ -9,7 +9,6 @@ using System.Text.RegularExpressions;
 using MonitoreoEscolar.Server.DTOs;
 using MimeKit;
 using MailKit.Net.Smtp;
-using MonitoreoEscolar.Server.DTOs;
 using MonitoreoEscolar.Server.DTOS;
 using System.Security.Claims;
 

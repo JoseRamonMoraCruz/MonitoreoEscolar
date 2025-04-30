@@ -23,7 +23,7 @@ function ActualizarPassword() {
 
     const enviarCodigo = async () => {
         try {
-            await axios.post('/api/usuarios/enviar-codigo', { correo });
+            await axios.post('http://localhost:5099/api/usuarios/enviar-codigo', { correo });
             setMessage('Código enviado. Revisa tu correo.');
             setError('');
             setPaso(2);
@@ -36,7 +36,7 @@ function ActualizarPassword() {
 
     const validarCodigo = async () => {
         try {
-            await axios.post('/api/usuarios/validar-codigo', { correo, codigo });
+            await axios.post('http://localhost:5099/api/usuarios/validar-codigo', { correo, codigo });
             setMessage('Código válido. Ahora escribe tu nueva contraseña.');
             setError('');
             setPaso(3);
@@ -48,7 +48,7 @@ function ActualizarPassword() {
 
     const actualizarPassword = async () => {
         try {
-            await axios.post('/api/usuarios/actualizar-password', { correo, newPassword });
+            await axios.post('http://localhost:5099/api/usuarios/actualizar-password', { correo, newPassword });
             setMessage('Contraseña actualizada exitosamente. Redirigiendo...');
             setError('');
             setTimeout(() => {
@@ -63,7 +63,7 @@ function ActualizarPassword() {
     return (
         <div className="update-container-wrapper">
             <div className="update-box">
-                <button className="back-button" onClick={() => window.location.href = '/'}>
+                <button className="back-button" onClick={() => navigate("/")}>
                     <img src={AtrasIcon} alt="Volver" className="back-icon" />
                 </button>
 

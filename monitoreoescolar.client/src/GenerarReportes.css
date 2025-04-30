@@ -146,3 +146,72 @@
     background-color: #ddd !important;
     color: #333 !important;
 }
+
+/*se puede quitar*/
+.ver-reportes-btn {
+    background: #005f73;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 6px;
+    cursor: pointer;
+    margin-bottom: 20px;
+}
+
+.reportes-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0,0,0,0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+}
+
+.reportes-modal-content {
+    background: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    width: 90%;
+    max-width: 600px;
+    max-height: 80vh;
+    overflow-y: auto;
+    position: relative;
+}
+
+.modal-close {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    font-size: 1.5rem;
+    cursor: pointer;
+}
+
+.reportes-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+}
+
+    .reportes-table th,
+    .reportes-table td {
+        border: 1px solid #ccc;
+        padding: 8px;
+        text-align: left;
+    }
+
+    .reportes-table th {
+        background: #e0e0e0;
+    }
+
+    .reportes-table button {
+        background: none;
+        border: none;
+        cursor: pointer;
+        margin-right: 8px;
+        font-size: 1rem;
+    }
+

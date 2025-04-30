@@ -32,5 +32,36 @@ namespace MonitoreoEscolar.Server.Controllers
 
             return Ok(new { mensaje = "Reporte generado exitosamente.", reporte });
         }
+
+        // GET: api/reportes
+        [HttpGet]
+        public async Task<IActionResult> ObtenerReportes()
+        {
+            var list = await _context.Reportes
+                .Include(r => r.Alumno)
+                .ToListAsync();
+
+            var dto = list.Select(r => new {
+                id = r.Id,
+                alumnoId = r.AlumnoId,
+                nombreCompleto = r.Alumno.Nombre + " " + r.Alumno.Apellidos,
+                fecha = r.Fecha,
+                motivo = r.Motivo
+            });
+
+            return Ok(dto);
+        }
+
+        // DELETE: api/reportes/{id}
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> EliminarReporte(int id)
+        {
+            var rep = await _context.Reportes.FindAsync(id);
+            if (rep == null) return NotFound(new { mensaje = "Reporte no encontrado." });
+
+            _context.Reportes.Remove(rep);
+            await _context.SaveChangesAsync();
+            return Ok(new { mensaje = "Reporte eliminado exitosamente." });
+        }
     }
 }

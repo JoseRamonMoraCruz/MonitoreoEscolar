@@ -53,7 +53,7 @@ function ActualizarPassword() {
             setMessage('Contraseña actualizada exitosamente. Redirigiendo...');
             setError('');
             setTimeout(() => {
-                window.location.href = '/'; // Regresa al login
+                navigate('/'); // Regresa al login usando react-router
             }, 3000);
         } catch (err) {
             setError(err.response?.data?.mensaje || "Error al actualizar contraseña.");
@@ -64,7 +64,7 @@ function ActualizarPassword() {
     return (
         <div className="update-container-wrapper">
             <div className="update-box">
-                <button className="back-button" onClick={() => window.location.href = '/'}>
+                <button className="back-button" onClick={() => navigate('/')}>
                     <img src={AtrasIcon} alt="Volver" className="back-icon" />
                 </button>
 

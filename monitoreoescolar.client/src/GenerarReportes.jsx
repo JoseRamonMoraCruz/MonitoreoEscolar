@@ -1,9 +1,36 @@
-﻿import { useState } from "react";
+﻿import { useState, useEffect } from "react"; //si no jala quitalo
 import axios from "axios";
 import Select from "react-select";
 import "./GenerarReportes.css";
 
+
 const GenerarReportes = () => {
+    const openModal = () => setIsModalOpen(true);
+    const closeModal = () => setIsModalOpen(false);
+    const [reportesList, setReportesList] = useState([]);
+    const [isModalOpen, setIsModalOpen] = useState(false);
+
+    // Traer la lista de reportes siempre que abra el modal
+    useEffect(() => {
+        if (isModalOpen) {
+            axios.get("/api/reportes")
+                .then(res => setReportesList(res.data))
+                .catch(err => console.error(err));
+        }
+    }, [isModalOpen]);
+
+    // Eliminar un reporte
+    const handleDeleteReporte = async (id) => {
+        if (!window.confirm("¿Eliminar este reporte?")) return;
+        try {
+            await axios.delete(`/api/reportes/${id}`);
+            setReportesList(r => r.filter(x => x.id !== id));
+        } catch (err) {
+            console.error(err);
+            alert("Error al eliminar reporte.");
+        }
+    };
+
     // Estado para el reporte
     const [reporte, setReporte] = useState({
         alumnoId: null,
@@ -31,7 +58,6 @@ const GenerarReportes = () => {
             console.error("Error al buscar alumnos:", error);
         }
     };
-
     // Maneja la selección de un alumno
     const handleChangeSelect = (selectedOption) => {
         setSelectedAlumno(selectedOption);
@@ -86,6 +112,14 @@ const GenerarReportes = () => {
         <div className="generar-reportes-container">
             <div className="generar-reportes-content">
                 <h2 className="generar-reportes-title">📑 Generar Reportes</h2>
+
+                <div className="generar-reportes-btn-container">
+                    <button type="button" className="ver-reportes-btn" onClick={openModal}>
+                        📋 Ver Reportes
+                    </button>
+                </div>
+
+
                 <form className="generar-reportes-form" onSubmit={handleSubmit}>
                     <div className="generar-reportes-row">
                         <div className="generar-reportes-group">
@@ -100,7 +134,6 @@ const GenerarReportes = () => {
                                 noOptionsMessage={() => "No se encontraron coincidencias"}
                             />
                         </div>
-
                         <div className="generar-reportes-group">
                             <label>Fecha:</label>
                             <input
@@ -112,7 +145,6 @@ const GenerarReportes = () => {
                             />
                         </div>
                     </div>
-
                     <div className="generar-reportes-group">
                         <label>Motivo del Reporte:</label>
                         <textarea
@@ -131,6 +163,35 @@ const GenerarReportes = () => {
                     </div>
                 </form>
             </div>
+            {isModalOpen && (
+                <div className="reportes-modal">
+                    <div className="reportes-modal-content">
+                        <span className="modal-close" onClick={closeModal}>×</span>
+                        <h3>Reportes Asignados</h3>
+                        <table className="reportes-table">
+                            <thead>
+                                <tr>
+                                    <th>Alumno</th><th>Fecha</th><th>Motivo</th><th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {reportesList.map(r => (
+                                    <tr key={r.id}>
+                                        <td>{r.nombreCompleto}</td>
+                                        <td>{new Date(r.fecha).toLocaleString()}</td>
+                                        <td>{r.motivo}</td>
+                                        <td>
+                                            {/*<button onClick={() => handleEditReporte(r)}>✏️</button> */}
+                                            <button onClick={() => handleDeleteReporte(r.id)}>🗑️</button>
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            )}
+
         </div>
     );
 };

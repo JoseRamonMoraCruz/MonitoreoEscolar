@@ -52,7 +52,7 @@ function ActualizarPassword() {
             setMessage('Contraseña actualizada exitosamente. Redirigiendo...');
             setError('');
             setTimeout(() => {
-                window.location.href = '/'; // Regresa al login
+                navigate('/'); // Regresa al login usando react-router
             }, 3000);
         } catch (err) {
             setError(err.response?.data?.mensaje || "Error al actualizar contraseña.");

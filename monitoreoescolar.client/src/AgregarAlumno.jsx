@@ -16,8 +16,16 @@ const AgregarAlumno = () => {
         tutor: "",
         domicilio: "",
         tutorId: null,
-        huellaCodigo: "" 
+        huellaCodigo: "",
+        CURP: "",
+        NumeroControl: "",
+        Carrera: "",
+        Plantel: "",
+        Turno: "",
+        Generacion: "",
+        Ciclo: ""
     });
+
 
     const [tutorOptions, setTutorOptions] = useState([]);
     const [selectedTutor, setSelectedTutor] = useState(null);
@@ -44,11 +52,17 @@ const AgregarAlumno = () => {
     };
 
     const handleChange = (e) => {
+        const { name, value } = e.target;
+
+        // Convertir CURP a mayúsculas automáticamente
+        const valorFinal = name === "CURP" ? value.toUpperCase() : value;
+
         setAlumno({
             ...alumno,
-            [e.target.name]: e.target.value
+            [name]: valorFinal
         });
     };
+
 
     const handleChangeGrado = (e) => {
         const newGrado = e.target.value;
@@ -76,7 +90,7 @@ const AgregarAlumno = () => {
             return;
         }
         try {
-            const response = await axios.get(`/api/usuarios/autocompletePadres?termino=${inputValue}`);
+            const response = await axios.get(`http://localhost:5099/api/usuarios/autocompletePadres?termino=${inputValue}`);
             const optionsData = response.data.map((padre) => ({
                 value: padre.id_Usuario,
                 label: `${padre.nombre} ${padre.apellidos} - ${padre.correo}`
@@ -109,7 +123,7 @@ const AgregarAlumno = () => {
 
         // Verificar que el grupo seleccionado exista
         try {
-            const gruposResponse = await axios.get("/api/grupos");
+            const gruposResponse = await axios.get("http://localhost:5099/api/grupos");
             const gruposExistentes = gruposResponse.data;
             const grupoEncontrado = gruposExistentes.find(
                 (g) =>
@@ -128,7 +142,7 @@ const AgregarAlumno = () => {
         }
 
         try {
-            const response = await axios.post("/api/alumnos/registro", alumno);
+            const response = await axios.post("http://localhost:5099/api/alumnos/registro", alumno);
             alert(response.data.mensaje);
 
             // Limpiar formulario
@@ -237,6 +251,99 @@ const AgregarAlumno = () => {
                                 required
                             />
                         </div>
+                      
+                            {/* CURP */}
+                            <div className="agregar-alumno-group">
+                                <label>🧾 CURP:</label>
+                                <input
+                                    type="text"
+                                    name="CURP"
+                                    value={alumno.CURP}
+                                    onChange={handleChange}
+                                    placeholder="CURP del alumno"
+                                />
+                            </div>
+
+                            {/* Número de Control */}
+                            <div className="agregar-alumno-group">
+                                <label>🔢 Número de Control:</label>
+                                <input
+                                    type="text"
+                                    name="NumeroControl"
+                                    value={alumno.NumeroControl}
+                                    onChange={handleChange}
+                                    placeholder="Número de control del alumno"
+                                />
+                            </div>
+
+                            {/* Carrera */}
+                        <div className="agregar-alumno-group">
+                            <label>🎓 Carrera:</label>
+                            <select
+                                name="Carrera"
+                                value={alumno.Carrera}
+                                onChange={handleChange}
+                                required
+                            >
+                                <option value="">Seleccione una carrera</option>
+                                <option value="CIENCIA DE DATOS E INFORMACIÓN">CIENCIA DE DATOS E INFORMACIÓN</option>
+                                <option value="CONSTRUCCIÓN">CONSTRUCCIÓN</option>
+                                <option value="CONTABILIDAD">CONTABILIDAD</option>
+                                <option value="LABORATORISTA CLÍNICO">LABORATORISTA CLÍNICO</option>
+                                <option value="MANTENIMIENTO AUTOMOTRIZ">MANTENIMIENTO AUTOMOTRIZ</option>
+                                <option value="MECATRÓNICA">MECATRÓNICA</option>
+                                <option value="PUERICULTURA">PUERICULTURA</option>
+                            </select>
+                        </div>
+
+
+                            {/* Plantel */}
+                            <div className="agregar-alumno-group">
+                                <label>🏫 Plantel:</label>
+                                <input
+                                    type="text"
+                                    name="Plantel"
+                                    value={alumno.Plantel}
+                                    onChange={handleChange}
+                                    placeholder="Plantel asignado"
+                                />
+                            </div>
+
+                            {/* Turno */}
+                            <div className="agregar-alumno-group">
+                                <label>🕐 Turno:</label>
+                                <input
+                                    type="text"
+                                    name="Turno"
+                                    value={alumno.Turno}
+                                    onChange={handleChange}
+                                    placeholder="Turno (Matutino/Vespertino)"
+                                />
+                            </div>
+
+                            {/* Generación */}
+                            <div className="agregar-alumno-group">
+                                <label>📅 Generación:</label>
+                                <input
+                                    type="text"
+                                    name="Generacion"
+                                    value={alumno.Generacion}
+                                    onChange={handleChange}
+                                    placeholder="Generación del alumno"
+                                />
+                            </div>
+
+                            {/* Ciclo Escolar */}
+                            <div className="agregar-alumno-group">
+                                <label>📚 Ciclo Escolar:</label>
+                                <input
+                                    type="text"
+                                    name="Ciclo"
+                                    value={alumno.Ciclo}
+                                    onChange={handleChange}
+                                    placeholder="Ej: 2024-2025"
+                                />
+                        </div>
                         {/* Campo de huella digital */}
                         <div className="agregar-alumno-group">
                             <label>👍🏻 Huella Digital:</label>
@@ -248,6 +355,7 @@ const AgregarAlumno = () => {
                                 placeholder="Huella Digital del Alumno"
                                 required
                             />
+
                         </div>
                         {/* Botones */}
                         <div className="button-container">

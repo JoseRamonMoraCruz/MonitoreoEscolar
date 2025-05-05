@@ -18,7 +18,8 @@ namespace MonitoreoEscolar.Server.Controllers
             _context = context;
             _logger = logger;
         }
-        //PARA SUBIR LAS CALIFICACIONES A LA BASE DE DATOS CON UN ARCHIVO EXCEL
+
+        // ✅ ENDPOINT 1: SUBIR CALIFICACIONES DESDE EXCEL
         [HttpPost("subirCalificaciones")]
         public async Task<IActionResult> SubirCalificaciones(IFormFile file)
         {
@@ -28,6 +29,7 @@ namespace MonitoreoEscolar.Server.Controllers
             try
             {
                 ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
+
                 using var stream = new MemoryStream();
                 await file.CopyToAsync(stream);
                 using var package = new ExcelPackage(stream);
@@ -38,66 +40,83 @@ namespace MonitoreoEscolar.Server.Controllers
 
                 var rowCount = worksheet.Dimension?.Rows ?? 0;
 
-                // Cache alumnos y grupos para mejor rendimiento
-                var alumnosDict = await _context.Alumnos.ToDictionaryAsync(a => Normalizar(a.NombreCompleto));
-                var gruposDict = await _context.Grupos.ToDictionaryAsync(
-                    g => $"{g.Grado}{g.Letra}".ToUpper()
-                );
+                // Diccionarios con nombres normalizados en MAYÚSCULAS
+                var alumnosDict = await _context.Alumnos
+                    .ToDictionaryAsync(a => Normalizar(a.NombreCompletoNormalizado));
+
+                var gruposDict = await _context.Grupos
+                    .ToDictionaryAsync(g => $"{g.Grado}{g.Letra}".ToUpper());
 
                 var calificacionesGuardadas = new List<Calificacion>();
 
                 for (int row = 2; row <= rowCount; row++)
                 {
-                    string nombreAlumno = worksheet.Cells[row, 1].Text.Trim();
-                    string grupoStr = worksheet.Cells[row, worksheet.Dimension.Columns - 1].Text.Trim();
-                    string parcialUnidad = worksheet.Cells[row, worksheet.Dimension.Columns].Text.Trim();
+                    // 🟡 Leer datos desde el Excel
+                    string nombreOriginal = $"{worksheet.Cells[row, 9].Text.Trim()} {worksheet.Cells[row, 10].Text.Trim()} {worksheet.Cells[row, 11].Text.Trim()}";
+                    string nombreNormalizado = Normalizar(nombreOriginal);
 
-                    if (string.IsNullOrWhiteSpace(nombreAlumno) || string.IsNullOrWhiteSpace(grupoStr))
-                        continue;
+                    string grupoStr = worksheet.Cells[row, 7].Text.Trim().ToUpper();
+                    string asignatura = Normalizar(worksheet.Cells[row, 13].Text.Trim());
 
-                    string nombreNormalizado = Normalizar(nombreAlumno);
+                    int.TryParse(worksheet.Cells[row, 14].Text, out int parcial1);
+                    int.TryParse(worksheet.Cells[row, 15].Text, out int parcial2);
+                    int.TryParse(worksheet.Cells[row, 16].Text, out int parcial3);
+                    int.TryParse(worksheet.Cells[row, 17].Text, out int califFinal);
 
+                    string periodo = worksheet.Cells[row, 18].Text.Trim();
+                    string firmadoTexto = worksheet.Cells[row, 19].Text.Trim();
+                    bool firmado = firmadoTexto.Equals("Sí", StringComparison.OrdinalIgnoreCase) || firmadoTexto.ToUpper().Contains("FIRMADO");
+
+                    int.TryParse(worksheet.Cells[row, 24].Text, out int asistenciasTotal);
+                    string tipo = worksheet.Cells[row, 25].Text.Trim();
+
+                    // 🧠 Validación contra BD
                     if (!alumnosDict.TryGetValue(nombreNormalizado, out var alumno))
+                    {
+                        _logger.LogWarning("Alumno no encontrado: {0}", nombreNormalizado);
                         continue;
+                    }
 
                     if (!gruposDict.TryGetValue(grupoStr.ToUpper(), out var grupo))
-                        continue;
-
-                    // Leer dinámicamente columnas tipo Materia N / Calificación de Materia N
-                    for (int col = 2; col < worksheet.Dimension.Columns - 2; col += 2)
                     {
-                        string materia = worksheet.Cells[row, col].Text.Trim();
-                        string calificacionTexto = worksheet.Cells[row, col + 1].Text.Trim();
-
-                        if (string.IsNullOrWhiteSpace(materia) || string.IsNullOrWhiteSpace(calificacionTexto))
-                            continue;
-
-                        if (!int.TryParse(calificacionTexto, out int calificacionValor))
-                            continue;
-
-                        // Evitar duplicados
-                        bool yaExiste = await _context.Calificaciones.AnyAsync(c =>
-                            c.AlumnoId == alumno.Id &&
-                            c.Materia == materia &&
-                            c.GrupoId == grupo.Id &&
-                            c.ParcialUnidad == parcialUnidad
-                        );
-
-                        if (yaExiste)
-                            continue;
-
-                        var calificacion = new Calificacion
-                        {
-                            Nombre = nombreAlumno,
-                            Materia = materia,
-                            CalificacionValor = calificacionValor,
-                            GrupoId = grupo.Id,
-                            ParcialUnidad = parcialUnidad,
-                            AlumnoId = alumno.Id
-                        };
-
-                        calificacionesGuardadas.Add(calificacion);
+                        _logger.LogWarning("Grupo no encontrado: {0}", grupoStr);
+                        continue;
                     }
+
+                    string parcialUnidad = "Parcial 1"; // 🔧 Puedes ajustarlo si usas varios
+
+                    bool yaExiste = await _context.Calificaciones.AnyAsync(c =>
+                        c.AlumnoId == alumno.Id &&
+                        c.NombreAsignatura == asignatura &&
+                        c.GrupoId == grupo.Id &&
+                        c.ParcialUnidad == parcialUnidad
+                    );
+
+                    if (yaExiste)
+                    {
+                        _logger.LogInformation("Calificación ya existente para {0} - {1}", nombreNormalizado, asignatura);
+                        continue;
+                    }
+
+                    // ✅ Crear y agregar nueva calificación
+                    var calificacion = new Calificacion
+                    {
+                        Nombre = nombreOriginal,
+                        NombreAsignatura = asignatura,
+                        Parcial1 = parcial1,
+                        Parcial2 = parcial2,
+                        Parcial3 = parcial3,
+                        CalificacionValor = califFinal,
+                        Tipo = tipo,
+                        Periodo = periodo,
+                        Firmado = firmado,
+                        AsistenciasTotal = asistenciasTotal,
+                        ParcialUnidad = parcialUnidad,
+                        GrupoId = grupo.Id,
+                        AlumnoId = alumno.Id
+                    };
+
+                    calificacionesGuardadas.Add(calificacion);
                 }
 
                 _context.Calificaciones.AddRange(calificacionesGuardadas);
@@ -108,78 +127,107 @@ namespace MonitoreoEscolar.Server.Controllers
 
                 return Ok(new
                 {
-                    mensaje = "Calificaciones cargadas correctamente.",
+                    mensaje = $"✅ Calificaciones cargadas correctamente. Total: {calificacionesGuardadas.Count}",
                     cantidad = calificacionesGuardadas.Count,
-                    calificaciones = calificacionesGuardadas.Select(c => new
-                    {
-                        nombre = c.Nombre,
-                        materia = c.Materia,
-                        calificacionValor = c.CalificacionValor,
-                        grupo = $"{c.Grupo.Grado}{c.Grupo.Letra}",
-                        parcialUnidad = c.ParcialUnidad
-                    }).ToList()
+                    calificaciones = calificacionesGuardadas
                 });
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex, "Error al subir calificaciones");
                 return StatusCode(500, $"Error interno: {ex.Message} {ex.InnerException?.Message}");
             }
         }
 
 
-        //PARA OBTENER LAS CALIFICACIONES DE LA BASE DE DATOS
+
+        // ✅ ENDPOINT 2: RESUMEN DE CALIFICACIONES
         [HttpGet("obtenerCalificaciones")]
         public async Task<IActionResult> ObtenerCalificacionesResumen()
         {
             var calificaciones = await _context.Calificaciones
                 .Include(c => c.Grupo)
-                .GroupBy(c => new { c.Nombre, c.Grupo.Grado, c.Grupo.Letra, c.ParcialUnidad })
                 .ToListAsync();
 
-            var resumen = calificaciones.Select(grupo =>
-            {
-                var datosAlumno = new Dictionary<string, object>
+            var resumen = calificaciones
+                .GroupBy(c => new
                 {
-                    ["alumno"] = grupo.Key.Nombre,
-                    ["grupo"] = $"{grupo.Key.Grado}{grupo.Key.Letra}",
-                    ["parcialUnidad"] = grupo.Key.ParcialUnidad
-                };
-
-                foreach (var calificacion in grupo)
+                    c.Nombre,
+                    GrupoStr = $"{c.Grupo.Grado}{c.Grupo.Letra}",
+                    c.ParcialUnidad,
+                    c.Periodo,
+                    c.Tipo,
+                    c.Firmado,
+                    c.AsistenciasTotal
+                })
+                .Select(grupo =>
                 {
-                    datosAlumno[calificacion.Materia] = calificacion.CalificacionValor;
-                }
+                    var datosAlumno = new Dictionary<string, object>
+                    {
+                        ["alumno"] = grupo.Key.Nombre,
+                        ["grupo"] = grupo.Key.GrupoStr,
+                        ["parcialUnidad"] = grupo.Key.ParcialUnidad,
+                        ["periodo"] = grupo.Key.Periodo,
+                        ["tipo"] = grupo.Key.Tipo,
+                        ["firmado"] = grupo.Key.Firmado,
+                        ["asistenciasTotal"] = grupo.Key.AsistenciasTotal
+                    };
 
-                return datosAlumno;
-            });
+                    foreach (var calificacion in grupo)
+                    {
+                        datosAlumno[calificacion.NombreAsignatura] = calificacion.CalificacionValor;
+                    }
+
+                    return datosAlumno;
+                });
 
             return Ok(resumen);
         }
 
-        //PARA ASIGNAR EL ID DEL ALUMNO A LAS CALIFICACIONES SOLO ES NECESARIO EJECUTAR ESTE METODO UNA VEZ
-        [HttpPost("asignar-alumno-id")]
-        public async Task<IActionResult> AsignarAlumnoIdACalificaciones()
+        // ✅ ENDPOINT 3: RESUMEN AGRUPADO POR ALUMNO
+        [HttpGet("obtenerResumenAgrupado")]
+        public async Task<IActionResult> ObtenerResumenAgrupado()
         {
-            var calificaciones = _context.Calificaciones.Where(c => c.AlumnoId == null).ToList();
+            var calificaciones = await _context.Calificaciones
+                .Include(c => c.Grupo)
+                .Include(c => c.Alumno)
+                .ToListAsync();
 
-            int actualizadas = 0;
-
-            foreach (var cal in calificaciones)
-            {
-                var alumno = _context.Alumnos.FirstOrDefault(a => a.NombreCompleto == cal.Nombre);
-
-                if (alumno != null)
+            var resumen = calificaciones
+                .GroupBy(c => new
                 {
-                    cal.AlumnoId = alumno.Id;
-                    actualizadas++;
-                }
-            }
+                    NombreCompleto = c.Alumno.NombreCompleto,
+                    Grupo = $"{c.Grupo.Grado}{c.Grupo.Letra}",
+                    c.ParcialUnidad
+                })
+                .Select(grupo =>
+                {
+                    var primera = grupo.First();
 
-            await _context.SaveChangesAsync();
+                    var resultado = new Dictionary<string, object>
+                    {
+                        ["alumno"] = grupo.Key.NombreCompleto,
+                        ["grupo"] = grupo.Key.Grupo,
+                        ["parcialUnidad"] = grupo.Key.ParcialUnidad,
+                        ["periodo"] = primera.Periodo,
+                        ["tipo"] = primera.Tipo,
+                        ["firmado"] = primera.Firmado,
+                        ["asistenciasTotal"] = primera.AsistenciasTotal ?? 0
+                    };
 
-            return Ok($" Se actualizaron {actualizadas} calificaciones con su AlumnoId.");
+                    foreach (var calif in grupo)
+                    {
+                        resultado[calif.NombreAsignatura] = calif.CalificacionValor;
+                    }
+
+                    return resultado;
+                })
+                .ToList();
+
+            return Ok(resumen);
         }
-        //PARA NORMALIZAR EL NOMBRE DEL ALUMNO
+
+        // ✅ NORMALIZAR SIN ACENTOS Y EN MAYÚSCULAS
         private string Normalizar(string input)
         {
             if (string.IsNullOrWhiteSpace(input)) return "";
@@ -195,7 +243,8 @@ namespace MonitoreoEscolar.Server.Controllers
                     sb.Append(c);
                 }
             }
-            return sb.ToString().ToLower().Replace("  ", " ").Trim();
+
+            return System.Text.RegularExpressions.Regex.Replace(sb.ToString().ToUpper(), @"\s+", " ").Trim();
         }
     }
 }

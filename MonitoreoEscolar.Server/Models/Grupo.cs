@@ -11,6 +11,8 @@ public class Grupo
 
     [Required]
     public string Letra { get; set; } = string.Empty;
+    public string? Carrera { get; set; }
+
 
     public string NombreGrupo => $"{Grado}{Letra}";
 

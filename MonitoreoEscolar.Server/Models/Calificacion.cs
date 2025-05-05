@@ -12,7 +12,20 @@ namespace MonitoreoEscolar.Server.Models
         public string Nombre { get; set; }
 
         [Required]
-        public string Materia { get; set; }
+        public string NombreAsignatura { get; set; }
+
+        public int? Parcial1 { get; set; }
+        public int? Parcial2 { get; set; }
+        public int? Parcial3 { get; set; }
+
+        public string? Tipo { get; set; } // Columna Y
+
+        public string? Periodo { get; set; } // SEMESTRAL 2 o similar
+
+        public bool? Firmado { get; set; } // Columna S
+
+        public int? AsistenciasTotal { get; set; } // U+V+W+X
+
 
         [Required]
         public int CalificacionValor { get; set; }

@@ -23,8 +23,8 @@ const Padre = () => {
 
     const descargarPDF = async (alumnoId) => {
         try {
-            const response = await axios.get(`/api/padres/descargar-reporte/${alumnoId}`, {
-                responseType: "blob", // importante para archivos binarios
+            const response = await axios.get(`http://localhost:5099/api/padres/descargar-reporte/${alumnoId}`, {
+                responseType: "blob",
             });
 
             const url = window.URL.createObjectURL(new Blob([response.data]));
@@ -51,7 +51,7 @@ const Padre = () => {
 
         const obtenerHijosConGrupo = async () => {
             try {
-                const response = await axios.get(`/api/padres/obtener-hijos-con-grupo/${idPadre}`);
+                const response = await axios.get(`http://localhost:5099/api/padres/obtener-hijos-con-grupo/${idPadre}`);
                 setHijos(response.data);
             } catch (error) {
                 console.error("❌ Error al obtener hijos con grupo:", error);
@@ -72,7 +72,7 @@ const Padre = () => {
         // Obtener reportes si aún no están
         if (!reportesPorAlumno[alumnoId]) {
             try {
-                const response = await axios.get(`/api/padres/obtener-reportes-hijo/${alumnoId}`);
+                const response = await axios.get(`http://localhost:5099/api/padres/obtener-reportes-hijo/${alumnoId}`);
                 setReportesPorAlumno((prev) => ({ ...prev, [alumnoId]: response.data }));
             } catch (error) {
                 console.error("❌ Error al obtener reportes:", error);
@@ -83,7 +83,7 @@ const Padre = () => {
         const alumno = hijos.find(h => h.alumnoId === alumnoId);
         if (!alumno?.calificaciones) {
             try {
-                const response = await axios.get(`/api/padres/obtener-calificaciones-alumno/${alumnoId}`);
+                const response = await axios.get(`http://localhost:5099/api/padres/obtener-calificaciones-alumno/${alumnoId}`);
                 setHijos(prev =>
                     prev.map(h =>
                         h.alumnoId === alumnoId
@@ -127,7 +127,6 @@ const Padre = () => {
                                         <tr>
                                             <th>Materia</th>
                                             <th>Calificación</th>
-                                            <th>Grupo</th>
                                             <th>Parcial</th>
                                         </tr>
                                     </thead>
@@ -137,7 +136,6 @@ const Padre = () => {
                                                 <tr key={idx}>
                                                     <td>{calif.materia}</td>
                                                     <td>{calif.calificacion}</td>
-                                                    <td>{calif.grupo}</td>
                                                     <td>{calif.parcial}</td>
                                                 </tr>
                                             ))

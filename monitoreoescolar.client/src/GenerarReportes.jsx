@@ -13,7 +13,7 @@ const GenerarReportes = () => {
     // Traer la lista de reportes siempre que abra el modal
     useEffect(() => {
         if (isModalOpen) {
-            axios.get("/api/reportes")
+            axios.get("http://localhost:5099/api/reportes")
                 .then(res => setReportesList(res.data))
                 .catch(err => console.error(err));
         }
@@ -23,7 +23,7 @@ const GenerarReportes = () => {
     const handleDeleteReporte = async (id) => {
         if (!window.confirm("¿Eliminar este reporte?")) return;
         try {
-            await axios.delete(`/api/reportes/${id}`);
+            await axios.delete(`http://localhost:5099/api/reportes/${id}`);
             setReportesList(r => r.filter(x => x.id !== id));
         } catch (err) {
             console.error(err);
@@ -48,7 +48,7 @@ const GenerarReportes = () => {
             return;
         }
         try {
-            const response = await axios.get(`/api/alumnos/buscar?termino=${inputValue}`);
+            const response = await axios.get(`http://localhost:5099/api/alumnos/buscar?termino=${inputValue}`);
             const optionsData = response.data.map((alumno) => ({
                 value: alumno.id,
                 label: alumno.nombreCompleto
@@ -92,7 +92,7 @@ const GenerarReportes = () => {
             return;
         }
         try {
-            const response = await axios.post("/api/reportes/generar", reporte);
+            const response = await axios.post("http://localhost:5099/api/reportes/generar", reporte);
             alert(response.data.mensaje);
             // Limpiar formulario
             setReporte({
@@ -189,7 +189,6 @@ const GenerarReportes = () => {
                     </div>
                 </div>
             )}
-
         </div>
     );
 };

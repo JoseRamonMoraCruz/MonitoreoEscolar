@@ -19,6 +19,19 @@ public class Alumno
 
     [Required]
     public string Grupo { get; set; } = string.Empty;
+    public string? Carrera { get; set; }
+
+    public string? Plantel { get; set; }
+
+    public string? Turno { get; set; }
+
+    public string? CURP { get; set; }
+
+    public string? NumeroControl { get; set; }
+
+    public string? Ciclo { get; set; }
+
+    public string? Generacion { get; set; } //La generacion del alumno
 
     // Quitar el [Required] y hacer que TutorId sea nullable:
     public int? TutorId { get; set; }

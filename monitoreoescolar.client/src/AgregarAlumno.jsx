@@ -154,6 +154,11 @@ const AgregarAlumno = () => {
                 letra: "",
                 tutor: "",
                 domicilio: "",
+                CURP: "",
+                NumeroControl: "",
+                Plantel: "",
+                Turno: "",
+                Generacion: "",
                 tutorId: null,
                 huellaCodigo: "" // Limpiar el campo de huella
             });

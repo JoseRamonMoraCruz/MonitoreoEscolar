@@ -1,4 +1,4 @@
-﻿import { useState, useEffect } from "react"; //si no jala quitalo
+﻿import { useState, useEffect } from "react"; 
 import axios from "axios";
 import Select from "react-select";
 import "./GenerarReportes.css";
@@ -9,11 +9,50 @@ const GenerarReportes = () => {
     const closeModal = () => setIsModalOpen(false);
     const [reportesList, setReportesList] = useState([]);
     const [isModalOpen, setIsModalOpen] = useState(false);
+    // Estado para edición
+    const [editingReport, setEditingReport] = useState(null);
+    const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+
+    // Al hacer clic en “✏️”
+    const handleEditReporte = (rep) => {
+        setEditingReport({
+            id: rep.id,
+            alumnoId: rep.alumnoId,
+            fecha: rep.fecha,
+            motivo: rep.motivo
+        });
+        setIsEditModalOpen(true);
+    };
+
+    // Guardar cambios
+    const handleUpdateReporte = async () => {
+        try {
+            await axios.put(`/api/reportes/${editingReport.id}`, {
+                AlumnoId: editingReport.alumnoId,
+                Fecha: editingReport.fecha,
+                Motivo: editingReport.motivo
+            });
+            // Refresca la lista en pantalla
+            setReportesList(list =>
+                list.map(r => r.id === editingReport.id ? {
+                    ...r,
+                    fecha: editingReport.fecha,
+                    motivo: editingReport.motivo
+                } : r)
+            );
+            setIsEditModalOpen(false);
+            setEditingReport(null);
+            alert("Reporte actualizado exitosamente.");
+        } catch (err) {
+            console.error(err);
+            alert("Error al actualizar el reporte.");
+        }
+    };
 
     // Traer la lista de reportes siempre que abra el modal
     useEffect(() => {
         if (isModalOpen) {
-            axios.get("http://localhost:5099/api/reportes")
+            axios.get("/api/reportes")
                 .then(res => setReportesList(res.data))
                 .catch(err => console.error(err));
         }
@@ -23,7 +62,7 @@ const GenerarReportes = () => {
     const handleDeleteReporte = async (id) => {
         if (!window.confirm("¿Eliminar este reporte?")) return;
         try {
-            await axios.delete(`http://localhost:5099/api/reportes/${id}`);
+            await axios.delete(`/api/reportes/${id}`);
             setReportesList(r => r.filter(x => x.id !== id));
         } catch (err) {
             console.error(err);
@@ -48,7 +87,7 @@ const GenerarReportes = () => {
             return;
         }
         try {
-            const response = await axios.get(`http://localhost:5099/api/alumnos/buscar?termino=${inputValue}`);
+            const response = await axios.get(`/api/alumnos/buscar?termino=${inputValue}`);
             const optionsData = response.data.map((alumno) => ({
                 value: alumno.id,
                 label: alumno.nombreCompleto
@@ -92,7 +131,7 @@ const GenerarReportes = () => {
             return;
         }
         try {
-            const response = await axios.post("http://localhost:5099/api/reportes/generar", reporte);
+            const response = await axios.post("/api/reportes/generar", reporte);
             alert(response.data.mensaje);
             // Limpiar formulario
             setReporte({
@@ -118,8 +157,6 @@ const GenerarReportes = () => {
                         📋 Ver Reportes
                     </button>
                 </div>
-
-
                 <form className="generar-reportes-form" onSubmit={handleSubmit}>
                     <div className="generar-reportes-row">
                         <div className="generar-reportes-group">
@@ -181,13 +218,39 @@ const GenerarReportes = () => {
                                         <td>{new Date(r.fecha).toLocaleString()}</td>
                                         <td>{r.motivo}</td>
                                         <td>
-                                            {/*<button onClick={() => handleEditReporte(r)}>✏️</button> */}
+                                            {<button onClick={() => handleEditReporte(r)}>✏️</button>}
                                             <button onClick={() => handleDeleteReporte(r.id)}>🗑️</button>
                                         </td>
                                     </tr>
                                 ))}
                             </tbody>
                         </table>
+                    </div>
+                </div>
+            )}
+            {isEditModalOpen && (
+                <div className="reportes-modal">
+                    <div className="reportes-modal-content">
+                        <span className="modal-close" onClick={() => setIsEditModalOpen(false)}>×</span>
+                        <h3>Editar Reporte</h3>
+
+                        <label>Fecha:</label>
+                        <input
+                            type="datetime-local"
+                            value={editingReport.fecha}
+                            onChange={e =>
+                                setEditingReport(er => ({ ...er, fecha: e.target.value }))
+                            }
+                        />
+
+                        <label>Motivo:</label>
+                        <textarea
+                            value={editingReport.motivo}
+                            onChange={e =>
+                                setEditingReport(er => ({ ...er, motivo: e.target.value }))
+                            }
+                        />
+                        <button onClick={handleUpdateReporte}>💾 Guardar Cambios</button>
                     </div>
                 </div>
             )}

@@ -63,5 +63,21 @@ namespace MonitoreoEscolar.Server.Controllers
             await _context.SaveChangesAsync();
             return Ok(new { mensaje = "Reporte eliminado exitosamente." });
         }
+
+        // PUT: api/reportes/{id}
+        [HttpPut("{id}")]
+        public async Task<IActionResult> EditarReporte(int id, [FromBody] Reporte request)
+        {
+            var rep = await _context.Reportes.FindAsync(id);
+            if (rep == null)
+                return NotFound(new { mensaje = "Reporte no encontrado." });
+
+            // Actualiza sólo los campos editables
+            rep.Fecha = request.Fecha;
+            rep.Motivo = request.Motivo;
+
+            await _context.SaveChangesAsync();
+            return Ok(new { mensaje = "Reporte actualizado exitosamente.", reporte = rep });
+        }
     }
 }

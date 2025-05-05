@@ -3,20 +3,21 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    min-height: calc(100vh - 75px); 
+    min-height: calc(100vh - 75px);
     background: linear-gradient(135deg, #89f7fe, #66a6ff);
     padding: 40px 20px;
 }
+
 .generar-reportes-content {
     background-color: #2d3e50;
     padding: 40px;
     border-radius: 12px;
-    box-shadow: 0px 5px 12px rgba(0, 0, 0, 0.25);
     box-shadow: 10px 10px 30px rgba(0, 0, 0, 1);
     width: 90%;
     max-width: 850px;
     color: #333;
 }
+
 .generar-reportes-title {
     font-size: 22px;
     font-weight: 600;
@@ -44,7 +45,6 @@
         color: white;
     }
 
-    /* Inputs y textarea */
     .generar-reportes-group input,
     .generar-reportes-group textarea {
         padding: 12px;
@@ -86,6 +86,16 @@
         background-color: #00975f;
     }
 
+/* Ver Reportes Button (opcional) */
+.ver-reportes-btn {
+    background: #005f73;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 6px;
+    cursor: pointer;
+    margin-bottom: 20px;
+}
 
 /* ==================== REACT-SELECT (my-select) ==================== */
 
@@ -101,7 +111,7 @@
 
 .my-select__control--is-focused {
     outline: none !important;
-    border: 2px solid #8800ff !important; 
+    border: 2px solid #8800ff !important;
 }
 
 .my-select__value-container {
@@ -112,13 +122,11 @@
     color: #666 !important;
 }
 
-/* Valor seleccionado (texto dentro del input) */
 .my-select__single-value {
-    color: #333 !important; 
+    color: #333 !important;
     font-size: 16px;
 }
 
-/* Menu desplegable */
 .my-select__menu {
     background-color: #fff !important;
     border-radius: 8px !important;
@@ -126,7 +134,6 @@
     z-index: 9999 !important;
 }
 
-/* Cada opción en la lista */
 .my-select__option {
     color: #333 !important;
     font-size: 16px !important;
@@ -135,29 +142,17 @@
     cursor: pointer;
 }
 
-/* Hover/focus en las opciones */
 .my-select__option--is-focused {
     background-color: #f0f0f0 !important;
     color: #333 !important;
 }
 
-/* Opción seleccionada */
 .my-select__option--is-selected {
     background-color: #ddd !important;
     color: #333 !important;
 }
 
-/*se puede quitar*/
-.ver-reportes-btn {
-    background: #005f73;
-    color: #fff;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 6px;
-    cursor: pointer;
-    margin-bottom: 20px;
-}
-
+/* Modal de listado de reportes */
 .reportes-modal {
     position: fixed;
     top: 0;
@@ -182,6 +177,7 @@
     position: relative;
 }
 
+/* Cerrar modal */
 .modal-close {
     position: absolute;
     top: 10px;
@@ -190,6 +186,7 @@
     cursor: pointer;
 }
 
+/* Tabla de reportes */
 .reportes-table {
     width: 100%;
     border-collapse: collapse;
@@ -215,3 +212,20 @@
         font-size: 1rem;
     }
 
+/* Inputs y textarea dentro del modal de edición */
+.reportes-modal-content input,
+.reportes-modal-content textarea {
+    width: 100%;
+    margin-bottom: 12px;
+    padding: 8px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    font-size: 14px;
+}
+/* Alinea horizontalmente los botones de acción */
+.reportes-table td:last-child {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    padding: 8px; 
+}

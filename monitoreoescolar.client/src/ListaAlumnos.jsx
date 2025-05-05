@@ -52,7 +52,7 @@
                         const groupString = `${grupo.grado}${grupo.letra}`;
                         try {
                             // Asegúrate de que este endpoint incluya TutorUsuario (usando Include en el backend)
-                            const response = await axios.get(`http://localhost:5099/api/alumnos/grupo/${groupString}`);
+                            const response = await axios.get(`/api/alumnos/grupo/${groupString}`);
                             newAlumnosPorGrupo[grupo.id] = response.data;
                         } catch (error) {
                             console.error("Error al obtener alumnos para el grupo", grupo, error);
@@ -95,7 +95,7 @@
                 return;
             }
             try {
-                const response = await axios.get(`http://localhost:5099/api/usuarios/autocompletePadres?termino=${inputValue}`);
+                const response = await axios.get(`/api/usuarios/autocompletePadres?termino=${inputValue}`);
                 const optionsData = response.data.map((padre) => ({
                     value: padre.id_Usuario,
                     label: `${padre.nombre} ${padre.apellidos} - ${padre.correo}`
@@ -124,7 +124,7 @@
 
         const obtenerGrupos = async () => {
             try {
-                const response = await axios.get("http://localhost:5099/api/grupos");
+                const response = await axios.get("/api/grupos");
                 const gruposOrdenados = response.data.sort((a, b) => {
                     const gradeA = parseInt(a.grado, 10);
                     const gradeB = parseInt(b.grado, 10);
@@ -198,7 +198,7 @@
                 };
 
                 const response = await axios.put(
-                    `http://localhost:5099/api/alumnos/editar/${alumno.id}`,
+                    `/api/alumnos/editar/${alumno.id}`,
                     alumnoParaActualizar
                 );
 
@@ -233,7 +233,7 @@
                 return;
             }
             try {
-                await axios.post("http://localhost:5099/api/grupos/agregar", nuevoGrupo);
+                await axios.post("/api/grupos/agregar", nuevoGrupo);
                 alert("✅ Grupo agregado correctamente.");
                 obtenerGrupos(); 
                 cerrarModalGrupo();
@@ -255,7 +255,7 @@
                 return;
             }
             try {
-                const response = await axios.get(`http://localhost:5099/api/alumnos/grupo/${groupString}`);
+                const response = await axios.get(`/api/alumnos/grupo/${groupString}`);
                 setAlumnosGrupo(response.data);
                 setExpandedGroup(grupo);
             } catch (error) {
@@ -279,7 +279,7 @@
         const eliminarGrupo = async () => {
             if (!grupoSeleccionado) return;
             try {
-                await axios.delete(`http://localhost:5099/api/grupos/eliminar/${grupoSeleccionado.id}`);
+                await axios.delete(`/api/grupos/eliminar/${grupoSeleccionado.id}`);
                 alert("✅ Grupo eliminado exitosamente.");
                 setGrupos(grupos.filter((g) => g.id !== grupoSeleccionado.id));
                 if (expandedGroup && expandedGroup.id === grupoSeleccionado.id) {
@@ -307,7 +307,7 @@
         const eliminarAlumno = async () => {
             if (!alumnoSeleccionado) return;
             try {
-                await axios.delete(`http://localhost:5099/api/alumnos/eliminar/${alumnoSeleccionado.id}`);
+                await axios.delete(`/api/alumnos/eliminar/${alumnoSeleccionado.id}`);
                 alert("✅ Alumno eliminado correctamente.");
                 setAlumnosGrupo(alumnosGrupo.filter((al) => al.id !== alumnoSeleccionado.id));
                 cerrarModalEliminarAlumno();
@@ -370,7 +370,7 @@
             }
             try {
                 const response = await axios.put(
-                    `http://localhost:5099/api/grupos/editar/${grupoDocenteEditado.id}`,
+                    `/api/grupos/editar/${grupoDocenteEditado.id}`,
                     grupoDocenteEditado
                 );
                 alert(response.data.mensaje);
@@ -394,7 +394,7 @@
 
             try {
                 // Llamada al nuevo endpoint para eliminar el docente
-                const response = await axios.put(`http://localhost:5099/api/grupos/eliminarDocente/${grupo.id}`);
+                const response = await axios.put(`/api/grupos/eliminarDocente/${grupo.id}`);
                 alert(response.data.mensaje);
                 obtenerGrupos(); // Actualiza la lista de grupos
                 cerrarMenuGrupo();

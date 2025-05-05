@@ -87,7 +87,7 @@ namespace MonitoreoEscolar.Server.Migrations
 
                     b.HasIndex("TutorId");
 
-                    b.ToTable("Alumnos");
+                    b.ToTable("Alumnos", (string)null);
                 });
 
             modelBuilder.Entity("Grupo", b =>
@@ -114,7 +114,7 @@ namespace MonitoreoEscolar.Server.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Grupos");
+                    b.ToTable("Grupos", (string)null);
                 });
 
             modelBuilder.Entity("MonitoreoEscolar.Server.Models.Calificacion", b =>
@@ -173,7 +173,7 @@ namespace MonitoreoEscolar.Server.Migrations
 
                     b.HasIndex("GrupoId");
 
-                    b.ToTable("Calificaciones");
+                    b.ToTable("Calificaciones", (string)null);
                 });
 
             modelBuilder.Entity("MonitoreoEscolar.Server.Models.Reporte", b =>
@@ -198,7 +198,7 @@ namespace MonitoreoEscolar.Server.Migrations
 
                     b.HasIndex("AlumnoId");
 
-                    b.ToTable("Reportes");
+                    b.ToTable("Reportes", (string)null);
                 });
 
             modelBuilder.Entity("MonitoreoEscolar.Server.Models.Usuario", b =>
@@ -241,7 +241,7 @@ namespace MonitoreoEscolar.Server.Migrations
 
                     b.HasKey("Id_Usuario");
 
-                    b.ToTable("Usuarios");
+                    b.ToTable("Usuarios", (string)null);
                 });
 
             modelBuilder.Entity("Alumno", b =>

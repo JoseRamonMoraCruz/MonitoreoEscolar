@@ -29,7 +29,7 @@ public class Alumno
 
     public string? NumeroControl { get; set; }
 
-    public string? Ciclo { get; set; }
+    public string? Ciclo { get; set; }//Cambio de ciclo a periodo
 
     public string? Generacion { get; set; } //La generacion del alumno
 

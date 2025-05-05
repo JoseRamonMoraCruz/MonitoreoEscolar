@@ -118,8 +118,6 @@ const GenerarReportes = () => {
                         📋 Ver Reportes
                     </button>
                 </div>
-
-
                 <form className="generar-reportes-form" onSubmit={handleSubmit}>
                     <div className="generar-reportes-row">
                         <div className="generar-reportes-group">

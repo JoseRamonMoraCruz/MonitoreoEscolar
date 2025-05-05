@@ -28,10 +28,10 @@ namespace MonitoreoEscolar.Server.Controllers
             try
             {
                 if (request == null)
-                    return BadRequest(new { mensaje = " Los datos enviados son nulos." });
+                    return BadRequest(new { mensaje = "Los datos enviados son nulos." });
 
                 if (string.IsNullOrWhiteSpace(request.Nombre) || string.IsNullOrWhiteSpace(request.Apellidos))
-                    return BadRequest(new { mensaje = " Nombre y Apellidos son obligatorios." });
+                    return BadRequest(new { mensaje = "Nombre y Apellidos son obligatorios." });
 
                 var nombreCompleto = $"{request.Nombre.Trim()} {request.Apellidos.Trim()}".Trim();
                 var nombreNormalizado = RemoveDiacritics(nombreCompleto.ToLower());
@@ -44,19 +44,27 @@ namespace MonitoreoEscolar.Server.Controllers
                     NombreCompletoNormalizado = nombreNormalizado,
                     Grupo = request.Grupo.Trim(),
                     Domicilio = request.Domicilio.Trim(),
-                    TutorId = request.TutorId
+                    TutorId = request.TutorId,
+                    CURP = request.CURP?.Trim().ToUpper(),
+                    NumeroControl = request.NumeroControl?.Trim(),
+                    Carrera = request.Carrera?.Trim(),
+                    Plantel = request.Plantel?.Trim(),
+                    Turno = request.Turno?.Trim(),
+                    Generacion = request.Generacion?.Trim(),
+                    Ciclo = request.Ciclo?.Trim()
                 };
 
                 _context.Alumnos.Add(alumno);
                 await _context.SaveChangesAsync();
 
-                return Ok(new { mensaje = " Alumno registrado exitosamente", alumno });
+                return Ok(new { mensaje = "Alumno registrado exitosamente", alumno });
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new { mensaje = " Error interno del servidor.", error = ex.Message });
+                return StatusCode(500, new { mensaje = "Error interno del servidor.", error = ex.Message });
             }
         }
+
 
         [HttpGet("buscar")]
         public async Task<IActionResult> BuscarAlumnos([FromQuery] string termino)

@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using MonitoreoEscolar.Server.Data;
 
@@ -11,9 +12,11 @@ using MonitoreoEscolar.Server.Data;
 namespace MonitoreoEscolar.Server.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250502202604_AgregarCamposAlumnoYCalificacion")]
+    partial class AgregarCamposAlumnoYCalificacion
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -97,9 +100,6 @@ namespace MonitoreoEscolar.Server.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Carrera")
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("Grado")
                         .HasColumnType("int");

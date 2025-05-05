@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MonitoreoEscolar.Server.Data;
+using MonitoreoEscolar.Server.DTOs;
 using MonitoreoEscolar.Server.Models;
 
 namespace MonitoreoEscolar.Server.Controllers
@@ -18,10 +19,22 @@ namespace MonitoreoEscolar.Server.Controllers
 
         // Obtener todos los grupos
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Grupo>>> GetGrupos()
+        public async Task<ActionResult<IEnumerable<GrupoDTO>>> GetGrupos()
         {
-            return await _context.Grupos.ToListAsync();
+            var grupos = await _context.Grupos
+                .Select(g => new GrupoDTO
+                {
+                    Id = g.Id,
+                    Grado = g.Grado,
+                    Letra = g.Letra,
+                    Carrera = g.Carrera,
+                    NombreDocente = g.NombreDocente
+                })
+                .ToListAsync();
+
+            return Ok(grupos);
         }
+
 
         // Crear un nuevo grupo
         [HttpPost("agregar")]

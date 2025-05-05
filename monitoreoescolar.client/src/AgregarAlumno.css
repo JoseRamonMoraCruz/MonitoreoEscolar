@@ -13,13 +13,12 @@
     border-radius: 15px;
     box-shadow: 10px 10px 20px rgba(0, 0, 0, 1);
     color: white;
-    width: 550px; /* Mantiene el ancho fijo */
-    height: 80vh; /* Altura fija para evitar que crezca demasiado */
+    width: 550px;
     text-align: left;
     display: flex;
     flex-direction: column;
-    overflow-y: auto; /* Permite desplazamiento vertical si hay más contenido */
 }
+
 
 /* ✅ Formulario */
 .agregar-alumno-form {
@@ -45,6 +44,16 @@
         border: none;
         background-color: #D9D9D9;
         font-size: 16px;
+    }
+
+    .agregar-alumno-group select {
+        background-color: #D9D9D9;
+        border-radius: 8px;
+        padding: 10px;
+        border: none;
+        font-size: 16px;
+        color: #000;
+        width: 100%;
     }
 
 /* ✅ Contenedor de botones alineados */
@@ -224,4 +233,20 @@ button {
     padding: 10px 20px;
     cursor: pointer;
     border-radius: 5px;
+}
+
+/* Mejora visual de secciones largas como CURP, Carrera, etc. */
+.agregar-alumno-group label {
+    font-weight: bold;
+    margin-bottom: 4px;
+    color: #ffffff;
+}
+
+.agregar-alumno-group input {
+    background-color: #D9D9D9;
+    border-radius: 8px;
+    padding: 10px;
+    border: none;
+    font-size: 16px;
+    color: #000;
 }

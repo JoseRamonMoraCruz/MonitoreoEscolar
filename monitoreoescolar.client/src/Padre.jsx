@@ -127,7 +127,6 @@ const Padre = () => {
                                         <tr>
                                             <th>Materia</th>
                                             <th>Calificación</th>
-                                            <th>Grupo</th>
                                             <th>Parcial</th>
                                         </tr>
                                     </thead>
@@ -137,7 +136,6 @@ const Padre = () => {
                                                 <tr key={idx}>
                                                     <td>{calif.materia}</td>
                                                     <td>{calif.calificacion}</td>
-                                                    <td>{calif.grupo}</td>
                                                     <td>{calif.parcial}</td>
                                                 </tr>
                                             ))

@@ -504,3 +504,25 @@ input {
         color: red;
     }
 
+/* Botón para agregar carrera (estilo flotante como el de grupo) */
+.boton-carrera {
+    background-color: #2E8B57;
+    position: fixed;
+    bottom: 100px; /* un poco más arriba que el de grupo */
+    right: 20px;
+    border: none;
+    border-radius: 50%;
+    padding: 15px;
+    cursor: pointer;
+    box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.2);
+    transition: transform 0.2s ease-in-out;
+}
+
+    .boton-carrera img {
+        width: 28px;
+        height: 28px;
+    }
+
+    .boton-carrera:hover {
+        transform: scale(1.1);
+    }

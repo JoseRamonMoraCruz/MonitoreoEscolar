@@ -52,7 +52,7 @@
                         const groupString = `${grupo.grado}${grupo.letra}`;
                         try {
                             // Asegúrate de que este endpoint incluya TutorUsuario (usando Include en el backend)
-                            const response = await axios.get(`/api/alumnos/grupo/${groupString}`);
+                            const response = await axios.get(`http://localhost:5099/api/alumnos/grupo/${groupString}`);
                             newAlumnosPorGrupo[grupo.id] = response.data;
                         } catch (error) {
                             console.error("Error al obtener alumnos para el grupo", grupo, error);
@@ -64,6 +64,10 @@
                 fetchAllStudents();
             }
         }, [grupos]);
+
+        const [showModalCarrera, setShowModalCarrera] = useState(false);
+        const [nuevaCarrera, setNuevaCarrera] = useState("");
+
 
         //Es pa ver si el usuario hizo click afuera se cierre el menu de los puntitos
         useEffect(() => {
@@ -91,7 +95,7 @@
                 return;
             }
             try {
-                const response = await axios.get(`/api/usuarios/autocompletePadres?termino=${inputValue}`);
+                const response = await axios.get(`http://localhost:5099/api/usuarios/autocompletePadres?termino=${inputValue}`);
                 const optionsData = response.data.map((padre) => ({
                     value: padre.id_Usuario,
                     label: `${padre.nombre} ${padre.apellidos} - ${padre.correo}`
@@ -120,7 +124,7 @@
 
         const obtenerGrupos = async () => {
             try {
-                const response = await axios.get("/api/grupos");
+                const response = await axios.get("http://localhost:5099/api/grupos");
                 const gruposOrdenados = response.data.sort((a, b) => {
                     const gradeA = parseInt(a.grado, 10);
                     const gradeB = parseInt(b.grado, 10);
@@ -194,7 +198,7 @@
                 };
 
                 const response = await axios.put(
-                    `/api/alumnos/editar/${alumno.id}`,
+                    `http://localhost:5099/api/alumnos/editar/${alumno.id}`,
                     alumnoParaActualizar
                 );
 
@@ -229,7 +233,7 @@
                 return;
             }
             try {
-                await axios.post("/api/grupos/agregar", nuevoGrupo);
+                await axios.post("http://localhost:5099/api/grupos/agregar", nuevoGrupo);
                 alert("✅ Grupo agregado correctamente.");
                 obtenerGrupos(); 
                 cerrarModalGrupo();
@@ -251,7 +255,7 @@
                 return;
             }
             try {
-                const response = await axios.get(`/api/alumnos/grupo/${groupString}`);
+                const response = await axios.get(`http://localhost:5099/api/alumnos/grupo/${groupString}`);
                 setAlumnosGrupo(response.data);
                 setExpandedGroup(grupo);
             } catch (error) {
@@ -275,7 +279,7 @@
         const eliminarGrupo = async () => {
             if (!grupoSeleccionado) return;
             try {
-                await axios.delete(`/api/grupos/eliminar/${grupoSeleccionado.id}`);
+                await axios.delete(`http://localhost:5099/api/grupos/eliminar/${grupoSeleccionado.id}`);
                 alert("✅ Grupo eliminado exitosamente.");
                 setGrupos(grupos.filter((g) => g.id !== grupoSeleccionado.id));
                 if (expandedGroup && expandedGroup.id === grupoSeleccionado.id) {
@@ -303,7 +307,7 @@
         const eliminarAlumno = async () => {
             if (!alumnoSeleccionado) return;
             try {
-                await axios.delete(`/api/alumnos/eliminar/${alumnoSeleccionado.id}`);
+                await axios.delete(`http://localhost:5099/api/alumnos/eliminar/${alumnoSeleccionado.id}`);
                 alert("✅ Alumno eliminado correctamente.");
                 setAlumnosGrupo(alumnosGrupo.filter((al) => al.id !== alumnoSeleccionado.id));
                 cerrarModalEliminarAlumno();
@@ -366,7 +370,7 @@
             }
             try {
                 const response = await axios.put(
-                    `/api/grupos/editar/${grupoDocenteEditado.id}`,
+                    `http://localhost:5099/api/grupos/editar/${grupoDocenteEditado.id}`,
                     grupoDocenteEditado
                 );
                 alert(response.data.mensaje);
@@ -390,7 +394,7 @@
 
             try {
                 // Llamada al nuevo endpoint para eliminar el docente
-                const response = await axios.put(`/api/grupos/eliminarDocente/${grupo.id}`);
+                const response = await axios.put(`http://localhost:5099/api/grupos/eliminarDocente/${grupo.id}`);
                 alert(response.data.mensaje);
                 obtenerGrupos(); // Actualiza la lista de grupos
                 cerrarMenuGrupo();
@@ -424,7 +428,6 @@
                     <div className="lista-header">
                         <h2 className="lista-title">Lista de Grupos</h2>
                     </div>
-
                     <div className="grupos-container">
                         {grupos.length === 0 ? (
                             <p>No hay grupos registrados.</p>
@@ -470,7 +473,7 @@
                                                     onClick={(e) => handleDeleteClick(e, grupo)}
                                                 />
                                             </div>
-                                            {/* Menú desplegable para el grupo */}
+                                         
                                             {/* Menú desplegable para el grupo */}
                                             {menuGrupo && menuGrupo.id === grupo.id && (
                                                 <div ref={menuRef} className="menu-editar-grupo">
@@ -607,6 +610,10 @@
                 <button className="boton-agregar" onClick={abrirModalGrupo}>
                     <img src={addIcon} alt="Agregar Grupo" />
                 </button>
+                <button className="boton-agregar boton-carrera" onClick={() => setShowModalCarrera(true)}>
+                    <img src={addIcon} alt="Agregar Carrera" />
+                </button>
+
 
                 {modalGrupo && (
                     <div className="modal-overlay">
@@ -835,7 +842,65 @@
                         </div>
                     </div>
                 )}
+                {showModalCarrera && (
+                    <div className="modal-huella">
+                        <div className="modal-content">
+                            <span className="close" onClick={() => setShowModalCarrera(false)}>X</span>
+                            <h3>Selecciona una Carrera</h3>
+                            <select
+                                value={nuevaCarrera}
+                                onChange={(e) => setNuevaCarrera(e.target.value)}
+                                style={{
+                                    padding: "10px",
+                                    borderRadius: "8px",
+                                    backgroundColor: "#D9D9D9",
+                                    fontSize: "16px",
+                                    marginBottom: "15px",
+                                    width: "100%"
+                                }}
+                            >
+                                <option value="">Seleccione una carrera</option>
+                                <option value="CIENCIA DE DATOS E INFORMACIÓN">CIENCIA DE DATOS E INFORMACIÓN</option>
+                                <option value="CONSTRUCCIÓN">CONSTRUCCIÓN</option>
+                                <option value="CONTABILIDAD">CONTABILIDAD</option>
+                                <option value="LABORATORISTA CLÍNICO">LABORATORISTA CLÍNICO</option>
+                                <option value="MANTENIMIENTO AUTOMOTRIZ">MANTENIMIENTO AUTOMOTRIZ</option>
+                                <option value="MECATRÓNICA">MECATRÓNICA</option>
+                                <option value="PUERICULTURA">PUERICULTURA</option>
+                            </select>
+                            <button
+                                onClick={() => {
+                                    if (!nuevaCarrera) return alert("Seleccione una carrera válida");
+                                    // Aquí llamas a tu endpoint o función para guardar
+                                    axios.post("http://localhost:5099/api/carreras", { nombre: nuevaCarrera })
+                                        .then(() => {
+                                            alert("✅ Carrera registrada correctamente");
+                                            setShowModalCarrera(false);
+                                            setNuevaCarrera("");
+                                            // Opcional: recargar lista de grupos/carreras si es necesario
+                                        })
+                                        .catch((err) => {
+                                            console.error(err);
+                                            alert("❌ Error al registrar la carrera");
+                                        });
+                                }}
+                                style={{
+                                    backgroundColor: "#4CAF50",
+                                    color: "white",
+                                    padding: "10px 20px",
+                                    borderRadius: "5px",
+                                    border: "none",
+                                    cursor: "pointer"
+                                }}
+                            >
+                                Registrar Carrera
+                            </button>
+                        </div>
+                    </div>
+                )}
+
             </div>
+
         );
     };
 

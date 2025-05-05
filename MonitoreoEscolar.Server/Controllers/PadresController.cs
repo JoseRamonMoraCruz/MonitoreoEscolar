@@ -66,25 +66,32 @@ namespace MonitoreoEscolar.Server.Controllers
         {
             var calificaciones = await _context.Calificaciones
                 .Where(c => c.AlumnoId == alumnoId)
-                .Include(c => c.Grupo)
                 .ToListAsync();
 
             if (!calificaciones.Any())
                 return Ok(new List<object>());
 
-            // Detectar el parcial más alto
+            // Extraer número desde "Parcial 1", "Parcial 2", etc.
             var parcialMasReciente = calificaciones
-                .Select(c => int.TryParse(c.ParcialUnidad, out var n) ? n : 0)
+                .Select(c =>
+                {
+                    var match = System.Text.RegularExpressions.Regex.Match(c.ParcialUnidad ?? "", @"\d+");
+                    return match.Success ? int.Parse(match.Value) : 0;
+                })
                 .Max();
 
-            // Filtrar por ese parcial
+            // Filtrar calificaciones por ese parcial
             var filtradas = calificaciones
-                .Where(c => int.TryParse(c.ParcialUnidad, out var n) && n == parcialMasReciente)
+                .Where(c =>
+                {
+                    var match = System.Text.RegularExpressions.Regex.Match(c.ParcialUnidad ?? "", @"\d+");
+                    return match.Success && int.Parse(match.Value) == parcialMasReciente;
+                })
                 .Select(c => new
                 {
-                    c.Materia,
+                    Materia = c.NombreAsignatura,
                     Calificacion = c.CalificacionValor,
-                    Grupo = $"{c.Grupo.Grado}{c.Grupo.Letra}",
+                    Grupo = "Sin grupo",
                     Parcial = c.ParcialUnidad
                 })
                 .ToList();
@@ -92,7 +99,7 @@ namespace MonitoreoEscolar.Server.Controllers
             return Ok(filtradas);
         }
 
-       
+
 
     }
 }

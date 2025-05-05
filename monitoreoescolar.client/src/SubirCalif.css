@@ -15,10 +15,13 @@
     border-radius: 15px;
     box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.5);
     text-align: center;
-    width: 750px;
+    width: 95vw; /* Más ancho */
+    max-width: 1400px;
     color: white;
     position: relative;
+    overflow-x: auto; /* Scroll horizontal */
 }
+
 
 /* 📌 Estilo del título */
 .titulo-subir {
@@ -128,8 +131,9 @@
 
 /* 📌 Contenedor de la tabla con desplazamiento */
 .contenedor-tabla {
-    max-height: 400px;
+    max-height: 500px;
     overflow-y: auto;
+    overflow-x: auto; /* NUEVO */
     margin-top: 10px;
     border-radius: 10px;
     width: 100%;

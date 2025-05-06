@@ -14,7 +14,7 @@ const Login = () => {
         e.preventDefault();
 
         try {
-            const response = await axios.post("/api/usuarios/login", {//NOTA: Cuando se suba a un servidor se debe cambiar la url del localhost a la del servidor
+            const response = await axios.post("http://localhost:5099/api/usuarios/login", {//NOTA: Cuando se suba a un servidor se debe cambiar la url del localhost a la del servidor
                 correo: email,
                 contrasena: password
             });

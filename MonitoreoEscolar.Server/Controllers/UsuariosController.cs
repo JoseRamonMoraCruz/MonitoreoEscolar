@@ -9,7 +9,6 @@ using System.Text.RegularExpressions;
 using MonitoreoEscolar.Server.DTOs;
 using MimeKit;
 using MailKit.Net.Smtp;
-using MonitoreoEscolar.Server.DTOS;
 using System.Security.Claims;
 
 
@@ -74,13 +73,15 @@ namespace MonitoreoEscolar.Server.Controllers
 
             var nuevoUsuario = new Usuario
             {
-                Nombre = NormalizarCadena(request.Nombre),
-                Apellidos = NormalizarCadena(request.Apellidos),
+                PrimerNombre = NormalizarCadena(request.PrimerNombre),
+                SegundoNombre = string.IsNullOrWhiteSpace(request.SegundoNombre) ? null : NormalizarCadena(request.SegundoNombre),
+                ApellidoPaterno = NormalizarCadena(request.ApellidoPaterno),
+                ApellidoMaterno = NormalizarCadena(request.ApellidoMaterno),
                 Correo = request.Correo,
                 Telefono = request.Telefono,
                 Tipo_Usuario = request.Tipo_Usuario,
-                CodigoVerificacion = null,           
-                FechaExpiracionCodigo = null    
+                CodigoVerificacion = null,
+                FechaExpiracionCodigo = null
             };
 
             nuevoUsuario.Contrasena = _passwordHasher.HashPassword(nuevoUsuario, request.Contrasena);
@@ -209,8 +210,10 @@ namespace MonitoreoEscolar.Server.Controllers
                 .Select(u => new
                 {
                     id_Usuario = u.Id_Usuario,
-                    nombre = u.Nombre,
-                    apellidos = u.Apellidos,
+                    primerNombre = u.PrimerNombre,
+                    segundoNombre = u.SegundoNombre,
+                    apellidoPaterno = u.ApellidoPaterno,
+                    apellidoMaterno = u.ApellidoMaterno,
                     correo = u.Correo
                 })
                 .ToListAsync();
@@ -223,29 +226,31 @@ namespace MonitoreoEscolar.Server.Controllers
         public async Task<IActionResult> AutocompletePadres([FromQuery] string termino)
         {
             if (string.IsNullOrWhiteSpace(termino))
-            {
                 return Ok(new List<object>());
-            }
 
-            // Convertir el término a minúsculas para la comparación
             var lowerTerm = termino.ToLower();
 
             var padres = await _context.Usuarios
                 .Where(u => u.Tipo_Usuario.ToLower() == "padre" &&
-                            EF.Functions.Collate((u.Nombre + " " + u.Apellidos).ToLower(), "Latin1_General_CI_AI")
-                                .Contains(lowerTerm))
+                            EF.Functions.Collate(
+                                (u.PrimerNombre + " " + u.SegundoNombre + " " + u.ApellidoPaterno + " " + u.ApellidoMaterno).ToLower(),
+                                "Latin1_General_CI_AI"
+                            ).Contains(lowerTerm))
                 .Select(u => new
                 {
                     id_Usuario = u.Id_Usuario,
-                    nombre = u.Nombre,
-                    apellidos = u.Apellidos,
+                    primerNombre = u.PrimerNombre,
+                    segundoNombre = u.SegundoNombre,
+                    apellidoPaterno = u.ApellidoPaterno,
+                    apellidoMaterno = u.ApellidoMaterno,
                     correo = u.Correo,
-                    nombreCompleto = u.Nombre + " " + u.Apellidos
+                    nombreCompleto = u.PrimerNombre + " " + u.SegundoNombre + " " + u.ApellidoPaterno + " " + u.ApellidoMaterno
                 })
                 .ToListAsync();
 
             return Ok(padres);
         }
+
 
         // BUSCAR PADRE POR NOMBRE O APELLIDOS (sin importar acentos ni mayúsculas/minúsculas)
         [HttpGet("buscarPadre")]
@@ -263,17 +268,20 @@ namespace MonitoreoEscolar.Server.Controllers
                 .Where(u => u.Tipo_Usuario == "padre")
                 .Select(u => new
                 {
-                    Nombre = u.Nombre,
-                    Apellidos = u.Apellidos,
-                    Telefono = u.Telefono,
-                    NombreCompleto = u.Nombre + " " + u.Apellidos
+                    u.PrimerNombre,
+                    u.SegundoNombre,
+                    u.ApellidoPaterno,
+                    u.ApellidoMaterno,
+                    NombreCompleto = u.PrimerNombre + " " + u.SegundoNombre + " " + u.ApellidoPaterno + " " + u.ApellidoMaterno,
                 })
                 .ToListAsync();
 
             // Filtrar en memoria usando la normalización de texto
-            var resultados = padres.Where(u =>
-                NormalizarTexto(u.Nombre).Contains(searchTerm) ||
-                NormalizarTexto(u.Apellidos).Contains(searchTerm) ||
+                var resultados = padres.Where(u =>
+                NormalizarTexto(u.PrimerNombre).Contains(searchTerm) ||
+                NormalizarTexto(u.SegundoNombre ?? "").Contains(searchTerm) ||
+                NormalizarTexto(u.ApellidoPaterno).Contains(searchTerm) ||
+                NormalizarTexto(u.ApellidoMaterno).Contains(searchTerm) ||
                 NormalizarTexto(u.NombreCompleto).Contains(searchTerm)
             ).ToList();
 
@@ -302,8 +310,10 @@ namespace MonitoreoEscolar.Server.Controllers
             }
 
             // Actualizar sólo los campos permitidos
-            usuario.Nombre = request.Nombre;
-            usuario.Apellidos = request.Apellidos;
+            usuario.PrimerNombre = request.PrimerNombre;
+            usuario.SegundoNombre = request.SegundoNombre;
+            usuario.ApellidoPaterno = request.ApellidoPaterno;
+            usuario.ApellidoMaterno = request.ApellidoMaterno;
             usuario.Correo = request.Correo;
             usuario.Telefono = request.Telefono;
 
@@ -336,8 +346,10 @@ namespace MonitoreoEscolar.Server.Controllers
             return Ok(new
             {
                 usuario.Id_Usuario,
-                usuario.Nombre,
-                usuario.Apellidos,
+                usuario.PrimerNombre,
+                usuario.SegundoNombre,
+                usuario.ApellidoPaterno,
+                usuario.ApellidoMaterno,
                 usuario.Correo,
                 usuario.Telefono
             });

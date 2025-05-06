@@ -9,12 +9,17 @@ namespace MonitoreoEscolar.Server.Models
         public int Id_Usuario { get; set; }
 
         [Required]
-        public string Nombre { get; set; } = string.Empty;
+        public string PrimerNombre { get; set; } = string.Empty;
+
+        public string? SegundoNombre { get; set; }
 
         [Required]
-        public string Apellidos { get; set; } = string.Empty;
+        public string ApellidoPaterno { get; set; } = string.Empty;
 
-        [Required] 
+        [Required]
+        public string ApellidoMaterno { get; set; } = string.Empty;
+
+        [Required]
         public string Contrasena { get; set; } = string.Empty;
 
         [Required]
@@ -30,8 +35,6 @@ namespace MonitoreoEscolar.Server.Models
         public string? CodigoVerificacion { get; set; }
         public DateTime? FechaExpiracionCodigo { get; set; }
 
-
-        // Colección de alumnos asociados (opcional, pero recomendable)
         [JsonIgnore]
         public ICollection<Alumno> Alumnos { get; set; } = new List<Alumno>();
     }

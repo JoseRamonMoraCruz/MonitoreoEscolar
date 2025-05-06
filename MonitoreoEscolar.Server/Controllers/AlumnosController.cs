@@ -104,8 +104,8 @@ namespace MonitoreoEscolar.Server.Controllers
                         tutorUsuario = a.TutorUsuario == null ? null : new
                         {
                             id_Usuario = a.TutorUsuario.Id_Usuario,
-                            nombre = a.TutorUsuario.Nombre,
-                            apellidos = a.TutorUsuario.Apellidos,
+                          //  nombre = a.TutorUsuario.Nombre,
+                           // apellidos = a.TutorUsuario.Apellidos,
                             telefono = a.TutorUsuario.Telefono,  
                             correo = a.TutorUsuario.Correo
                         }

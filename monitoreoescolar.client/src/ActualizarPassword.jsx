@@ -23,7 +23,7 @@ function ActualizarPassword() {
 
     const enviarCodigo = async () => {
         try {
-            await axios.post('/api/usuarios/enviar-codigo', { correo });
+            await axios.post('http://localhost:5099/api/usuarios/enviar-codigo', { correo });
             setMessage('Código enviado. Revisa tu correo.');
             setError('');
             setPaso(2);

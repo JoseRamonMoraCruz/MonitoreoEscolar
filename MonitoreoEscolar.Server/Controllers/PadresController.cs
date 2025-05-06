@@ -47,8 +47,8 @@ namespace MonitoreoEscolar.Server.Controllers
                 .Select(a => new
                 {
                     AlumnoId = a.Id,
-                    NombreCompleto = a.Nombre + " " + a.Apellidos,
-                    Grupo = a.Grupo ?? "Sin grupo" // usa el campo Grupo directamente
+                   // NombreCompleto = a.Nombre + " " + a.Apellidos,
+                    //Grupo = a.Grupo ?? "Sin grupo" // usa el campo Grupo directamente
                 })
                 .ToListAsync();
 

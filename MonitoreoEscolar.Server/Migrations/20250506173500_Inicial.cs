@@ -55,20 +55,23 @@ namespace MonitoreoEscolar.Server.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Nombre = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Apellidos = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    PrimerNombre = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    SegundoNombre = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ApellidoPaterno = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    ApellidoMaterno = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     NombreCompleto = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     NombreCompletoNormalizado = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Grupo = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Domicilio = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Grado = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Letra = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Carrera = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Plantel = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Turno = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    CURP = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    CURP = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     NumeroControl = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Ciclo = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Generacion = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     TutorId = table.Column<int>(type: "int", nullable: true),
-                    Domicilio = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     GrupoId = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>

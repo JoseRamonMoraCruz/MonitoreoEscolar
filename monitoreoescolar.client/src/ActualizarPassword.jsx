@@ -13,6 +13,8 @@ function ActualizarPassword() {
     const [error, setError] = useState('');
     const [contador, setContador] = useState(0);
     const navigate = useNavigate();
+    const [confirmarPassword, setConfirmarPassword] = useState('');
+
 
     useEffect(() => {
         if (contador > 0) {
@@ -47,18 +49,28 @@ function ActualizarPassword() {
     };
 
     const actualizarPassword = async () => {
+        if (newPassword !== confirmarPassword) {
+            setError("❌ Las contraseñas no coinciden.");
+            setMessage('');
+            return;
+        }
+
         try {
-            await axios.post('http://localhost:5099/api/usuarios/actualizar-password', { correo, newPassword });
+            await axios.post('http://localhost:5099/api/usuarios/actualizar-password', {
+                correo,
+                newPassword
+            });
             setMessage('Contraseña actualizada exitosamente. Redirigiendo...');
             setError('');
             setTimeout(() => {
-                navigate('/'); // Regresa al login usando react-router
+                navigate('/');
             }, 3000);
         } catch (err) {
             setError(err.response?.data?.mensaje || "Error al actualizar contraseña.");
             setMessage('');
         }
     };
+
 
     return (
         <div className="update-container-wrapper">
@@ -149,6 +161,15 @@ function ActualizarPassword() {
                             className="update-input"
                             value={newPassword}
                             onChange={(e) => setNewPassword(e.target.value)}
+                            required
+                        />
+
+                        <label>Confirma tu nueva contraseña:</label>
+                        <input
+                            type="password"
+                            className="update-input"
+                            value={confirmarPassword}
+                            onChange={(e) => setConfirmarPassword(e.target.value)}
                             required
                         />
 

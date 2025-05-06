@@ -30,22 +30,28 @@ namespace MonitoreoEscolar.Server.Controllers
                 if (request == null)
                     return BadRequest(new { mensaje = "Los datos enviados son nulos." });
 
-                if (string.IsNullOrWhiteSpace(request.Nombre) || string.IsNullOrWhiteSpace(request.Apellidos))
-                    return BadRequest(new { mensaje = "Nombre y Apellidos son obligatorios." });
+                if (string.IsNullOrWhiteSpace(request.PrimerNombre) || string.IsNullOrWhiteSpace(request.ApellidoPaterno) || string.IsNullOrWhiteSpace(request.ApellidoMaterno))
+                    return BadRequest(new { mensaje = "El primer Nombre y los dos Apellidos son obligatorios." });
 
-                var nombreCompleto = $"{request.Nombre.Trim()} {request.Apellidos.Trim()}".Trim();
+                var nombreCompleto = $"{request.PrimerNombre.Trim()} {request.SegundoNombre?.Trim()}{request.ApellidoPaterno.Trim()} {request.ApellidoMaterno.Trim()}".Trim();
                 var nombreNormalizado = RemoveDiacritics(nombreCompleto.ToLower());
 
                 var alumno = new Alumno
                 {
-                    Nombre = request.Nombre.Trim(),
-                    Apellidos = request.Apellidos.Trim(),
+                    //Datos alumno
+                    PrimerNombre = request.PrimerNombre.Trim(),
+                    SegundoNombre = request.SegundoNombre?.Trim(),
+                    ApellidoPaterno = request.ApellidoPaterno.Trim(),
+                    ApellidoMaterno = request.ApellidoMaterno.Trim(),
                     NombreCompleto = nombreCompleto,
                     NombreCompletoNormalizado = nombreNormalizado,
-                    Grupo = request.Grupo.Trim(),
+                    Grado = request.Grado.Trim(),
+                    Letra = request.Letra.Trim(),
+                    // Datos de dirección
                     Domicilio = request.Domicilio.Trim(),
+                    // Datos adicionales
                     TutorId = request.TutorId,
-                    CURP = request.CURP?.Trim().ToUpper(),
+                    CURP = request.CURP.Trim().ToUpper(),
                     NumeroControl = request.NumeroControl?.Trim(),
                     Carrera = request.Carrera?.Trim(),
                     Plantel = request.Plantel?.Trim(),
@@ -92,20 +98,24 @@ namespace MonitoreoEscolar.Server.Controllers
             {
                 var alumnos = await _context.Alumnos
                     .Include(a => a.TutorUsuario)
-                    .Where(a => a.Grupo == grupoStr)
+                    .Where(a => a.Letra == grupoStr)
                     .OrderBy(a => a.NombreCompleto)
                     .Select(a => new
                     {
                         id = a.Id,
-                        nombre = a.Nombre,
-                        apellidos = a.Apellidos,
+                        primernombre = a.PrimerNombre,
+                        segundonombre = a.SegundoNombre,
+                        apellidoPaterno = a.ApellidoPaterno,
                         domicilio = a.Domicilio,
-                        grupo = a.Grupo,
+                        grado = a.Grado,
+                        grupo = a.Letra,
                         tutorUsuario = a.TutorUsuario == null ? null : new
                         {
                             id_Usuario = a.TutorUsuario.Id_Usuario,
-                          //  nombre = a.TutorUsuario.Nombre,
-                           // apellidos = a.TutorUsuario.Apellidos,
+                            primernombre = a.TutorUsuario.PrimerNombre,
+                            segundonombre = a.TutorUsuario.SegundoNombre,
+                            apellidopaterno = a.TutorUsuario.ApellidoPaterno,
+                            apellidomaterno = a.TutorUsuario.ApellidoMaterno,
                             telefono = a.TutorUsuario.Telefono,  
                             correo = a.TutorUsuario.Correo
                         }
@@ -166,12 +176,18 @@ namespace MonitoreoEscolar.Server.Controllers
                     return NotFound(new { mensaje = "Alumno no encontrado." });
 
                 // Actualizando datos del alumno
-                alumnoExistente.Nombre = alumnoEditado.Nombre.Trim();
-                alumnoExistente.Apellidos = alumnoEditado.Apellidos.Trim();
-                alumnoExistente.NombreCompleto = $"{alumnoEditado.Nombre.Trim()} {alumnoEditado.Apellidos.Trim()}";
+                alumnoExistente.PrimerNombre = alumnoEditado.PrimerNombre.Trim();
+                alumnoExistente.SegundoNombre = alumnoEditado.SegundoNombre?.Trim();
+                alumnoExistente.ApellidoPaterno = alumnoEditado.ApellidoPaterno.Trim();
+                alumnoExistente.ApellidoMaterno = alumnoEditado.ApellidoMaterno.Trim();
+                alumnoExistente.NombreCompleto = $"{alumnoEditado.PrimerNombre.Trim()} {alumnoEditado.SegundoNombre?.Trim()} {alumnoEditado.ApellidoPaterno.Trim()} {alumnoEditado.ApellidoMaterno.Trim()}";
                 alumnoExistente.NombreCompletoNormalizado = RemoveDiacritics(alumnoExistente.NombreCompleto.ToLower());
-                alumnoExistente.Grupo = alumnoEditado.Grupo.Trim();
-                alumnoExistente.Domicilio = alumnoEditado.Domicilio.Trim();
+                alumnoExistente.Grado = alumnoEditado.Grado.Trim();
+                alumnoExistente.Letra = alumnoEditado.Letra.Trim();
+                alumnoEditado.Domicilio = alumnoEditado.Domicilio.Trim();
+                alumnoExistente.CURP = alumnoEditado.CURP.Trim().ToUpper();
+                alumnoExistente.NumeroControl = alumnoEditado.NumeroControl?.Trim();
+                alumnoExistente.Carrera = alumnoEditado.Carrera?.Trim();
 
                 // Actualiza el TutorId solo si se proporciona un nuevo valor (no es null)
                 if (alumnoEditado.TutorId != null)

@@ -76,7 +76,7 @@ namespace MonitoreoEscolar.Server.Controllers
 
             // Buscar todos los alumnos cuyo campo 'Grupo' coincida con el string construido
             var alumnosGrupo = await _context.Alumnos
-                .Where(a => a.Grupo == grupoString) 
+                .Where(a => a.Letra == grupoString) 
                 .ToListAsync();
 
             if (alumnosGrupo.Any())

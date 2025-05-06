@@ -8,23 +8,23 @@ import agregarIcon from "./assets/agregar-alumno.png";
 const AgregarAlumno = () => {
     // Estado para almacenar los datos del alumno
     const [alumno, setAlumno] = useState({
-        nombre: "",
-        apellidos: "",
-        grupo: "",
-        grado: "",
-        letra: "",
-        tutor: "",
-        domicilio: "",
-        tutorId: null,
-        huellaCodigo: "",
-        CURP: "",
-        NumeroControl: "",
+        PrimerNombre: "",
+        SegundoNombre: "",
+        ApellidoPaterno: "",
+        ApellidoMaterno: "",
+        Domicilio: "",
+        Grado: "",
+        Grupo: "",
         Carrera: "",
         Plantel: "",
         Turno: "",
+        CURP: "",
+        NumeroControl: "",
         Generacion: "",
-        Ciclo: ""
+        Ciclo: "",
+        TutorId: null
     });
+
 
 
     const [tutorOptions, setTutorOptions] = useState([]);
@@ -68,8 +68,8 @@ const AgregarAlumno = () => {
         const newGrado = e.target.value;
         setAlumno({
             ...alumno,
-            grado: newGrado,
-            grupo: newGrado && alumno.letra ? `${newGrado}${alumno.letra}` : ""
+            Grado: newGrado,
+            Grupo: newGrado && alumno.letra ? `${newGrado}${alumno.letra}` : ""
         });
     };
 
@@ -79,7 +79,7 @@ const AgregarAlumno = () => {
         setAlumno({
             ...alumno,
             letra: newLetra,
-            grupo: alumno.grado && newLetra ? `${alumno.grado}${newLetra}` : ""
+            Grupo: alumno.Grado && newLetra ? `${alumno.Grado}${newLetra}` : ""
         });
     };
 
@@ -147,20 +147,21 @@ const AgregarAlumno = () => {
 
             // Limpiar formulario
             setAlumno({
-                nombre: "",
-                apellidos: "",
-                grupo: "",
-                grado: "",
-                letra: "",
-                tutor: "",
-                domicilio: "",
-                CURP: "",
-                NumeroControl: "",
+                PrimerNombre: "",
+                SegundoNombre: "",
+                ApellidoPaterno: "",
+                ApellidoMaterno: "",
+                Domicilio: "",
+                Grado: "",
+                Grupo: "",
+                Carrera: "",
                 Plantel: "",
                 Turno: "",
+                CURP: "",
+                NumeroControl: "",
                 Generacion: "",
-                tutorId: null,
-                huellaCodigo: "" // Limpiar el campo de huella
+                Ciclo: "",
+                TutorId: null
             });
             setSelectedTutor(null);
             setTutorOptions([]);
@@ -176,37 +177,65 @@ const AgregarAlumno = () => {
                 <div className="agregar-alumno-content">
                     <h2 className="agregar-alumno-title">📑 Registra un Alumno</h2>
                     <form onSubmit={handleSubmit}>
-                        {/* Nombre */}
+                        {/* Primer Nombre */}
                         <div className="agregar-alumno-group">
-                            <label> Nombre:</label>
+                            <label>Primer Nombre:</label>
                             <input
                                 type="text"
-                                name="nombre"
-                                value={alumno.nombre}
+                                name="PrimerNombre"
+                                value={alumno.PrimerNombre}
                                 onChange={handleChange}
-                                placeholder="Ingrese el nombre"
+                                placeholder="Ingrese el primer nombre"
                                 required
                             />
                         </div>
-                        {/* Apellidos */}
+
+                        {/* Otros Nombre */}
                         <div className="agregar-alumno-group">
-                            <label> Apellidos:</label>
+                            <label>Mas Nombres:</label>
                             <input
                                 type="text"
-                                name="apellidos"
-                                value={alumno.apellidos}
+                                name="SegundoNombre"
+                                value={alumno.SegundoNombre}
                                 onChange={handleChange}
-                                placeholder="Ingrese los apellidos"
+                                placeholder="Si tiene mas de un nombre ingrese los datos"
+                            />
+                        </div>
+
+                        {/* Apellido Paterno */}
+                        <div className="agregar-alumno-group">
+                            <label>Apellido Paterno:</label>
+                            <input
+                                type="text"
+                                name="ApellidoPaterno"
+                                value={alumno.ApellidoPaterno}
+                                onChange={handleChange}
+                                placeholder="Ingrese el apellido paterno"
                                 required
                             />
                         </div>
-                        {/* Grado y Letra */}
+
+                        {/* Apellido Materno */}
+                        <div className="agregar-alumno-group">
+                            <label>Apellido Materno:</label>
+                            <input
+                                type="text"
+                                name="ApellidoMaterno"
+                                value={alumno.ApellidoMaterno}
+                                onChange={handleChange}
+                                placeholder="Ingrese el apellido materno"
+                                required
+                            />
+                        </div>
+
+
+                        {/* Grado y Letra para armar Grupo */}
                         <div className="agregar-alumno-group-selects">
                             <div>
                                 <label>Grado:</label>
                                 <select
-                                    name="grado"
-                                    value={alumno.grado}
+                                    name="Grado"
+                                    value={alumno.Grado}
                                     onChange={handleChangeGrado}
                                     required
                                 >
@@ -219,8 +248,8 @@ const AgregarAlumno = () => {
                             <div>
                                 <label>Grupo:</label>
                                 <select
-                                    name="letra"
-                                    value={alumno.letra}
+                                    name="letra" // no se guarda en backend, solo ayuda a formar Grupo
+                                    value={alumno.letra || ""}
                                     onChange={handleChangeLetra}
                                     required
                                 >
@@ -231,6 +260,10 @@ const AgregarAlumno = () => {
                                 </select>
                             </div>
                         </div>
+
+                        {/* Grupo (campo final armado automáticamente) */}
+                        <input type="hidden" name="Grupo" value={alumno.Grupo} />
+
                         {/* Autocompletado para seleccionar padre/tutor */}
                         <div className="agregar-alumno-group">
                             <label> Seleccionar padre del alumno:</label>

@@ -36,7 +36,7 @@ function ActualizarPassword() {
 
     const validarCodigo = async () => {
         try {
-            await axios.post('http://localhost:5099/api/usuarios/validar-codigo', { correo, codigo });
+            await axios.post('/api/usuarios/validar-codigo', { correo, codigo });
             setMessage('Código válido. Ahora escribe tu nueva contraseña.');
             setError('');
             setPaso(3);
@@ -48,11 +48,11 @@ function ActualizarPassword() {
 
     const actualizarPassword = async () => {
         try {
-            await axios.post('http://localhost:5099/api/usuarios/actualizar-password', { correo, newPassword });
+            await axios.post('/api/usuarios/actualizar-password', { correo, newPassword });
             setMessage('Contraseña actualizada exitosamente. Redirigiendo...');
             setError('');
             setTimeout(() => {
-                navigate('/'); // Regresa al login usando react-router
+                navigate('/'); 
             }, 3000);
         } catch (err) {
             setError(err.response?.data?.mensaje || "Error al actualizar contraseña.");

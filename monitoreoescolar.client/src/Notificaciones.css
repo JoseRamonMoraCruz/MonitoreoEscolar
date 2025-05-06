@@ -12,7 +12,7 @@
 
 /* Caja del contenido */
 .notificaciones-content {
-    background-color: #2d3e50; /* Gris oscuro con un toque azul */
+    background-color: #2d3e50; 
     padding: 25px;
     border-radius: 15px;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
@@ -28,7 +28,7 @@
     font-size: 24px;
     font-weight: bold;
     margin-bottom: 20px;
-    color: #ffffff; /* Texto blanco */
+    color: #ffffff; 
 }
 
 /* Barra de búsqueda */
@@ -53,7 +53,7 @@
     }
 
 .notificaciones-search-button {
-    background-color: #48cae4; /* Color azulado */
+    background-color: #48cae4; 
     color: white;
     border: none;
     border-radius: 50%;
@@ -75,7 +75,7 @@
 
 /* Contenedor de resultados */
 .notificaciones-result-container {
-    background-color: #e4e4e4; /* Gris muy suave */
+    background-color: #e4e4e4; 
     padding: 18px;
     border-radius: 12px;
     font-size: 18px;
@@ -89,7 +89,7 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background-color: #e2e8f0; /* Gris claro */
+    background-color: #e2e8f0; 
     padding: 14px;
     border-radius: 8px;
     margin-top: 10px;
@@ -99,7 +99,7 @@
 }
 
     .notificaciones-item:hover {
-        background-color: #d1e0e8; /* Color más claro en hover */
+        background-color: #d1e0e8; 
     }
 
 /* Contenedor de los iconos */

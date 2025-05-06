@@ -65,7 +65,7 @@ namespace MonitoreoEscolar.Server.Controllers
             // Sólo el Personal Escolar debe conocer la clave maestra para registrarse:
                if (request.Tipo_Usuario == "personal")
                    {
-                    var masterPass = "EscolarPerson123";  // idéntica a la del frontend
+                    var masterPass = "EscolarPerson123";  
                        if (request.Contrasena != masterPass)
                            {
                                return BadRequest(new { mensaje = "Contraseña de acceso para personal inválida." });
@@ -195,11 +195,6 @@ namespace MonitoreoEscolar.Server.Controllers
             await smtp.DisconnectAsync(true);
         }
 
-
-        /*
-        Fin de la seccion de contraseñas olvidadas
-        */
-
         //OBTENER LISTA DE PADRES PARA RELACIONARLOS EN EL REGISTRO DEL ALUMNO
         [HttpGet("padres")]
         public async Task<IActionResult> GetPadres()
@@ -289,7 +284,7 @@ namespace MonitoreoEscolar.Server.Controllers
         {
             if (!ModelState.IsValid)
             {
-                // Devuelve todos los errores de validación
+                
                 return BadRequest(ModelState);
             }
 
@@ -317,7 +312,7 @@ namespace MonitoreoEscolar.Server.Controllers
         public async Task<IActionResult> ObtenerUsuarioLogueado()
         {
             // Obtén el usuario autenticado desde el contexto actual
-            var usuarioId = User?.FindFirstValue(ClaimTypes.NameIdentifier); // Suponiendo que usas JWT o un sistema de autenticación basado en Claims
+            var usuarioId = User?.FindFirstValue(ClaimTypes.NameIdentifier); 
 
             if (usuarioId == null)
             {

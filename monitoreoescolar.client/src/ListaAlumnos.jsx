@@ -35,7 +35,7 @@
         const [selectedTutorEdit, setSelectedTutorEdit] = useState(null);
 
         // Estados para el menú de edición del grupo (solo para editar el nombre del docente)
-        const [menuGrupo, setMenuGrupo] = useState(null); // Guardará el grupo que tenga abierto el menú
+        const [menuGrupo, setMenuGrupo] = useState(null); 
         const [modalEditarDocente, setModalEditarDocente] = useState(false);
         const [grupoDocenteEditado, setGrupoDocenteEditado] = useState(null);
         const menuRef = useRef(null); 
@@ -340,7 +340,7 @@
 
         // Abre el menú de edición para el grupo seleccionado
         const abrirMenuGrupo = (grupo, e) => {
-            e.stopPropagation(); // Evita que se active otro evento (por ejemplo, la expansión de la carta)
+            e.stopPropagation(); 
             setMenuGrupo(grupo);
         };
 
@@ -374,7 +374,7 @@
                     grupoDocenteEditado
                 );
                 alert(response.data.mensaje);
-                obtenerGrupos(); // Actualiza la lista de grupos
+                obtenerGrupos(); 
                 cerrarModalEditarDocente();
             } catch (error) {
                 console.error(
@@ -396,7 +396,7 @@
                 // Llamada al nuevo endpoint para eliminar el docente
                 const response = await axios.put(`/api/grupos/eliminarDocente/${grupo.id}`);
                 alert(response.data.mensaje);
-                obtenerGrupos(); // Actualiza la lista de grupos
+                obtenerGrupos(); 
                 cerrarMenuGrupo();
             } catch (error) {
                 console.error("Error al eliminar el docente:", error.response?.data || error.message);
@@ -505,7 +505,7 @@
                                                     </thead>
                                                         <tbody>{ /*ELIMINAR POR SI LAS DUDAS POR SI NO FUNCIONA*/}
                                                             {tableData.map((alumno) => {
-                                                                console.log("ALUMNO:", alumno); // Esto muestra en consola los datos recibidos
+                                                                console.log("ALUMNO:", alumno); 
                                                                 return (
                                                                     <tr key={alumno.id}>
                                                                         <td>
@@ -606,7 +606,6 @@
                         )}
                     </div>
                 </div>
-
                 <button className="boton-agregar" onClick={abrirModalGrupo}>
                     <img src={addIcon} alt="Agregar Grupo" />
                 </button>
@@ -872,7 +871,7 @@
                                 onClick={() => {
                                     if (!nuevaCarrera) return alert("Seleccione una carrera válida");
                                     // Aquí llamas a tu endpoint o función para guardar
-                                    axios.post("http://localhost:5099/api/carreras", { nombre: nuevaCarrera })
+                                    axios.post("/api/carreras", { nombre: nuevaCarrera })
                                         .then(() => {
                                             alert("✅ Carrera registrada correctamente");
                                             setShowModalCarrera(false);

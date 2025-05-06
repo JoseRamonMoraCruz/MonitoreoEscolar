@@ -121,7 +121,7 @@ namespace MonitoreoEscolar.Server.Controllers
         }
 
 
-        // 🔹 ELIMINAR ALUMNO
+        //  ELIMINAR ALUMNO
         [HttpDelete("eliminar/{id}")]
         public async Task<IActionResult> EliminarAlumno(int id)
         {
@@ -178,7 +178,7 @@ namespace MonitoreoEscolar.Server.Controllers
                 {
                     alumnoExistente.TutorId = alumnoEditado.TutorId;
                 }
-                // Si TutorId viene como null, se deja el actual sin cambios
+                
 
                 // Guardar cambios
                 await _context.SaveChangesAsync();

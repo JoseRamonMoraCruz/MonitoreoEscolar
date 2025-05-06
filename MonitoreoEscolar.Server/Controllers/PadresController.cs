@@ -48,7 +48,7 @@ namespace MonitoreoEscolar.Server.Controllers
                 {
                     AlumnoId = a.Id,
                     NombreCompleto = a.Nombre + " " + a.Apellidos,
-                    Grupo = a.Grupo ?? "Sin grupo" // usa el campo Grupo directamente
+                    Grupo = a.Grupo ?? "Sin grupo" 
                 })
                 .ToListAsync();
 
@@ -98,8 +98,5 @@ namespace MonitoreoEscolar.Server.Controllers
 
             return Ok(filtradas);
         }
-
-
-
     }
 }

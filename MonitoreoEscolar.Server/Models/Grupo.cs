@@ -14,7 +14,7 @@ public class Grupo
     public string? Carrera { get; set; }
 
 
-    public string NombreGrupo => $"{Grado}{Letra}"; //HOLA
+    public string NombreGrupo => $"{Grado}{Letra}"; //HOLA jaja
 
     [Required]
     // Nueva propiedad para el docente

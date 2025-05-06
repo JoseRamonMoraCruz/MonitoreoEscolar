@@ -5,7 +5,7 @@
     align-items: center;
     justify-content: flex-start;
     padding: 20px;
-    background: linear-gradient(135deg, #89f7fe, #66a6ff); /* Fondo */
+    background: linear-gradient(135deg, #89f7fe, #66a6ff); 
 }
 
 /* Contenido interno */
@@ -77,7 +77,7 @@
 
 /* Estilo de las cartas */
 .grupo-card {
-    position: relative; /*si no jala se quita*/
+    position: relative; 
     background: white;
     border-radius: 10px;
     width: 90vw;
@@ -466,13 +466,13 @@ input {
     font-size: 16px;
     color: #000;
     white-space: nowrap;
-    line-height: 1; /*  esto evita que se agrande la altura */
-    vertical-align: middle; /*  alinea con el resto de celdas */
+    line-height: 1; 
+    vertical-align: middle; 
 }
 
     .padre-whatsapp img {
-        width: 22px; /*  aquí cambias el ancho */
-        height: 22px; /*  aquí cambias la altura */
+        width: 22px; 
+        height: 22px; 
         margin-right: 6px;
         vertical-align: middle;
         cursor: pointer;
@@ -508,7 +508,7 @@ input {
 .boton-carrera {
     background-color: #2E8B57;
     position: fixed;
-    bottom: 100px; /* un poco más arriba que el de grupo */
+    bottom: 100px; 
     right: 20px;
     border: none;
     border-radius: 50%;

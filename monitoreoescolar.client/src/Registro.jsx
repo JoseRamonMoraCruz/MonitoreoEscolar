@@ -29,7 +29,7 @@ export default function Registro() {
             return;
         }
 
-         const MASTER_PASS = "EscolarPerson123";  // <- Cámbiala por la que quieras
+         const MASTER_PASS = "EscolarPerson123";  
            if (tipoUsuario === "personal" && contrasena !== MASTER_PASS) {
                    setError("❌ Contraseña de acceso para personal inválida.");
                    return;
@@ -49,7 +49,7 @@ export default function Registro() {
         try {
             const response = await axios.post("/api/usuarios/registro", usuario);
             alert(response.data.mensaje);
-            navigate("/"); // Redirige al login tras el registro
+            navigate("/"); 
         } catch (error) {
             console.error("Error en el registro:", error.response?.data || error.message);
             setError(error.response?.data?.mensaje || "❌ Error en el registro.");

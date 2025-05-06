@@ -1,7 +1,7 @@
 ﻿import { useState, useEffect } from "react";
 import "./Notificaciones.css";
 import axios from "axios";
-import WhatsappIcon from "./assets/whatsapp.png"; // Ícono de WhatsApp
+import WhatsappIcon from "./assets/whatsapp.png"; 
 
 const Notificaciones = () => {
     const [nombre, setNombre] = useState("");
@@ -38,9 +38,9 @@ const Notificaciones = () => {
     useEffect(() => {
         const timer = setTimeout(() => {
             buscarPadre(nombre);
-        }, 500); // Espera 500ms antes de hacer la consulta a la API
+        }, 500); 
 
-        return () => clearTimeout(timer); // Limpia el temporizador si el usuario sigue escribiendo
+        return () => clearTimeout(timer); 
     }, [nombre]);
 
     //  Función para abrir WhatsApp con el número

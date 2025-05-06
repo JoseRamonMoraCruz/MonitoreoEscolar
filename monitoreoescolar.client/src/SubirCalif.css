@@ -1,29 +1,29 @@
-﻿/* 📌 Contenedor principal */
+﻿/*  Contenedor principal */
 .contenedor-subir {
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
     padding: 20px;
-    overflow: hidden; /* Evita el desbordamiento */
+    overflow: hidden; 
 }
 
-/* 📌 Caja principal */
+/*  Caja principal */
 .caja-subir {
     background-color: #2d3e50;
     padding: 30px;
     border-radius: 15px;
     box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.5);
     text-align: center;
-    width: 95vw; /* Más ancho */
+    width: 95vw; 
     max-width: 1400px;
     color: white;
     position: relative;
-    overflow-x: auto; /* Scroll horizontal */
+    overflow-x: auto; 
 }
 
 
-/* 📌 Estilo del título */
+/*  Estilo del título */
 .titulo-subir {
     font-size: 22px;
     font-weight: bold;
@@ -34,7 +34,7 @@
     gap: 8px;
 }
 
-/* 📌 Contenedor superior */
+/*  Contenedor superior */
 .contenedor-superior {
     display: flex;
     align-items: center;
@@ -43,7 +43,7 @@
     margin-bottom: 15px;
 }
 
-/* 📌 Sección de selección de archivo */
+/*  Sección de selección de archivo */
 .contenedor-archivo {
     display: flex;
     align-items: center;
@@ -55,7 +55,7 @@
     justify-content: space-between;
 }
 
-/* 📌 Botón elegir archivo */
+/*  Botón elegir archivo */
 .boton-seleccionar {
     background: #5A189A;
     border: none;
@@ -74,14 +74,14 @@
     flex-grow: 1;
 }
 
-/* 📌 Contenedor de los botones */
+/*  Contenedor de los botones */
 .contenedor-botones {
     display: flex;
     align-items: center;
-    gap: 10px; /* Espaciado entre los botones */
+    gap: 10px; 
 }
 
-/* 📌 Botón para reiniciar (como imagen) */
+/*  Botón para reiniciar (como imagen) */
 .boton-reiniciar {
     background: none;
     border: none;
@@ -94,7 +94,7 @@
 }
 
     .boton-reiniciar img {
-        width: 30px; /* Ajuste de tamaño */
+        width: 30px; 
         height: 30px;
         transition: transform 0.2s;
     }
@@ -103,7 +103,7 @@
             transform: scale(1.1);
         }
 
-/* 📌 Botón para subir los datos */
+/*  Botón para subir los datos */
 .boton-subir {
     background-color: #6B46C1;
     border: none;
@@ -129,18 +129,18 @@
         box-shadow: none;
     }
 
-/* 📌 Contenedor de la tabla con desplazamiento */
+/*  Contenedor de la tabla con desplazamiento */
 .contenedor-tabla {
     max-height: 500px;
     overflow-y: auto;
-    overflow-x: auto; /* NUEVO */
+    overflow-x: auto; 
     margin-top: 10px;
     border-radius: 10px;
     width: 100%;
     padding-bottom: 10px;
 }
 
-/* 📌 Tabla con los datos */
+/*  Tabla con los datos */
 .tabla-subir {
     width: 100%;
     border-collapse: collapse;
@@ -167,7 +167,7 @@
         background: #f1f1f1;
     }
 
-/* 📌 Mensaje si no hay datos */
+/*  Mensaje si no hay datos */
 .mensaje-vacio {
     margin-top: 15px;
     padding: 10px;

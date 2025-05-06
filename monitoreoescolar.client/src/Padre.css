@@ -68,14 +68,14 @@
     }
 
     .card-alumno .grupo {
-        font-size: 16px; /* Antes era 48px */
+        font-size: 16px; 
         color: #000;
-        margin-top: 10px; /* Lo tenía el nombre, ahora lo tiene el grupo */
+        margin-top: 10px; 
     }
 
     .card-alumno .nombre {
-        font-size: 30px; /* Antes era 16px */
-        font-weight: bold; /* Agregado para que se vea como el grupo anterior */
+        font-size: 30px; 
+        font-weight: bold; 
         color: #000;
     }
 

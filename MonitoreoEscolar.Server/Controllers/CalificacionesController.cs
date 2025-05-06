@@ -19,7 +19,7 @@ namespace MonitoreoEscolar.Server.Controllers
             _logger = logger;
         }
 
-        // ✅ ENDPOINT 1: SUBIR CALIFICACIONES DESDE EXCEL
+        //  ENDPOINT 1: SUBIR CALIFICACIONES DESDE EXCEL
         [HttpPost("subirCalificaciones")]
         public async Task<IActionResult> SubirCalificaciones(IFormFile file)
         {
@@ -70,7 +70,7 @@ namespace MonitoreoEscolar.Server.Controllers
                     int.TryParse(worksheet.Cells[row, 24].Text, out int asistenciasTotal);
                     string tipo = worksheet.Cells[row, 25].Text.Trim();
 
-                    // 🧠 Validación contra BD
+                    //  Validación contra BD
                     if (!alumnosDict.TryGetValue(nombreNormalizado, out var alumno))
                     {
                         _logger.LogWarning("Alumno no encontrado: {0}", nombreNormalizado);
@@ -83,7 +83,7 @@ namespace MonitoreoEscolar.Server.Controllers
                         continue;
                     }
 
-                    string parcialUnidad = "Parcial 1"; // 🔧 Puedes ajustarlo si usas varios
+                    string parcialUnidad = "Parcial 1"; 
 
                     bool yaExiste = await _context.Calificaciones.AnyAsync(c =>
                         c.AlumnoId == alumno.Id &&
@@ -98,7 +98,7 @@ namespace MonitoreoEscolar.Server.Controllers
                         continue;
                     }
 
-                    // ✅ Crear y agregar nueva calificación
+                    //  Crear y agregar nueva calificación
                     var calificacion = new Calificacion
                     {
                         Nombre = nombreOriginal,
@@ -141,7 +141,7 @@ namespace MonitoreoEscolar.Server.Controllers
 
 
 
-        // ✅ ENDPOINT 2: RESUMEN DE CALIFICACIONES
+        //  ENDPOINT 2: RESUMEN DE CALIFICACIONES
         [HttpGet("obtenerCalificaciones")]
         public async Task<IActionResult> ObtenerCalificacionesResumen()
         {
@@ -184,7 +184,7 @@ namespace MonitoreoEscolar.Server.Controllers
             return Ok(resumen);
         }
 
-        // ✅ ENDPOINT 3: RESUMEN AGRUPADO POR ALUMNO
+        //  ENDPOINT 3: RESUMEN AGRUPADO POR ALUMNO
         [HttpGet("obtenerResumenAgrupado")]
         public async Task<IActionResult> ObtenerResumenAgrupado()
         {
@@ -227,7 +227,7 @@ namespace MonitoreoEscolar.Server.Controllers
             return Ok(resumen);
         }
 
-        // ✅ NORMALIZAR SIN ACENTOS Y EN MAYÚSCULAS
+        //  NORMALIZAR SIN ACENTOS Y EN MAYÚSCULAS
         private string Normalizar(string input)
         {
             if (string.IsNullOrWhiteSpace(input)) return "";

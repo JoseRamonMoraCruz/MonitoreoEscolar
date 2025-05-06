@@ -12,8 +12,8 @@ using MonitoreoEscolar.Server.Data;
 namespace MonitoreoEscolar.Server.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250428161554_AgregarCamposCodigoVerificacion")]
-    partial class AgregarCamposCodigoVerificacion
+    [Migration("20250506182923_Inicial")]
+    partial class Inicial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -37,8 +37,20 @@ namespace MonitoreoEscolar.Server.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("CURP")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Carrera")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Ciclo")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Domicilio")
                         .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Generacion")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Grupo")
@@ -60,6 +72,15 @@ namespace MonitoreoEscolar.Server.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("NumeroControl")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Plantel")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Turno")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<int?>("TutorId")
                         .HasColumnType("int");
 
@@ -79,6 +100,9 @@ namespace MonitoreoEscolar.Server.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Carrera")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("Grado")
                         .HasColumnType("int");
@@ -107,22 +131,43 @@ namespace MonitoreoEscolar.Server.Migrations
                     b.Property<int?>("AlumnoId")
                         .HasColumnType("int");
 
+                    b.Property<int?>("AsistenciasTotal")
+                        .HasColumnType("int");
+
                     b.Property<int>("CalificacionValor")
                         .HasColumnType("int");
 
+                    b.Property<bool?>("Firmado")
+                        .HasColumnType("bit");
+
                     b.Property<int>("GrupoId")
                         .HasColumnType("int");
-
-                    b.Property<string>("Materia")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Nombre")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("NombreAsignatura")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("Parcial1")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("Parcial2")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("Parcial3")
+                        .HasColumnType("int");
+
                     b.Property<string>("ParcialUnidad")
                         .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Periodo")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Tipo")
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
@@ -172,7 +217,6 @@ namespace MonitoreoEscolar.Server.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("CodigoVerificacion")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Contrasena")

@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace MonitoreoEscolar.Server.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialCreate : Migration
+    public partial class Inicial : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -19,6 +19,7 @@ namespace MonitoreoEscolar.Server.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Grado = table.Column<int>(type: "int", nullable: false),
                     Letra = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Carrera = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     NombreDocente = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
@@ -38,7 +39,8 @@ namespace MonitoreoEscolar.Server.Migrations
                     Correo = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Telefono = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Tipo_Usuario = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    NombreAlumno = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                    CodigoVerificacion = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    FechaExpiracionCodigo = table.Column<DateTime>(type: "datetime2", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -56,6 +58,13 @@ namespace MonitoreoEscolar.Server.Migrations
                     NombreCompleto = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     NombreCompletoNormalizado = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Grupo = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Carrera = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Plantel = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Turno = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    CURP = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    NumeroControl = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Ciclo = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Generacion = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     TutorId = table.Column<int>(type: "int", nullable: true),
                     Domicilio = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     GrupoId = table.Column<int>(type: "int", nullable: true)
@@ -83,7 +92,14 @@ namespace MonitoreoEscolar.Server.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Nombre = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Materia = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    NombreAsignatura = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Parcial1 = table.Column<int>(type: "int", nullable: true),
+                    Parcial2 = table.Column<int>(type: "int", nullable: true),
+                    Parcial3 = table.Column<int>(type: "int", nullable: true),
+                    Tipo = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Periodo = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Firmado = table.Column<bool>(type: "bit", nullable: true),
+                    AsistenciasTotal = table.Column<int>(type: "int", nullable: true),
                     CalificacionValor = table.Column<int>(type: "int", nullable: false),
                     GrupoId = table.Column<int>(type: "int", nullable: false),
                     ParcialUnidad = table.Column<string>(type: "nvarchar(max)", nullable: false),

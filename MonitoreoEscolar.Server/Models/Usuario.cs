@@ -19,7 +19,7 @@ namespace MonitoreoEscolar.Server.Models
 
         [Required]
         [EmailAddress]
-        public string Correo { get; set; } = string.Empty;
+        public string Correo { get; set; } = string.Empty; //hola
 
         [Required]
         public string Telefono { get; set; } = string.Empty;

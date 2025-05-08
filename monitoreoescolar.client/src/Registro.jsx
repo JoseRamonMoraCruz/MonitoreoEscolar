@@ -28,8 +28,6 @@ export default function Registro() {
         }
     }, [toastMensaje]);
 
-    const [confirmarContrasena, setConfirmarContrasena] = useState("");
-
     const handleRegistro = async (e) => {
         e.preventDefault();
 

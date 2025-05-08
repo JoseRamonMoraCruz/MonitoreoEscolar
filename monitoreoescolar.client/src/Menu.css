@@ -145,11 +145,11 @@
     cursor: pointer;
 }
 
-.agregar-alumno-group {
+.perfil-field-group {
     margin-bottom: 15px;
 }
 
-    .agregar-alumno-group input {
+    .perfil-field-group input {
         width: 100%;
         padding: 8px;
         border-radius: 5px;

@@ -60,32 +60,16 @@ namespace MonitoreoEscolar.Server.Controllers
             return Ok(new { mensaje = "Grupo agregado exitosamente." });
         }
 
-        // Endpoint para eliminar un grupo y sus alumnos asociados
+        //endpoint para eliminar un grupo
         [HttpDelete("eliminar/{id}")]
         public async Task<IActionResult> EliminarGrupo(int id)
         {
-            // Buscar el grupo por id
             var grupo = await _context.Grupos.FindAsync(id);
             if (grupo == null)
-            {
                 return NotFound(new { mensaje = "Grupo no encontrado." });
-            }
-
-            // Construir el string que representa el grupo (ejemplo: "1A")
-            var grupoString = $"{grupo.Grado}{grupo.Letra}";
-
-            // Buscar todos los alumnos cuyo campo 'Grupo' coincida con el string construido
-            var alumnosGrupo = await _context.Alumnos
-                .Where(a => a.Grupo == grupoString) 
-                .ToListAsync();
-
-            if (alumnosGrupo.Any())
-            {
-                _context.Alumnos.RemoveRange(alumnosGrupo);
-            }
 
             _context.Grupos.Remove(grupo);
-            await _context.SaveChangesAsync();  
+            await _context.SaveChangesAsync();
 
             return Ok(new { mensaje = "Grupo eliminado exitosamente." });
         }

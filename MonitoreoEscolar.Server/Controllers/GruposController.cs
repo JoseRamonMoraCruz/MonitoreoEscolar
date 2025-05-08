@@ -108,5 +108,4 @@ namespace MonitoreoEscolar.Server.Controllers
         }
 
     }
-
 }

@@ -12,8 +12,8 @@ using MonitoreoEscolar.Server.Data;
 namespace MonitoreoEscolar.Server.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250507175042_AgregarCampoCodigoQR")]
-    partial class AgregarCampoCodigoQR
+    [Migration("20250508172718_Inicial")]
+    partial class Inicial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -33,11 +33,16 @@ namespace MonitoreoEscolar.Server.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("Apellidos")
+                    b.Property<string>("ApellidoMaterno")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ApellidoPaterno")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("CURP")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Carrera")
@@ -220,7 +225,11 @@ namespace MonitoreoEscolar.Server.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id_Usuario"));
 
-                    b.Property<string>("Apellidos")
+                    b.Property<string>("ApellidoMaterno")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ApellidoPaterno")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 

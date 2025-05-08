@@ -9,12 +9,14 @@ public class Alumno
 
     // Nombres
     [Required]
-    public string PrimerNombre { get; set; } = string.Empty;
+    public string Nombre { get; set; } = string.Empty;
 
-    public string? SegundoNombre { get; set; }
 
     [Required]
-    public string Apellidos { get; set; } = string.Empty;
+    public string ApellidoPaterno { get; set; } = string.Empty;
+
+    [Required]
+    public string ApellidoMaterno { get; set; } = string.Empty;
 
     public string NombreCompleto { get; set; } = string.Empty;
 
@@ -31,9 +33,7 @@ public class Alumno
     public string? Ciclo { get; set; }
     public string? Generacion { get; set; }
 
-    public string? Ciclo { get; set; }//Cambio de ciclo a periodo
-
-    public string? Generacion { get; set; } //La generacion del alumno
+ 
 
     public int? TutorId { get; set; }
 

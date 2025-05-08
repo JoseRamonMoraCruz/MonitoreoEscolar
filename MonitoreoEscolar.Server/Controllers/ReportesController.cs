@@ -44,7 +44,7 @@ namespace MonitoreoEscolar.Server.Controllers
             var dto = list.Select(r => new {
                 id = r.Id,
                 alumnoId = r.AlumnoId,
-               // nombreCompleto = r.Alumno.Nombre + " " + r.Alumno.Apellidos,
+               nombreCompleto = r.Alumno.Nombre + " " + r.Alumno.ApellidoPaterno + " " + r.Alumno.ApellidoMaterno,
                 fecha = r.Fecha,
                 motivo = r.Motivo,
                 responsable = r.ResponsableDelReporte

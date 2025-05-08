@@ -73,8 +73,7 @@ namespace MonitoreoEscolar.Server.Controllers
 
             var nuevoUsuario = new Usuario
             {
-                PrimerNombre = NormalizarCadena(request.PrimerNombre),
-                SegundoNombre = string.IsNullOrWhiteSpace(request.SegundoNombre) ? null : NormalizarCadena(request.SegundoNombre),
+                Nombre = NormalizarCadena(request.Nombre),
                 ApellidoPaterno = NormalizarCadena(request.ApellidoPaterno),
                 ApellidoMaterno = NormalizarCadena(request.ApellidoMaterno),
                 Correo = request.Correo,
@@ -205,8 +204,7 @@ namespace MonitoreoEscolar.Server.Controllers
                 .Select(u => new
                 {
                     id_Usuario = u.Id_Usuario,
-                    primerNombre = u.PrimerNombre,
-                    segundoNombre = u.SegundoNombre,
+                    primerNombre = u.Nombre,
                     apellidoPaterno = u.ApellidoPaterno,
                     apellidoMaterno = u.ApellidoMaterno,
                     correo = u.Correo
@@ -228,18 +226,17 @@ namespace MonitoreoEscolar.Server.Controllers
             var padres = await _context.Usuarios
                 .Where(u => u.Tipo_Usuario.ToLower() == "padre" &&
                             EF.Functions.Collate(
-                                (u.PrimerNombre + " " + u.SegundoNombre + " " + u.ApellidoPaterno + " " + u.ApellidoMaterno).ToLower(),
+                                (u.Nombre +  " " + u.ApellidoPaterno + " " + u.ApellidoMaterno).ToLower(),
                                 "Latin1_General_CI_AI"
                             ).Contains(lowerTerm))
                 .Select(u => new
                 {
                     id_Usuario = u.Id_Usuario,
-                    primerNombre = u.PrimerNombre,
-                    segundoNombre = u.SegundoNombre,
+                    nombre = u.Nombre,
                     apellidoPaterno = u.ApellidoPaterno,
                     apellidoMaterno = u.ApellidoMaterno,
                     correo = u.Correo,
-                    nombreCompleto = u.PrimerNombre + " " + u.SegundoNombre + " " + u.ApellidoPaterno + " " + u.ApellidoMaterno
+                    nombreCompleto = u.Nombre + " " + u.ApellidoPaterno + " " + u.ApellidoMaterno
                 })
                 .ToListAsync();
 
@@ -263,18 +260,16 @@ namespace MonitoreoEscolar.Server.Controllers
                 .Where(u => u.Tipo_Usuario == "padre")
                 .Select(u => new
                 {
-                    u.PrimerNombre,
-                    u.SegundoNombre,
+                    u.Nombre,
                     u.ApellidoPaterno,
                     u.ApellidoMaterno,
-                    NombreCompleto = u.PrimerNombre + " " + u.SegundoNombre + " " + u.ApellidoPaterno + " " + u.ApellidoMaterno,
+                    NombreCompleto = u.Nombre + " " + u.ApellidoPaterno + " " + u.ApellidoMaterno,
                 })
                 .ToListAsync();
 
             // Filtrar en memoria usando la normalización de texto
                 var resultados = padres.Where(u =>
-                NormalizarTexto(u.PrimerNombre).Contains(searchTerm) ||
-                NormalizarTexto(u.SegundoNombre ?? "").Contains(searchTerm) ||
+                NormalizarTexto(u.Nombre).Contains(searchTerm) ||
                 NormalizarTexto(u.ApellidoPaterno).Contains(searchTerm) ||
                 NormalizarTexto(u.ApellidoMaterno).Contains(searchTerm) ||
                 NormalizarTexto(u.NombreCompleto).Contains(searchTerm)
@@ -305,8 +300,7 @@ namespace MonitoreoEscolar.Server.Controllers
             }
 
             // Actualizar sólo los campos permitidos
-            usuario.PrimerNombre = request.PrimerNombre;
-            usuario.SegundoNombre = request.SegundoNombre;
+            usuario.Nombre = request.PrimerNombre;
             usuario.ApellidoPaterno = request.ApellidoPaterno;
             usuario.ApellidoMaterno = request.ApellidoMaterno;
             usuario.Correo = request.Correo;
@@ -341,8 +335,7 @@ namespace MonitoreoEscolar.Server.Controllers
             return Ok(new
             {
                 usuario.Id_Usuario,
-                usuario.PrimerNombre,
-                usuario.SegundoNombre,
+                usuario.Nombre,
                 usuario.ApellidoPaterno,
                 usuario.ApellidoMaterno,
                 usuario.Correo,

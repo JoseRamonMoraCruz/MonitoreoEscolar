@@ -98,7 +98,7 @@
                 const response = await axios.get(`http://localhost:5099/api/usuarios/autocompletePadres?termino=${inputValue}`);
                 const optionsData = response.data.map((padre) => ({
                     value: padre.id_Usuario,
-                    label: `${padre.nombre} ${padre.apellidos} - ${padre.correo}`
+                    label: `${padre.nombre} ${padre.ApellidoPaterno} ${padre.TutorUsuario.ApellidoMaterno} - ${padre.correo}`
                 }));
                 setTutorOptionsEdit(optionsData);
             } catch (error) {
@@ -160,7 +160,7 @@
             if (alumno.tutorId && alumno.TutorUsuario) {
                 setSelectedTutorEdit({
                     value: alumno.tutorId,
-                    label: `${alumno.TutorUsuario.nombre} ${alumno.TutorUsuario.apellidos} - ${alumno.TutorUsuario.correo}`
+                    label: `${alumno.TutorUsuario.nombre} ${alumno.TutorUsuario.ApellidoPaterno} ${alumno.TutorUsuario.ApellidoMaterno} - ${alumno.TutorUsuario.correo}`
                 });
             } else {
                 setSelectedTutorEdit(null);
@@ -441,7 +441,7 @@
                                     ? isGroupSearch
                                         ? alumnosPorGrupo[grupo.id] || []
                                         : (alumnosPorGrupo[grupo.id] || []).filter((alumno) =>
-                                            removeDiacritics((alumno.nombre + " " + alumno.apellidos).toLowerCase()).includes(normalizedSearch)
+                                            removeDiacritics((alumno.nombre + " " + alumno.ApellidoPaterno + "" + alumno.ApellidoMaterno).toLowerCase()).includes(normalizedSearch)
                                         )
                                     : expandedGroup && expandedGroup.id === grupo.id
                                         ? alumnosGrupo
@@ -509,7 +509,7 @@
                                                                 return (
                                                                     <tr key={alumno.id}>
                                                                         <td>
-                                                                            {alumno.nombre} {alumno.apellidos}
+                                                                            {alumno.nombre} {alumno.apellidoPaterno} {alumno.apellidoMaterno}
                                                                         </td>
                                                                         <td className="padre-whatsapp">
                                                                             {alumno.tutorUsuario?.telefono && (
@@ -521,7 +521,7 @@
                                                                                 />
                                                                             )}
                                                                             {alumno.tutorUsuario
-                                                                                ? `${alumno.tutorUsuario.nombre} ${alumno.tutorUsuario.apellidos}`
+                                                                                ? `${alumno.tutorUsuario.nombre} ${alumno.tutorUsuario.apellidopaterno} ${alumno.tutorUsuario.apellidomaterno}`
                                                                                 : "Sin Tutor"}
                                                                         </td>
                                                                         <td>{alumno.domicilio}</td>
@@ -564,7 +564,7 @@
                                                         {alumnosGrupo.map((alumno) => (
                                                             <tr key={alumno.id}>
                                                                 <td>
-                                                                    {alumno.nombre} {alumno.apellidos}
+                                                                    {alumno.nombre} {alumno.apellidoPaterno} {alumno.apellidoMaterno}
                                                                 </td>
                                                                 {/*SECCION DE LA PARTE DEL WHATS, SI NO FUNCIONA DEBERIAS ELIMINARLO*/ }
                                                                 <td className="padre-whatsapp">
@@ -577,8 +577,9 @@
                                                                         />
                                                                     )}
                                                                     {alumno.tutorUsuario
-                                                                        ? `${alumno.tutorUsuario.nombre} ${alumno.tutorUsuario.apellidos}`
+                                                                        ? `${alumno.tutorUsuario.nombre} ${alumno.tutorUsuario.apellidopaterno} ${alumno.tutorUsuario.apellidomaterno}`
                                                                         : "Sin Tutor"}
+
                                                                 </td>
                                                                 <td>{alumno.domicilio}</td>
                                                                 <td className="acciones">
@@ -732,14 +733,29 @@
                             </div>
 
                             <div className="input-container">
-                                <label>Apellidos:</label>
+                                <label>Apellido Paterno:</label>
                                 <input
                                     type="text"
-                                    name="apellidos"
-                                    value={alumnoSeleccionado.apellidos}
-                                    onChange={(e) => setAlumnoSeleccionado({ ...alumnoSeleccionado, apellidos: e.target.value })}
+                                    name="apellidoPaterno"
+                                    value={alumnoSeleccionado.apellidoPaterno}
+                                    onChange={(e) =>
+                                        setAlumnoSeleccionado({ ...alumnoSeleccionado, apellidoPaterno: e.target.value })
+                                    }
                                 />
                             </div>
+
+                            <div className="input-container">
+                                <label>Apellido Materno:</label>
+                                <input
+                                    type="text"
+                                    name="apellidoMaterno"
+                                    value={alumnoSeleccionado.apellidoMaterno}
+                                    onChange={(e) =>
+                                        setAlumnoSeleccionado({ ...alumnoSeleccionado, apellidoMaterno: e.target.value })
+                                    }
+                                />
+                            </div>
+
 
                             <div className="select-container">
                                 <div>

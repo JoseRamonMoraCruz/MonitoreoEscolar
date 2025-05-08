@@ -59,14 +59,14 @@ namespace MonitoreoEscolar.Server.Migrations
                     b.Property<string>("Generacion")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Grado")
+                    b.Property<string>("Grupo")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int?>("GrupoId")
                         .HasColumnType("int");
 
-                    b.Property<string>("Letra")
+                    b.Property<string>("Nombre")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -82,13 +82,6 @@ namespace MonitoreoEscolar.Server.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Plantel")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("PrimerNombre")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("SegundoNombre")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Turno")
@@ -251,11 +244,8 @@ namespace MonitoreoEscolar.Server.Migrations
                     b.Property<DateTime?>("FechaExpiracionCodigo")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("PrimerNombre")
+                    b.Property<string>("Nombre")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("SegundoNombre")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Telefono")

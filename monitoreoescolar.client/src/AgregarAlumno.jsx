@@ -7,25 +7,24 @@ import agregarIcon from "./assets/agregar-alumno.png";
 const AgregarAlumno = () => {
     // Estado para almacenar los datos del alumno
     const [alumno, setAlumno] = useState({
-        nombre: "",
-        apellidos: "",
+        Nombre: "", // <- CORRECTO
+        ApellidoPaterno: "",
+        ApellidoMaterno: "",
         grupo: "",
         grado: "",
         letra: "",
         tutor: "",
         domicilio: "",
-        tutorId: null,
         CURP: "",
         NumeroControl: "",
         Carrera: "",
         Plantel: "",
         Turno: "",
-        CURP: "",
-        NumeroControl: "",
         Generacion: "",
         Ciclo: "",
         TutorId: null
     });
+
 
     //Variable para el nombre de la imagen del qr
     const [nombreArchivoQR, setNombreArchivoQR] = useState("QR_alumno");
@@ -76,7 +75,7 @@ const AgregarAlumno = () => {
             const response = await axios.get(`http://localhost:5099/api/usuarios/autocompletePadres?termino=${inputValue}`);
             const optionsData = response.data.map((padre) => ({
                 value: padre.id_Usuario,
-                label: `${padre.nombre} ${padre.apellidos} - ${padre.correo}`
+                label: `${padre.nombre} ${padre.apellidoPaterno} ${padre.apellidoMaterno} - ${padre.correo}`
             }));
             setTutorOptions(optionsData);
         } catch (error) {
@@ -96,7 +95,7 @@ const AgregarAlumno = () => {
     // Maneja la selección del tutor en el autocompletado
     const handleTutorChangeSelect = (selectedOption) => {
         setSelectedTutor(selectedOption);
-        setAlumno({ ...alumno, tutorId: selectedOption ? selectedOption.value : null });
+        setAlumno({ ...alumno, TutorId: selectedOption ? selectedOption.value : null });
     };
 
 
@@ -114,7 +113,7 @@ const AgregarAlumno = () => {
             const gruposExistentes = gruposResponse.data;
             const grupoEncontrado = gruposExistentes.find(
                 (g) =>
-                    g.grado.toString() === alumno.grado &&
+                    g.grado.toString() === alumno.Grado &&
                     g.letra.toUpperCase() === alumno.letra.toUpperCase()
             );
 
@@ -129,7 +128,7 @@ const AgregarAlumno = () => {
         }
 
         setNombreArchivoQR(
-            `QR_${(alumno.nombre + "_" + alumno.apellidos).replace(/\s+/g, "_")}`
+            `QR_${(alumno.Nombre + "_" + alumno.ApellidoPaterno + "_" + alumno.ApellidoMaterno).replace(/\s+/g, "_")}`
         );
 
 
@@ -159,13 +158,14 @@ const AgregarAlumno = () => {
             // Limpiar formulario
             setAlumno({
                 nombre: "",
-                apellidos: "",
+                apellidoPaterno: "",
+                apellidoMaterno: "",
                 grupo: "",
                 grado: "",
                 letra: "",
                 tutor: "",
                 domicilio: "",
-                tutorId: null,
+                TutorId: null,
                 CURP: "",
                 NumeroControl: "",
                 Carrera: "",
@@ -189,28 +189,16 @@ const AgregarAlumno = () => {
                 <div className="agregar-alumno-content">
                     <h2 className="agregar-alumno-title">📑 Registra un Alumno</h2>
                     <form onSubmit={handleSubmit}>
-                        {/* Primer Nombre */}
+                        {/* Nombre */}
                         <div className="agregar-alumno-group">
-                            <label>Primer Nombre:</label>
+                            <label>Nombre:</label>
                             <input
                                 type="text"
-                                name="PrimerNombre"
-                                value={alumno.PrimerNombre}
+                                name="Nombre"
+                                value={alumno.Nombre}
                                 onChange={handleChange}
                                 placeholder="Ingrese el primer nombre"
                                 required
-                            />
-                        </div>
-
-                        {/* Otros Nombre */}
-                        <div className="agregar-alumno-group">
-                            <label>Mas Nombres:</label>
-                            <input
-                                type="text"
-                                name="SegundoNombre"
-                                value={alumno.SegundoNombre}
-                                onChange={handleChange}
-                                placeholder="Si tiene mas de un nombre ingrese los datos"
                             />
                         </div>
 

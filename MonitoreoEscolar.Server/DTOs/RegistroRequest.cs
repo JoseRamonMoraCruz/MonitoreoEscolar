@@ -2,8 +2,7 @@
 {
     public class RegistroRequest
     {
-        public string PrimerNombre { get; set; }
-        public string? SegundoNombre { get; set; }
+        public string Nombre { get; set; }
         public string ApellidoPaterno { get; set; }
         public string ApellidoMaterno { get; set; }
         public string Correo { get; set; }

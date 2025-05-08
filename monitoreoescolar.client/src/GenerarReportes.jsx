@@ -75,7 +75,11 @@ const GenerarReportes = () => {
         alumnoId: null,
         fecha: "",
         motivo: "",
-        responsableDelReporte: localStorage.getItem("nombre") + " " + localStorage.getItem("apellidos") || ""
+        responsableDelReporte: [
+            localStorage.getItem("nombre"),
+            localStorage.getItem("apellidoPaterno"),
+            localStorage.getItem("apellidoMaterno")
+        ].filter(Boolean).join(" ")
     });
 
     const [options, setOptions] = useState([]);
@@ -125,7 +129,6 @@ const GenerarReportes = () => {
     };
 
     // Envía el reporte al backend
-    // Envía el reporte al backend
     const handleSubmit = async (e) => {
         e.preventDefault();
         if (!reporte.alumnoId || !reporte.fecha || !reporte.motivo) {
@@ -140,7 +143,11 @@ const GenerarReportes = () => {
                 alumnoId: null,
                 fecha: "",
                 motivo: "",
-                responsableDelReporte: localStorage.getItem("nombre") + " " + localStorage.getItem("apellidos") || ""
+                ResponsableDelReporte: [
+                    localStorage.getItem("nombre"),
+                    localStorage.getItem("apellidoPaterno"),
+                    localStorage.getItem("apellidoMaterno")
+                ].filter(Boolean).join(" ")
             });
             setSelectedAlumno(null);
             setOptions([]);

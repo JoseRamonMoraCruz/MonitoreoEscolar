@@ -28,8 +28,8 @@ namespace MonitoreoEscolar.Server.Controllers
                 if (request == null)
                     return BadRequest(new { mensaje = "Los datos enviados son nulos." });
 
-                if (string.IsNullOrWhiteSpace(request.PrimerNombre) || string.IsNullOrWhiteSpace(request.ApellidoPaterno) || string.IsNullOrWhiteSpace(request.ApellidoMaterno))
-                    return BadRequest(new { mensaje = "El primer Nombre y los dos Apellidos son obligatorios." });
+                if (string.IsNullOrWhiteSpace(request.Nombre) || string.IsNullOrWhiteSpace(request.ApellidoPaterno) || string.IsNullOrWhiteSpace(request.ApellidoMaterno))
+                    return BadRequest(new { mensaje = "El Nombre y los dos Apellidos son obligatorios." });
 
                 if (string.IsNullOrWhiteSpace(request.CURP))
                     return BadRequest(new { mensaje = "La CURP es obligatoria para generar el código QR." });
@@ -41,20 +41,19 @@ namespace MonitoreoEscolar.Server.Controllers
                 if (existeQr)
                     return BadRequest(new { mensaje = "Ya existe un alumno con esa CURP asignada como código QR." });
 
-                var nombreCompleto = $"{request.Nombre.Trim()} {request.Apellidos.Trim()}".Trim();
+                var nombreCompleto = $"{request.Nombre.Trim()} {request.ApellidoPaterno.Trim()} { request.ApellidoMaterno.Trim()}".Trim();
                 var nombreNormalizado = RemoveDiacritics(nombreCompleto.ToLower());
 
                 var alumno = new Alumno
                 {
                     //Datos alumno
-                    PrimerNombre = request.PrimerNombre.Trim(),
-                    SegundoNombre = request.SegundoNombre?.Trim(),
+                    Nombre = request.Nombre.Trim(),
                     ApellidoPaterno = request.ApellidoPaterno.Trim(),
                     ApellidoMaterno = request.ApellidoMaterno.Trim(),
                     NombreCompleto = nombreCompleto,
                     NombreCompletoNormalizado = nombreNormalizado,
-                    Grupo = request.Grupo?.Trim(),
-                    Domicilio = request.Domicilio?.Trim(),
+                    Grupo = request.Grupo.Trim(),
+                    Domicilio = request.Domicilio.Trim(),
                     TutorId = request.TutorId,
                     CURP = codigoQR,
                     NumeroControl = request.NumeroControl?.Trim(),
@@ -120,26 +119,26 @@ namespace MonitoreoEscolar.Server.Controllers
         [HttpGet("grupo/{grupoStr}")]
         public async Task<IActionResult> ObtenerAlumnosPorGrupo(string grupoStr)
         {
-            try
+             try
             {
                 var alumnos = await _context.Alumnos
                     .Include(a => a.TutorUsuario)
-                    .Where(a => a.Letra == grupoStr)
+                    .Where(a => a.Grupo == grupoStr)
                     .OrderBy(a => a.NombreCompleto)
                     .Select(a => new
+
                     {
                         id = a.Id,
-                        primernombre = a.PrimerNombre,
-                        segundonombre = a.SegundoNombre,
+                        nombre = a.Nombre,
                         apellidoPaterno = a.ApellidoPaterno,
+                        apellidoMaterno = a.ApellidoMaterno,
                         domicilio = a.Domicilio,
-                        grado = a.Grado,
-                        grupo = a.Letra,
+                        grupo = a.Grupo,
                         tutorUsuario = a.TutorUsuario == null ? null : new
+
                         {
                             id_Usuario = a.TutorUsuario.Id_Usuario,
-                            primernombre = a.TutorUsuario.PrimerNombre,
-                            segundonombre = a.TutorUsuario.SegundoNombre,
+                            nombre = a.TutorUsuario.Nombre,
                             apellidopaterno = a.TutorUsuario.ApellidoPaterno,
                             apellidomaterno = a.TutorUsuario.ApellidoMaterno,
                             telefono = a.TutorUsuario.Telefono,  
@@ -202,14 +201,12 @@ namespace MonitoreoEscolar.Server.Controllers
                     return NotFound(new { mensaje = "Alumno no encontrado." });
 
                 // Actualizando datos del alumno
-                alumnoExistente.PrimerNombre = alumnoEditado.PrimerNombre.Trim();
-                alumnoExistente.SegundoNombre = alumnoEditado.SegundoNombre?.Trim();
+                alumnoExistente.Nombre = alumnoEditado.Nombre.Trim();
                 alumnoExistente.ApellidoPaterno = alumnoEditado.ApellidoPaterno.Trim();
                 alumnoExistente.ApellidoMaterno = alumnoEditado.ApellidoMaterno.Trim();
-                alumnoExistente.NombreCompleto = $"{alumnoEditado.PrimerNombre.Trim()} {alumnoEditado.SegundoNombre?.Trim()} {alumnoEditado.ApellidoPaterno.Trim()} {alumnoEditado.ApellidoMaterno.Trim()}";
+                alumnoExistente.NombreCompleto = $"{alumnoEditado.Nombre.Trim()} {alumnoEditado.ApellidoPaterno.Trim()} {alumnoEditado.ApellidoMaterno.Trim()}";
                 alumnoExistente.NombreCompletoNormalizado = RemoveDiacritics(alumnoExistente.NombreCompleto.ToLower());
-                alumnoExistente.Grado = alumnoEditado.Grado.Trim();
-                alumnoExistente.Letra = alumnoEditado.Letra.Trim();
+                alumnoExistente.Grupo = alumnoEditado.Grupo.Trim();
                 alumnoEditado.Domicilio = alumnoEditado.Domicilio.Trim();
                 alumnoExistente.CURP = alumnoEditado.CURP.Trim().ToUpper();
                 alumnoExistente.NumeroControl = alumnoEditado.NumeroControl?.Trim();

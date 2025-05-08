@@ -8,8 +8,7 @@ import AtrasIcon from './assets/flecha-hacia-atras.png';
 
 export default function Registro() {
     const [tipoUsuario, setTipoUsuario] = useState("personal"); 
-    const [primerNombre, setPrimerNombre] = useState("");
-    const [segundoNombre, setSegundoNombre] = useState(""); // opcional
+    const [Nombre, setNombre] = useState("");
     const [apellidoPaterno, setApellidoPaterno] = useState("");
     const [apellidoMaterno, setApellidoMaterno] = useState("");
     const [correo, setCorreo] = useState("");
@@ -31,7 +30,7 @@ export default function Registro() {
     const handleRegistro = async (e) => {
         e.preventDefault();
 
-        if (!primerNombre || !apellidoPaterno || !apellidoMaterno || !telefono || !correo || !contrasena || !confirmarContrasena) {
+        if (!Nombre || !apellidoPaterno || !apellidoMaterno || !telefono || !correo || !contrasena || !confirmarContrasena) {
             setError("❌ Todos los campos son obligatorios.");
             return;
         }
@@ -57,8 +56,7 @@ export default function Registro() {
         setError(""); // Limpia errores anteriores
 
         const usuario = {
-            primerNombre,
-            segundoNombre,
+            Nombre,
             apellidoPaterno,
             apellidoMaterno,
             correo,
@@ -130,8 +128,7 @@ export default function Registro() {
 
                 {/* Formulario */}
                 <form onSubmit={handleRegistro}>
-                    <input type="text" placeholder="Primer Nombre" className="input-field" value={primerNombre} onChange={(e) => setPrimerNombre(e.target.value)} required />
-                    <input type="text" placeholder="Segundo Nombre (opcional)" className="input-field" value={segundoNombre} onChange={(e) => setSegundoNombre(e.target.value)} />
+                    <input type="text" placeholder="Nombre" className="input-field" value={Nombre} onChange={(e) => setNombre(e.target.value)} required />
                     <input type="text" placeholder="Apellido Paterno" className="input-field" value={apellidoPaterno} onChange={(e) => setApellidoPaterno(e.target.value)} required />
                     <input type="text" placeholder="Apellido Materno" className="input-field" value={apellidoMaterno} onChange={(e) => setApellidoMaterno(e.target.value)} required />
                     <input type="tel" placeholder="Teléfono" className="input-field" value={telefono} onChange={(e) => setTelefono(e.target.value)} required />                

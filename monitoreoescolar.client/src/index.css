@@ -116,5 +116,46 @@
 }
 
     .submit-button:hover {
-        background-color: #3b10b0;
+        background-color: #531AEE;
     }
+    .submit-button:disabled {
+        background-color: #A5B4FC; /* azul claro cuando está deshabilitado */
+        cursor: not-allowed;
+        opacity: 0.8;
+    }
+
+    /*El mensaje del toast*/
+.toast-mensaje {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background-color: #ff4d4f;
+    color: white;
+    padding: 12px 18px;
+    border-radius: 6px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    z-index: 9999;
+    font-weight: bold;
+    animation: fadeInOut 3s ease-in-out;
+}
+
+@keyframes fadeInOut {
+    0% {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+
+    10% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    90% {
+        opacity: 1;
+    }
+
+    100% {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+}

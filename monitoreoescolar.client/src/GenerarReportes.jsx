@@ -13,7 +13,7 @@ const GenerarReportes = () => {
     const [editingReport, setEditingReport] = useState(null);
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
-    // Al hacer clic en “✏️”
+    // Al hacer clic en editar
     const handleEditReporte = (rep) => {
         setEditingReport({
             id: rep.id,
@@ -27,7 +27,7 @@ const GenerarReportes = () => {
     // Guardar cambios
     const handleUpdateReporte = async () => {
         try {
-            await axios.put(`/api/reportes/${editingReport.id}`, {
+            await axios.put(`http://localhost:5099/api/reportes/${editingReport.id}`, {
                 AlumnoId: editingReport.alumnoId,
                 Fecha: editingReport.fecha,
                 Motivo: editingReport.motivo
@@ -52,7 +52,7 @@ const GenerarReportes = () => {
     // Traer la lista de reportes siempre que abra el modal
     useEffect(() => {
         if (isModalOpen) {
-            axios.get("/api/reportes")
+            axios.get("http://localhost:5099/api/reportes")
                 .then(res => setReportesList(res.data))
                 .catch(err => console.error(err));
         }
@@ -62,7 +62,7 @@ const GenerarReportes = () => {
     const handleDeleteReporte = async (id) => {
         if (!window.confirm("¿Eliminar este reporte?")) return;
         try {
-            await axios.delete(`/api/reportes/${id}`);
+            await axios.delete(`http://localhost:5099/api/reportes/${id}`);
             setReportesList(r => r.filter(x => x.id !== id));
         } catch (err) {
             console.error(err);
@@ -74,7 +74,8 @@ const GenerarReportes = () => {
     const [reporte, setReporte] = useState({
         alumnoId: null,
         fecha: "",
-        motivo: ""
+        motivo: "",
+        responsableDelReporte: localStorage.getItem("nombre") + " " + localStorage.getItem("apellidos") || ""
     });
 
     const [options, setOptions] = useState([]);
@@ -87,7 +88,7 @@ const GenerarReportes = () => {
             return;
         }
         try {
-            const response = await axios.get(`/api/alumnos/buscar?termino=${inputValue}`);
+            const response = await axios.get(`http://localhost:5099/api/alumnos/buscar?termino=${inputValue}`);
             const optionsData = response.data.map((alumno) => ({
                 value: alumno.id,
                 label: alumno.nombreCompleto
@@ -124,6 +125,7 @@ const GenerarReportes = () => {
     };
 
     // Envía el reporte al backend
+    // Envía el reporte al backend
     const handleSubmit = async (e) => {
         e.preventDefault();
         if (!reporte.alumnoId || !reporte.fecha || !reporte.motivo) {
@@ -131,13 +133,14 @@ const GenerarReportes = () => {
             return;
         }
         try {
-            const response = await axios.post("/api/reportes/generar", reporte);
+            const response = await axios.post("http://localhost:5099/api/reportes/generar", reporte); // AQUÍ ESTÁ
             alert(response.data.mensaje);
             // Limpiar formulario
             setReporte({
                 alumnoId: null,
                 fecha: "",
-                motivo: ""
+                motivo: "",
+                responsableDelReporte: localStorage.getItem("nombre") + " " + localStorage.getItem("apellidos") || ""
             });
             setSelectedAlumno(null);
             setOptions([]);
@@ -146,6 +149,7 @@ const GenerarReportes = () => {
             alert("❌ No se pudo generar el reporte.");
         }
     };
+
 
     return (
         <div className="generar-reportes-container">
@@ -208,7 +212,7 @@ const GenerarReportes = () => {
                         <table className="reportes-table">
                             <thead>
                                 <tr>
-                                    <th>Alumno</th><th>Fecha</th><th>Motivo</th><th>Acciones</th>
+                                    <th>Alumno</th><th>Fecha</th><th>Motivo</th><th>Responsable</th><th>Acciones</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -217,6 +221,7 @@ const GenerarReportes = () => {
                                         <td>{r.nombreCompleto}</td>
                                         <td>{new Date(r.fecha).toLocaleString()}</td>
                                         <td>{r.motivo}</td>
+                                        <td>{r.responsable}</td>
                                         <td>
                                             {<button onClick={() => handleEditReporte(r)}>✏️</button>}
                                             <button onClick={() => handleDeleteReporte(r.id)}>🗑️</button>

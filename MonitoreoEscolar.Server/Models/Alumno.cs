@@ -13,12 +13,13 @@ public class Alumno
     [Required]
     public string Apellidos { get; set; } = string.Empty;
 
-    public string NombreCompleto { get; set; } = string.Empty; // Se genera automáticamente
+    public string NombreCompleto { get; set; } = string.Empty;
 
-    public string NombreCompletoNormalizado { get; set; } = string.Empty; // Se genera automáticamente
+    public string NombreCompletoNormalizado { get; set; } = string.Empty; 
 
     [Required]
     public string Grupo { get; set; } = string.Empty;
+
     public string? Carrera { get; set; }
 
     public string? Plantel { get; set; }
@@ -33,7 +34,6 @@ public class Alumno
 
     public string? Generacion { get; set; } //La generacion del alumno
 
-    // Quitar el [Required] y hacer que TutorId sea nullable:
     public int? TutorId { get; set; }
 
     [ForeignKey("TutorId")]
@@ -41,4 +41,7 @@ public class Alumno
 
     [Required]
     public string Domicilio { get; set; } = string.Empty;
+
+    public string CodigoQR { get; set; } = string.Empty;
+
 }

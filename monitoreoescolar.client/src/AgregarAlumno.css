@@ -250,3 +250,65 @@ button {
     font-size: 16px;
     color: #000;
 }
+
+
+/* ======================= MODAL QR ======================= */
+.modal-qr {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.6);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1002;
+}
+
+.modal-qr-content {
+    background-color: #ffffff;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+    text-align: center;
+    width: 320px;
+    position: relative;
+}
+
+    .modal-qr-content h3 {
+        margin-bottom: 15px;
+        color: #333;
+        font-size: 18px;
+    }
+
+    .modal-qr-content .qr-image {
+        width: 200px;
+        height: 200px;
+        object-fit: contain;
+    }
+
+    .modal-qr-content .close {
+        position: absolute;
+        top: 8px;
+        right: 12px;
+        font-size: 22px;
+        font-weight: bold;
+        color: #888;
+        cursor: pointer;
+    }
+    .qr-download-btn {
+        margin-top: 15px;
+        display: inline-block;
+        background-color: #8800ff;
+        color: #fff;
+        padding: 10px 16px;
+        border-radius: 8px;
+        font-weight: bold;
+        text-decoration: none;
+        transition: background-color 0.3s ease-in-out;
+    }
+
+        .qr-download-btn:hover {
+            background-color: #6a00cc;
+        }

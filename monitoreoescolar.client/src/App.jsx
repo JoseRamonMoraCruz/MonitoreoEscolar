@@ -5,10 +5,10 @@ import SubirCalif from "./SubirCalif";
 import GenerarReportes from "./GenerarReportes";
 import Menu from "./Menu";
 import AgregarAlumno from "./AgregarAlumno";
-import Notificaciones from "./Notificaciones";
 import Padre from "./Padre";
 import ActualizarPassword from './ActualizarPassword';
 import ListaAlumnos from "./ListaAlumnos";
+import TomaAsistencia from "./TomaAsistencia";
 
 
 function App() {
@@ -39,7 +39,7 @@ function DashboardLayout() {
                     <Route path="/generar-reportes" element={<GenerarReportes />} />
                     <Route path="/agregar-alumno" element={<AgregarAlumno />} />
                     <Route path="/lista-alumnos" element={<ListaAlumnos />} />
-                    <Route path="/notificaciones" element={<Notificaciones />} />
+                    <Route path="/TomaDeAsistencia" element={<TomaAsistencia />} />
                 </Routes>
             </div>
         </div>

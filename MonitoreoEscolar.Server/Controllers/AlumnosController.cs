@@ -1,11 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MonitoreoEscolar.Server.Data;
-using MonitoreoEscolar.Server.Models;
-using OfficeOpenXml; // EPPlus para exportar a Excel
 using System.Globalization;
 using System.Text;
-
+using QRCoder;
 
 namespace MonitoreoEscolar.Server.Controllers
 {
@@ -21,7 +19,7 @@ namespace MonitoreoEscolar.Server.Controllers
             Console.WriteLine(" AlumnosController CARGADO");
         }
 
-        // REGISTRAR ALUMNO (Sin cambios)
+        // REGISTRAR ALUMNO 
         [HttpPost("registro")]
         public async Task<IActionResult> RegistrarAlumno([FromBody] Alumno request)
         {
@@ -33,6 +31,16 @@ namespace MonitoreoEscolar.Server.Controllers
                 if (string.IsNullOrWhiteSpace(request.Nombre) || string.IsNullOrWhiteSpace(request.Apellidos))
                     return BadRequest(new { mensaje = "Nombre y Apellidos son obligatorios." });
 
+                if (string.IsNullOrWhiteSpace(request.CURP))
+                    return BadRequest(new { mensaje = "La CURP es obligatoria para generar el código QR." });
+
+                var codigoQR = request.CURP.Trim().ToUpper();
+
+                // Validar si ya existe ese Código QR
+                var existeQr = await _context.Alumnos.AnyAsync(a => a.CodigoQR == codigoQR);
+                if (existeQr)
+                    return BadRequest(new { mensaje = "Ya existe un alumno con esa CURP asignada como código QR." });
+
                 var nombreCompleto = $"{request.Nombre.Trim()} {request.Apellidos.Trim()}".Trim();
                 var nombreNormalizado = RemoveDiacritics(nombreCompleto.ToLower());
 
@@ -42,20 +50,23 @@ namespace MonitoreoEscolar.Server.Controllers
                     Apellidos = request.Apellidos.Trim(),
                     NombreCompleto = nombreCompleto,
                     NombreCompletoNormalizado = nombreNormalizado,
-                    Grupo = request.Grupo.Trim(),
-                    Domicilio = request.Domicilio.Trim(),
+                    Grupo = request.Grupo?.Trim(),
+                    Domicilio = request.Domicilio?.Trim(),
                     TutorId = request.TutorId,
-                    CURP = request.CURP?.Trim().ToUpper(),
+                    CURP = codigoQR,
                     NumeroControl = request.NumeroControl?.Trim(),
                     Carrera = request.Carrera?.Trim(),
                     Plantel = request.Plantel?.Trim(),
                     Turno = request.Turno?.Trim(),
                     Generacion = request.Generacion?.Trim(),
-                    Ciclo = request.Ciclo?.Trim()
+                    Ciclo = request.Ciclo?.Trim(),
+                    CodigoQR = codigoQR
                 };
 
                 _context.Alumnos.Add(alumno);
                 await _context.SaveChangesAsync();
+
+                Console.WriteLine("CÓDIGO QR GENERADO: " + codigoQR);
 
                 return Ok(new { mensaje = "Alumno registrado exitosamente", alumno });
             }
@@ -64,6 +75,24 @@ namespace MonitoreoEscolar.Server.Controllers
                 return StatusCode(500, new { mensaje = "Error interno del servidor.", error = ex.Message });
             }
         }
+
+        // ESTE LO QUE HACE ES GENERAR UN QR CON EL CODIGO QR DEL ALUMNO
+        [HttpGet("qr/{alumnoId}")]
+        public async Task<IActionResult> ObtenerQRAlumno(int alumnoId)
+        {
+            var alumno = await _context.Alumnos.FindAsync(alumnoId);
+            if (alumno == null || string.IsNullOrEmpty(alumno.CodigoQR))
+                return NotFound("Alumno no encontrado o sin código QR asignado.");
+
+            using var qrGenerator = new QRCodeGenerator();
+            var qrData = qrGenerator.CreateQrCode(alumno.CodigoQR, QRCodeGenerator.ECCLevel.Q);
+
+            var pngQrCode = new PngByteQRCode(qrData);
+            byte[] qrCodeAsPng = pngQrCode.GetGraphic(20);
+
+            return File(qrCodeAsPng, "image/png");
+        }
+
 
 
         [HttpGet("buscar")]

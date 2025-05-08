@@ -1,5 +1,5 @@
 ﻿import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";  
+import { Link } from "react-router-dom";
 import axios from "axios";
 import "./Menu.css";
 import perfil from "./assets/perfil.png";
@@ -102,7 +102,7 @@ const Menu = () => {
             <ul className="menu-links">
                 <li><Link to="/subir-calif">Subir Calificaciones</Link></li>
                 <li><Link to="/generar-reportes">Reporte de Conducta</Link></li>
-                <li><Link to="/notificaciones">Envío de Notificaciones</Link></li>
+                <li><Link to="/TomaDeAsistencia">Toma de Asistencias</Link></li>
                 <li><Link to="/agregar-alumno">Agregar Alumno</Link></li>
                 <li><Link to="/lista-alumnos">Lista de Grupos</Link></li>
                 <li><Link to="/">Cerrar Sesión</Link></li>
@@ -114,7 +114,7 @@ const Menu = () => {
                         <span className="perfil-modal-close" onClick={handleCloseModal}>X</span>
                         <h3>Editar Perfil</h3>
                         <form onSubmit={handleSubmit}>
-                            <div className="agregar-alumno-group">
+                            <div className="perfil-field-group">
                                 <label>Nombre:</label>
                                 <input
                                     name="nombre"
@@ -123,7 +123,7 @@ const Menu = () => {
                                     required
                                 />
                             </div>
-                            <div className="agregar-alumno-group">
+                            <div className="perfil-field-group">
                                 <label>Apellidos:</label>
                                 <input
                                     name="apellidos"
@@ -132,7 +132,7 @@ const Menu = () => {
                                     required
                                 />
                             </div>
-                            <div className="agregar-alumno-group">
+                            <div className="perfil-field-group">
                                 <label>Correo:</label>
                                 <input
                                     type="email"
@@ -142,7 +142,7 @@ const Menu = () => {
                                     required
                                 />
                             </div>
-                            <div className="agregar-alumno-group">
+                            <div className="perfil-field-group">
                                 <label>Teléfono:</label>
                                 <input
                                     name="telefono"
@@ -151,7 +151,7 @@ const Menu = () => {
                                     required
                                 />
                             </div>
-                            <div className="agregar-alumno-group">
+                            <div className="perfil-field-group">
                                 <label>Nueva contraseña <small>(opcional)</small>:</label>
                                 <input
                                     type="password"
@@ -161,7 +161,7 @@ const Menu = () => {
                                     placeholder="Dejar vacío si no cambia"
                                 />
                             </div>
-                            <div className="agregar-alumno-group">
+                            <div className="perfil-field-group">
                                 <label>Confirmar contraseña:</label>
                                 <input
                                     type="password"

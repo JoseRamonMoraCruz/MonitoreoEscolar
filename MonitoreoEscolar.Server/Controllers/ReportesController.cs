@@ -46,9 +46,9 @@ namespace MonitoreoEscolar.Server.Controllers
                 alumnoId = r.AlumnoId,
                 nombreCompleto = r.Alumno.Nombre + " " + r.Alumno.Apellidos,
                 fecha = r.Fecha,
-                motivo = r.Motivo
+                motivo = r.Motivo,
+                responsable = r.ResponsableDelReporte
             });
-
             return Ok(dto);
         }
 

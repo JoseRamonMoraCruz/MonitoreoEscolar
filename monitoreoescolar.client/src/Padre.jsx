@@ -23,7 +23,7 @@ const Padre = () => {
 
     const descargarPDF = async (alumnoId) => {
         try {
-            const response = await axios.get(`/api/padres/descargar-reporte/${alumnoId}`, {
+            const response = await axios.get(`http://localhost:5099/api/padres/descargar-reporte/${alumnoId}`, {
                 responseType: "blob",
             });
 
@@ -51,7 +51,7 @@ const Padre = () => {
 
         const obtenerHijosConGrupo = async () => {
             try {
-                const response = await axios.get(`/api/padres/obtener-hijos-con-grupo/${idPadre}`);
+                const response = await axios.get(`http://localhost:5099/api/padres/obtener-hijos-con-grupo/${idPadre}`);
                 setHijos(response.data);
             } catch (error) {
                 console.error("❌ Error al obtener hijos con grupo:", error);
@@ -72,7 +72,7 @@ const Padre = () => {
         // Obtener reportes si aún no están
         if (!reportesPorAlumno[alumnoId]) {
             try {
-                const response = await axios.get(`/api/padres/obtener-reportes-hijo/${alumnoId}`);
+                const response = await axios.get(`http://localhost:5099/api/padres/obtener-reportes-hijo/${alumnoId}`);
                 setReportesPorAlumno((prev) => ({ ...prev, [alumnoId]: response.data }));
             } catch (error) {
                 console.error("❌ Error al obtener reportes:", error);
@@ -83,7 +83,7 @@ const Padre = () => {
         const alumno = hijos.find(h => h.alumnoId === alumnoId);
         if (!alumno?.calificaciones) {
             try {
-                const response = await axios.get(`/api/padres/obtener-calificaciones-alumno/${alumnoId}`);
+                const response = await axios.get(`http://localhost:5099/api/padres/obtener-calificaciones-alumno/${alumnoId}`);
                 setHijos(prev =>
                     prev.map(h =>
                         h.alumnoId === alumnoId
@@ -166,28 +166,27 @@ const Padre = () => {
                                 <h3>⚠️ Reporte de Mala Conducta</h3>
                                 <table className="styled-table">
                                     <thead>
-                                        <tr><th>Situación del Reporte</th><th>Fecha del Reporte</th></tr>
+                                        <tr>
+                                            <th>Situación del Reporte</th>
+                                            <th>Fecha del Reporte</th>
+                                            <th>Profesor Responsable de Poner el Reporte</th>
+                                        </tr>
                                     </thead>
                                     <tbody>
                                         {reportesPorAlumno[hijo.alumnoId]?.length > 0 ? (
                                             reportesPorAlumno[hijo.alumnoId].map((reporte, idx) => (
                                                 <tr key={idx}>
                                                     <td>{reporte.motivo}</td>
-                                                    <td>{
-                                                        new Date(reporte.fecha).toLocaleString('es-MX', {
-                                                            year: 'numeric',
-                                                            month: '2-digit',
-                                                            day: '2-digit',
-                                                            hour: '2-digit',
-                                                            minute: '2-digit',
-                                                            second: '2-digit',
-                                                            hour12: true
-                                                        }).replace(',', '').replace(/\//g, '/')
-                                                    }</td>
+                                                    <td>{new Date(reporte.fecha).toLocaleString('es-MX', {
+                                                        year: 'numeric', month: '2-digit', day: '2-digit',
+                                                        hour: '2-digit', minute: '2-digit', second: '2-digit',
+                                                        hour12: true
+                                                    }).replace(',', '').replace(/\//g, '/')}</td>
+                                                    <td>{reporte.responsable}</td>
                                                 </tr>
                                             ))
                                         ) : (
-                                            <tr><td colSpan="2">Sin reportes registrados.</td></tr>
+                                            <tr><td colSpan="3">Sin reportes registrados.</td></tr>
                                         )}
                                     </tbody>
                                 </table>

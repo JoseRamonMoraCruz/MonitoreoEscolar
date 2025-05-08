@@ -14,6 +14,9 @@ namespace MonitoreoEscolar.Server.Models
         [Required]
         public string Motivo { get; set; } = string.Empty;
 
+        [Required]
+        public string ResponsableDelReporte { get; set; } = string.Empty; // Responsable de quien pone los reportes al alumnado
+
         // Clave foránea para asociar el reporte a un alumno(se quito required)
         public int AlumnoId { get; set; }
 

@@ -49,8 +49,17 @@ function ActualizarPassword() {
     };
 
     const actualizarPassword = async () => {
+        if (newPassword !== confirmarPassword) {
+            setError("❌ Las contraseñas no coinciden.");
+            setMessage('');
+            return;
+        }
+
         try {
-            await axios.post('http://localhost:5099/api/usuarios/actualizar-password', { correo, newPassword });
+            await axios.post('http://localhost:5099/api/usuarios/actualizar-password', {
+                correo,
+                newPassword
+            });
             setMessage('Contraseña actualizada exitosamente. Redirigiendo...');
             setError('');
             setTimeout(() => {
@@ -61,6 +70,7 @@ function ActualizarPassword() {
             setMessage('');
         }
     };
+
 
     return (
         <div className="update-container-wrapper">

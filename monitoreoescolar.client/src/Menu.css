@@ -135,6 +135,7 @@
     max-height: 90vh;
     overflow-y: auto;
     box-sizing: border-box;
+    color: black;
 }
 
 .perfil-modal-close {

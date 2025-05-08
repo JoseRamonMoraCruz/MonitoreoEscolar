@@ -8,8 +8,10 @@ import AtrasIcon from './assets/flecha-hacia-atras.png';
 
 export default function Registro() {
     const [tipoUsuario, setTipoUsuario] = useState("personal"); 
-    const [nombre, setNombre] = useState("");
-    const [apellidos, setApellidos] = useState("");
+    const [primerNombre, setPrimerNombre] = useState("");
+    const [segundoNombre, setSegundoNombre] = useState(""); // opcional
+    const [apellidoPaterno, setApellidoPaterno] = useState("");
+    const [apellidoMaterno, setApellidoMaterno] = useState("");
     const [correo, setCorreo] = useState("");
     const [telefono, setTelefono] = useState("");
     const [contrasena, setContrasena] = useState("");
@@ -26,16 +28,18 @@ export default function Registro() {
         }
     }, [toastMensaje]);
 
+    const [confirmarContrasena, setConfirmarContrasena] = useState("");
+
     const handleRegistro = async (e) => {
         e.preventDefault();
 
-        if (!nombre || !apellidos || !telefono || !correo || !contrasena) {
+        if (!primerNombre || !apellidoPaterno || !apellidoMaterno || !telefono || !correo || !contrasena || !confirmarContrasena) {
             setError("❌ Todos los campos son obligatorios.");
             return;
         }
 
-        if (!correo.includes("@")) {
-            setError("❌ Ingresa un correo válido.");
+        if (contrasena !== confirmarContrasena) {
+            setError("❌ Las contraseñas no coinciden.");
             return;
         }
         if (contrasena !== confirmarContrasena) {
@@ -52,10 +56,13 @@ export default function Registro() {
            }
 
         setLoading(true);
+        setError(""); // Limpia errores anteriores
 
         const usuario = {
-            nombre,
-            apellidos,
+            primerNombre,
+            segundoNombre,
+            apellidoPaterno,
+            apellidoMaterno,
             correo,
             telefono,
             contrasena,
@@ -74,22 +81,23 @@ export default function Registro() {
         }
     };
 
+
     return (
         <div className="container">
             <div className={`register-container ${tipoUsuario === "padre" ? "padre" : ""}`}>
-                {/* Botón para regresar al login con imagen personalizada */}
+               
                 <button className="back-button" onClick={() => navigate("/")}>
                     <img src={AtrasIcon} alt="Volver" className="back-icon" />
                 </button>
 
                 <h2 className="register-title">Regístrate</h2>
 
-                {/* Botón para regresar al login con imagen personalizada */}
+                
                 <button className="back-button" onClick={() => navigate("/")}>
                     <img src={AtrasIcon} alt="Volver" className="back-icon" />
                 </button>
 
-                {/* Imagen dinámica */}
+               
                 <img
                     src={tipoUsuario === "padre" ? familiaIcon : escuelaIcon}
                     alt="Tipo de usuario"
@@ -98,7 +106,7 @@ export default function Registro() {
 
                 {error && <p style={{ color: 'red' }}>{error}</p>}
 
-                {/* Selector de tipo de usuario */}
+               
                 <div className="selector-container">
                     <button
                         className={`selector-button ${tipoUsuario === "padre" ? "selected" : ""}`}
@@ -124,8 +132,11 @@ export default function Registro() {
 
                 {/* Formulario */}
                 <form onSubmit={handleRegistro}>
-                    <input type="text" placeholder="Nombre" className="input-field" value={nombre} onChange={(e) => setNombre(e.target.value)} required />
-                    <input type="text" placeholder="Apellidos" className="input-field" value={apellidos} onChange={(e) => setApellidos(e.target.value)} required />
+                    <input type="text" placeholder="Primer Nombre" className="input-field" value={primerNombre} onChange={(e) => setPrimerNombre(e.target.value)} required />
+                    <input type="text" placeholder="Segundo Nombre (opcional)" className="input-field" value={segundoNombre} onChange={(e) => setSegundoNombre(e.target.value)} />
+                    <input type="text" placeholder="Apellido Paterno" className="input-field" value={apellidoPaterno} onChange={(e) => setApellidoPaterno(e.target.value)} required />
+                    <input type="text" placeholder="Apellido Materno" className="input-field" value={apellidoMaterno} onChange={(e) => setApellidoMaterno(e.target.value)} required />
+                    <input type="tel" placeholder="Teléfono" className="input-field" value={telefono} onChange={(e) => setTelefono(e.target.value)} required />                
                     <input type="email" placeholder="Correo" className="input-field" value={correo} onChange={(e) => setCorreo(e.target.value)} required />
                     <input type="tel" placeholder="Teléfono" className="input-field" value={telefono} onChange={(e) => setTelefono(e.target.value)} required />  
                     <input type="password" placeholder="Contraseña" className="input-field" value={contrasena} onChange={(e) => setContrasena(e.target.value)} required />

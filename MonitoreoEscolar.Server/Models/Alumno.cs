@@ -7,8 +7,11 @@ public class Alumno
     [Key]
     public int Id { get; set; }
 
+    // Nombres
     [Required]
-    public string Nombre { get; set; } = string.Empty;
+    public string PrimerNombre { get; set; } = string.Empty;
+
+    public string? SegundoNombre { get; set; }
 
     [Required]
     public string Apellidos { get; set; } = string.Empty;
@@ -21,14 +24,12 @@ public class Alumno
     public string Grupo { get; set; } = string.Empty;
 
     public string? Carrera { get; set; }
-
     public string? Plantel { get; set; }
-
     public string? Turno { get; set; }
-
-    public string? CURP { get; set; }
-
+    public string CURP { get; set; } = string.Empty;
     public string? NumeroControl { get; set; }
+    public string? Ciclo { get; set; }
+    public string? Generacion { get; set; }
 
     public string? Ciclo { get; set; }//Cambio de ciclo a periodo
 

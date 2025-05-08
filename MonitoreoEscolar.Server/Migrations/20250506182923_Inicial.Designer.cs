@@ -12,7 +12,11 @@ using MonitoreoEscolar.Server.Data;
 namespace MonitoreoEscolar.Server.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
+<<<<<<<< HEAD:MonitoreoEscolar.Server/Migrations/20250506182923_Inicial.Designer.cs
     [Migration("20250506182923_Inicial")]
+========
+    [Migration("20250506173500_Inicial")]
+>>>>>>>> 818cbccb4aeff19d98f9208d7bed905fd2e9d57e:MonitoreoEscolar.Server/Migrations/20250506173500_Inicial.Designer.cs
     partial class Inicial
     {
         /// <inheritdoc />
@@ -33,11 +37,16 @@ namespace MonitoreoEscolar.Server.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("Apellidos")
+                    b.Property<string>("ApellidoMaterno")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ApellidoPaterno")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("CURP")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Carrera")
@@ -53,14 +62,14 @@ namespace MonitoreoEscolar.Server.Migrations
                     b.Property<string>("Generacion")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Grupo")
+                    b.Property<string>("Grado")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int?>("GrupoId")
                         .HasColumnType("int");
 
-                    b.Property<string>("Nombre")
+                    b.Property<string>("Letra")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -76,6 +85,13 @@ namespace MonitoreoEscolar.Server.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Plantel")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PrimerNombre")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("SegundoNombre")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Turno")
@@ -212,7 +228,11 @@ namespace MonitoreoEscolar.Server.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id_Usuario"));
 
-                    b.Property<string>("Apellidos")
+                    b.Property<string>("ApellidoMaterno")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ApellidoPaterno")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -230,8 +250,11 @@ namespace MonitoreoEscolar.Server.Migrations
                     b.Property<DateTime?>("FechaExpiracionCodigo")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("Nombre")
+                    b.Property<string>("PrimerNombre")
                         .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("SegundoNombre")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Telefono")

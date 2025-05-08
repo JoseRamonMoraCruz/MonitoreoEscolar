@@ -2,54 +2,37 @@
 import axios from "axios";
 import Select from "react-select";
 import "./AgregarAlumno.css";
-import huellaIcon from "./assets/huella-dactilar.png";
 import agregarIcon from "./assets/agregar-alumno.png";
 
 const AgregarAlumno = () => {
     // Estado para almacenar los datos del alumno
     const [alumno, setAlumno] = useState({
-        nombre: "",
-        apellidos: "",
+        Nombre: "", // <- CORRECTO
+        ApellidoPaterno: "",
+        ApellidoMaterno: "",
         grupo: "",
         grado: "",
         letra: "",
         tutor: "",
         domicilio: "",
-        tutorId: null,
-        huellaCodigo: "",
         CURP: "",
         NumeroControl: "",
         Carrera: "",
         Plantel: "",
         Turno: "",
         Generacion: "",
-        Ciclo: ""
+        Ciclo: "",
+        TutorId: null
     });
+
+
+    //Variable para el nombre de la imagen del qr
+    const [nombreArchivoQR, setNombreArchivoQR] = useState("QR_alumno");
 
 
     const [tutorOptions, setTutorOptions] = useState([]);
     const [selectedTutor, setSelectedTutor] = useState(null);
 
-    // Estado para mostrar el modal
-    const [showModal, setShowModal] = useState(false);
-
-    // Estado para mostrar el status y el código de la huella
-    const [huellaStatus, setHuellaStatus] = useState("");
-    const [huellaCodigo, setHuellaCodigo] = useState("");
-
-    const handleOpenModal = () => {
-        setShowModal(true);
-    };
-    const handleCloseModal = () => {
-        setShowModal(false);
-    };
-    // Simular la captura de huella (esto debe reemplazarse con la lógica de un lector real)
-    const handleCaptureHuella = () => {
-        setHuellaStatus("Huella capturada correctamente");
-        setHuellaCodigo("9377378382929938-ab10-48bf"); // Simula un código de huella
-        setShowModal(false); // Cierra el modal cuando se captura la huella
-        setAlumno({ ...alumno, huellaCodigo: "9377378382929938-ab10-48bf" }); // Refleja el código en el campo
-    };
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -63,13 +46,12 @@ const AgregarAlumno = () => {
         });
     };
 
-
     const handleChangeGrado = (e) => {
         const newGrado = e.target.value;
         setAlumno({
             ...alumno,
-            grado: newGrado,
-            grupo: newGrado && alumno.letra ? `${newGrado}${alumno.letra}` : ""
+            Grado: newGrado,
+            Grupo: newGrado && alumno.letra ? `${newGrado}${alumno.letra}` : ""
         });
     };
 
@@ -79,7 +61,7 @@ const AgregarAlumno = () => {
         setAlumno({
             ...alumno,
             letra: newLetra,
-            grupo: alumno.grado && newLetra ? `${alumno.grado}${newLetra}` : ""
+            Grupo: alumno.Grado && newLetra ? `${alumno.Grado}${newLetra}` : ""
         });
     };
 
@@ -90,10 +72,10 @@ const AgregarAlumno = () => {
             return;
         }
         try {
-            const response = await axios.get(`/api/usuarios/autocompletePadres?termino=${inputValue}`);
+            const response = await axios.get(`http://localhost:5099/api/usuarios/autocompletePadres?termino=${inputValue}`);
             const optionsData = response.data.map((padre) => ({
                 value: padre.id_Usuario,
-                label: `${padre.nombre} ${padre.apellidos} - ${padre.correo}`
+                label: `${padre.nombre} ${padre.apellidoPaterno} ${padre.apellidoMaterno} - ${padre.correo}`
             }));
             setTutorOptions(optionsData);
         } catch (error) {
@@ -113,21 +95,25 @@ const AgregarAlumno = () => {
     // Maneja la selección del tutor en el autocompletado
     const handleTutorChangeSelect = (selectedOption) => {
         setSelectedTutor(selectedOption);
-        setAlumno({ ...alumno, tutorId: selectedOption ? selectedOption.value : null });
+        setAlumno({ ...alumno, TutorId: selectedOption ? selectedOption.value : null });
     };
+
+
+    // Estado para almacenar la URL del código QR
+    const [qrUrl, setQrUrl] = useState(null);
+    const [showQrModal, setShowQrModal] = useState(false);
 
     // Función para enviar los datos del alumno al backend
     const handleSubmit = async (e) => {
-
         e.preventDefault();
 
         // Verificar que el grupo seleccionado exista
         try {
-            const gruposResponse = await axios.get("/api/grupos");
+            const gruposResponse = await axios.get("http://localhost:5099/api/grupos");
             const gruposExistentes = gruposResponse.data;
             const grupoEncontrado = gruposExistentes.find(
                 (g) =>
-                    g.grado.toString() === alumno.grado &&
+                    g.grado.toString() === alumno.Grado &&
                     g.letra.toUpperCase() === alumno.letra.toUpperCase()
             );
 
@@ -141,21 +127,52 @@ const AgregarAlumno = () => {
             return;
         }
 
+        setNombreArchivoQR(
+            `QR_${(alumno.Nombre + "_" + alumno.ApellidoPaterno + "_" + alumno.ApellidoMaterno).replace(/\s+/g, "_")}`
+        );
+
+
+        // Registrar al alumno
         try {
-            const response = await axios.post("/api/alumnos/registro", alumno);
+            const response = await axios.post("http://localhost:5099/api/alumnos/registro", alumno);
             alert(response.data.mensaje);
+
+            // Obtener el ID del nuevo alumno
+            const alumnoId = response.data.alumno.id;
+
+            // Obtener el QR desde el backend
+            const qrResponse = await axios.get(`http://localhost:5099/api/alumnos/qr/${alumnoId}`, {
+                responseType: "blob"
+            });
+            const qrBlob = new Blob([qrResponse.data], { type: "image/png" });
+            const qrImageUrl = URL.createObjectURL(qrBlob);
+            setQrUrl(qrImageUrl);
+            setShowQrModal(true);
+
+            // Ocultar automáticamente el modal tras 10 segundos
+            setTimeout(() => {
+                setShowQrModal(false);
+                setQrUrl(null);
+            }, 10000);
 
             // Limpiar formulario
             setAlumno({
                 nombre: "",
-                apellidos: "",
+                apellidoPaterno: "",
+                apellidoMaterno: "",
                 grupo: "",
                 grado: "",
                 letra: "",
                 tutor: "",
                 domicilio: "",
-                tutorId: null,
-                huellaCodigo: "" // Limpiar el campo de huella
+                TutorId: null,
+                CURP: "",
+                NumeroControl: "",
+                Carrera: "",
+                Plantel: "",
+                Turno: "",
+                Generacion: "",
+                Ciclo: ""
             });
             setSelectedTutor(null);
             setTutorOptions([]);
@@ -165,6 +182,7 @@ const AgregarAlumno = () => {
         }
     };
 
+
     return (
         <div className="bootstrap-scope">
             <div className="agregar-alumno-container">
@@ -173,35 +191,51 @@ const AgregarAlumno = () => {
                     <form onSubmit={handleSubmit}>
                         {/* Nombre */}
                         <div className="agregar-alumno-group">
-                            <label> Nombre:</label>
+                            <label>Nombre:</label>
                             <input
                                 type="text"
-                                name="nombre"
-                                value={alumno.nombre}
+                                name="Nombre"
+                                value={alumno.Nombre}
                                 onChange={handleChange}
-                                placeholder="Ingrese el nombre"
+                                placeholder="Ingrese el primer nombre"
                                 required
                             />
                         </div>
-                        {/* Apellidos */}
+
+                        {/* Apellido Paterno */}
                         <div className="agregar-alumno-group">
-                            <label> Apellidos:</label>
+                            <label>Apellido Paterno:</label>
                             <input
                                 type="text"
-                                name="apellidos"
-                                value={alumno.apellidos}
+                                name="ApellidoPaterno"
+                                value={alumno.ApellidoPaterno}
                                 onChange={handleChange}
-                                placeholder="Ingrese los apellidos"
+                                placeholder="Ingrese el apellido paterno"
                                 required
                             />
                         </div>
-                        {/* Grado y Letra */}
+
+                        {/* Apellido Materno */}
+                        <div className="agregar-alumno-group">
+                            <label>Apellido Materno:</label>
+                            <input
+                                type="text"
+                                name="ApellidoMaterno"
+                                value={alumno.ApellidoMaterno}
+                                onChange={handleChange}
+                                placeholder="Ingrese el apellido materno"
+                                required
+                            />
+                        </div>
+
+
+                        {/* Grado y Letra para armar Grupo */}
                         <div className="agregar-alumno-group-selects">
                             <div>
                                 <label>Grado:</label>
                                 <select
-                                    name="grado"
-                                    value={alumno.grado}
+                                    name="Grado"
+                                    value={alumno.Grado}
                                     onChange={handleChangeGrado}
                                     required
                                 >
@@ -214,8 +248,8 @@ const AgregarAlumno = () => {
                             <div>
                                 <label>Grupo:</label>
                                 <select
-                                    name="letra"
-                                    value={alumno.letra}
+                                    name="letra" // no se guarda en backend, solo ayuda a formar Grupo
+                                    value={alumno.letra || ""}
                                     onChange={handleChangeLetra}
                                     required
                                 >
@@ -226,6 +260,10 @@ const AgregarAlumno = () => {
                                 </select>
                             </div>
                         </div>
+
+                        {/* Grupo (campo final armado automáticamente) */}
+                        <input type="hidden" name="Grupo" value={alumno.Grupo} />
+
                         {/* Autocompletado para seleccionar padre/tutor */}
                         <div className="agregar-alumno-group">
                             <label> Seleccionar padre del alumno:</label>
@@ -350,48 +388,36 @@ const AgregarAlumno = () => {
                             </select>
 
                         </div>
-                        {/* Campo de huella digital */}
-                        <div className="agregar-alumno-group">
-                            <label> Huella Digital:</label>
-                            <input
-                                type="text"
-                                name="huellaCodigo"
-                                value={alumno.huellaCodigo}
-                                onChange={handleChange}
-                                placeholder="Huella Digital del Alumno"
-                                required
-                            />
-
-                        </div>
+                      
                         {/* Botones */}
                         <div className="button-container">
                             <button type="submit" className="agregar-alumno-btn">
                                 <img src={agregarIcon} alt="Agregar" className="back-icon" />
                                 Agregar Alumno
                             </button>
-                            <button type="button" className="capturar-huella-btn" onClick={handleOpenModal}>
-                                <img src={huellaIcon} alt="Huella" className="back-icon" />
-                                Registrar Huella
-                            </button>
                         </div>
                     </form>
                 </div>
             </div>
-            {/* Modal de huella */}
-            {showModal && (
-                <div className="modal-huella">
-                    <div className="modal-content">
-                        <span className="close" onClick={handleCloseModal}>X</span>
-                        <div className="huella-info">
-                            <img src={huellaIcon} alt="Huella" />
-                            <p>Sensor Conectado</p>
-                            <p>Status: {huellaStatus}</p>
-                            <p>Codigo de Huella: {huellaCodigo}</p>
-                        </div>
-                        <button onClick={handleCaptureHuella}>Capturar Huella</button>
+            {/* Modal de QR */}
+            {showQrModal && (
+                <div className="modal-qr">
+                    <div className="modal-qr-content">
+                        <span className="close" onClick={() => setShowQrModal(false)}>×</span>
+                        <h3>Código QR del alumno registrado</h3>
+                        <img src={qrUrl} alt="Código QR" className="qr-image" />
+                        <a
+                            href={qrUrl}
+                            download={`${nombreArchivoQR}.png`}
+                            className="qr-download-btn"
+                        >
+                            Descargar QR
+                        </a>
+
                     </div>
                 </div>
             )}
+
         </div>
     );
 };

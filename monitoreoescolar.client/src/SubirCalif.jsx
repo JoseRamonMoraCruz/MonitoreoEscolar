@@ -43,18 +43,18 @@ const SubirCalif = () => {
 
         try {
             // 1️⃣ Subir archivo
-            const response = await axios.post("/api/calificaciones/subirCalificaciones", formData, {
+            const response = await axios.post("http://localhost:5099/api/calificaciones/subirCalificaciones", formData, {
                 headers: { "Content-Type": "multipart/form-data" }
             });
 
-            alert(`✅ ${response.data.mensaje}`);
+            alert(` ${response.data.mensaje}`);
 
             // 2️⃣ Obtener resumen ya procesado desde el backend
-            const resumen = await axios.get("/api/calificaciones/obtenerResumenAgrupado");
+            const resumen = await axios.get("http://localhost:5099/api/calificaciones/obtenerResumenAgrupado");
 
             setDatos(resumen.data);
 
-            // 3️⃣ Limpiar archivo y formulario
+            // 3️ Limpiar archivo y formulario
             setArchivo(null);
             setNombreArchivo("");
             fileInputRef.current.value = null;
@@ -132,7 +132,7 @@ const SubirCalif = () => {
                                         <td>{alumno.parcialUnidad}</td>
                                         <td>{alumno.periodo}</td>
                                         <td>{alumno.tipo}</td>
-                                        <td>{alumno.firmado ? "Sí" : "No"}</td>
+                                        <td>{alumno.firmado ? "SI FIRMADO" : "NO FIRMADO"}</td>
                                         <td>{alumno.asistenciasTotal}</td>
                                         {materiasUnicas.map((materia, idx) => (
                                             <td key={idx}>{alumno[materia] ?? "N/A"}</td>

@@ -1,0 +1,26 @@
+.buscador-alumno-container {
+    display: flex;
+    justify-content: center;
+    margin-top: 40px;
+    width: 100%;
+}
+
+.buscador-alumno-input {
+    background-color: white;
+    border-radius: 30px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    max-width: 600px;
+}
+
+.icono-lupa {
+    color: #1976d2;
+}
+/* Quita completamente el borde del TextField */
+.no-outline {
+    border: none !important;
+}
+
+/* O puedes usar esto directamente si el de arriba no se aplica */
+.buscador-alumno-input .MuiOutlinedInput-notchedOutline {
+    border: none !important;
+}

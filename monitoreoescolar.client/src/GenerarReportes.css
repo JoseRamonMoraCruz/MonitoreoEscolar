@@ -223,9 +223,27 @@
     font-size: 14px;
 }
 /* Alinea horizontalmente los botones de acción */
-.reportes-table td:last-child {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    padding: 8px; 
+.reportes-table td {
+    vertical-align: top; /* Alinea todo arriba */
+    height: 100%;
 }
+
+    .reportes-table td:last-child {
+        text-align: center;
+        vertical-align: top;
+        padding: 8px;
+        white-space: nowrap;
+    }
+        .reportes-table td:last-child button {
+            background: #eeeeee;
+            border: 1px solid #ccc;
+            padding: 6px 10px;
+            font-size: 18px;
+            border-radius: 6px;
+            margin-right: 6px;
+            transition: background-color 0.2s ease-in-out;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+

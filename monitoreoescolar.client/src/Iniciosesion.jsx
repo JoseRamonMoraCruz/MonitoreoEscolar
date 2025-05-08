@@ -14,7 +14,7 @@ const Login = () => {
         e.preventDefault();
 
         try {
-            const response = await axios.post("/api/usuarios/login", {
+            const response = await axios.post("http://localhost:5099/api/usuarios/login", {
                 correo: email,
                 contrasena: password
             });
@@ -26,7 +26,8 @@ const Login = () => {
             // Guardamos los datos en localStorage
             localStorage.setItem('idUsuario', usuario.id_Usuario); 
             localStorage.setItem('nombre', usuario.nombre); 
-            localStorage.setItem('apellidos', usuario.apellidos); 
+            localStorage.setItem('apellidoPaterno', usuario.apellidoPaterno); 
+            localStorage.setItem('apellidoMaterno', usuario.apellidoMaterno);
             localStorage.setItem('correo', usuario.correo); 
             localStorage.setItem('contraseña', usuario.contrasena);
             localStorage.setItem('telefono', usuario.telefono); 

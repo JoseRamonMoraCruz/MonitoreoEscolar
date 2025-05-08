@@ -13,6 +13,8 @@ function ActualizarPassword() {
     const [error, setError] = useState('');
     const [contador, setContador] = useState(0);
     const navigate = useNavigate();
+    const [confirmarPassword, setConfirmarPassword] = useState('');
+
 
     useEffect(() => {
         if (contador > 0) {
@@ -23,7 +25,7 @@ function ActualizarPassword() {
 
     const enviarCodigo = async () => {
         try {
-            await axios.post('/api/usuarios/enviar-codigo', { correo });
+            await axios.post('http://localhost:5099/api/usuarios/enviar-codigo', { correo });
             setMessage('Código enviado. Revisa tu correo.');
             setError('');
             setPaso(2);
@@ -36,7 +38,7 @@ function ActualizarPassword() {
 
     const validarCodigo = async () => {
         try {
-            await axios.post('/api/usuarios/validar-codigo', { correo, codigo });
+            await axios.post('http://localhost:5099/api/usuarios/validar-codigo', { correo, codigo });
             setMessage('Código válido. Ahora escribe tu nueva contraseña.');
             setError('');
             setPaso(3);
@@ -47,8 +49,17 @@ function ActualizarPassword() {
     };
 
     const actualizarPassword = async () => {
+        if (newPassword !== confirmarPassword) {
+            setError("❌ Las contraseñas no coinciden.");
+            setMessage('');
+            return;
+        }
+
         try {
-            await axios.post('/api/usuarios/actualizar-password', { correo, newPassword });
+            await axios.post('http://localhost:5099/api/usuarios/actualizar-password', {
+                correo,
+                newPassword
+            });
             setMessage('Contraseña actualizada exitosamente. Redirigiendo...');
             setError('');
             setTimeout(() => {
@@ -59,6 +70,7 @@ function ActualizarPassword() {
             setMessage('');
         }
     };
+
 
     return (
         <div className="update-container-wrapper">
@@ -152,11 +164,30 @@ function ActualizarPassword() {
                             required
                         />
 
-                        <button className="update-button" onClick={actualizarPassword}>
+                        <label>Confirma tu nueva contraseña:</label>
+                        <input
+                            type="password"
+                            className="update-input"
+                            value={confirmarPassword}
+                            onChange={(e) => setConfirmarPassword(e.target.value)}
+                            required
+                        />
+
+                        {/* Mensaje si no coinciden */}
+                        {confirmarPassword && newPassword !== confirmarPassword && (
+                            <p className="error-message">❌ Las contraseñas no coinciden.</p>
+                        )}
+
+                        <button
+                            className="update-button"
+                            onClick={actualizarPassword}
+                            disabled={!newPassword || newPassword !== confirmarPassword}
+                        >
                             Actualizar Contraseña
                         </button>
                     </>
                 )}
+
             </div>
         </div>
     );

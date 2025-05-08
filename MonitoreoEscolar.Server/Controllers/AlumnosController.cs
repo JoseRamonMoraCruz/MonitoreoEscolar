@@ -1,11 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MonitoreoEscolar.Server.Data;
-using MonitoreoEscolar.Server.Models;
-using OfficeOpenXml; // EPPlus para exportar a Excel
 using System.Globalization;
 using System.Text;
-
+using QRCoder;
 
 namespace MonitoreoEscolar.Server.Controllers
 {
@@ -21,7 +19,7 @@ namespace MonitoreoEscolar.Server.Controllers
             Console.WriteLine(" AlumnosController CARGADO");
         }
 
-        // REGISTRAR ALUMNO (Sin cambios)
+        // REGISTRAR ALUMNO 
         [HttpPost("registro")]
         public async Task<IActionResult> RegistrarAlumno([FromBody] Alumno request)
         {
@@ -30,32 +28,47 @@ namespace MonitoreoEscolar.Server.Controllers
                 if (request == null)
                     return BadRequest(new { mensaje = "Los datos enviados son nulos." });
 
-                if (string.IsNullOrWhiteSpace(request.Nombre) || string.IsNullOrWhiteSpace(request.Apellidos))
-                    return BadRequest(new { mensaje = "Nombre y Apellidos son obligatorios." });
+                if (string.IsNullOrWhiteSpace(request.Nombre) || string.IsNullOrWhiteSpace(request.ApellidoPaterno) || string.IsNullOrWhiteSpace(request.ApellidoMaterno))
+                    return BadRequest(new { mensaje = "El Nombre y los dos Apellidos son obligatorios." });
 
-                var nombreCompleto = $"{request.Nombre.Trim()} {request.Apellidos.Trim()}".Trim();
+                if (string.IsNullOrWhiteSpace(request.CURP))
+                    return BadRequest(new { mensaje = "La CURP es obligatoria para generar el código QR." });
+
+                var codigoQR = request.CURP.Trim().ToUpper();
+
+                // Validar si ya existe ese Código QR
+                var existeQr = await _context.Alumnos.AnyAsync(a => a.CodigoQR == codigoQR);
+                if (existeQr)
+                    return BadRequest(new { mensaje = "Ya existe un alumno con esa CURP asignada como código QR." });
+
+                var nombreCompleto = $"{request.Nombre.Trim()} {request.ApellidoPaterno.Trim()} { request.ApellidoMaterno.Trim()}".Trim();
                 var nombreNormalizado = RemoveDiacritics(nombreCompleto.ToLower());
 
                 var alumno = new Alumno
                 {
+                    //Datos alumno
                     Nombre = request.Nombre.Trim(),
-                    Apellidos = request.Apellidos.Trim(),
+                    ApellidoPaterno = request.ApellidoPaterno.Trim(),
+                    ApellidoMaterno = request.ApellidoMaterno.Trim(),
                     NombreCompleto = nombreCompleto,
                     NombreCompletoNormalizado = nombreNormalizado,
                     Grupo = request.Grupo.Trim(),
                     Domicilio = request.Domicilio.Trim(),
                     TutorId = request.TutorId,
-                    CURP = request.CURP?.Trim().ToUpper(),
+                    CURP = codigoQR,
                     NumeroControl = request.NumeroControl?.Trim(),
                     Carrera = request.Carrera?.Trim(),
                     Plantel = request.Plantel?.Trim(),
                     Turno = request.Turno?.Trim(),
                     Generacion = request.Generacion?.Trim(),
-                    Ciclo = request.Ciclo?.Trim()
+                    Ciclo = request.Ciclo?.Trim(),
+                    CodigoQR = codigoQR
                 };
 
                 _context.Alumnos.Add(alumno);
                 await _context.SaveChangesAsync();
+
+                Console.WriteLine("CÓDIGO QR GENERADO: " + codigoQR);
 
                 return Ok(new { mensaje = "Alumno registrado exitosamente", alumno });
             }
@@ -64,6 +77,24 @@ namespace MonitoreoEscolar.Server.Controllers
                 return StatusCode(500, new { mensaje = "Error interno del servidor.", error = ex.Message });
             }
         }
+
+        // ESTE LO QUE HACE ES GENERAR UN QR CON EL CODIGO QR DEL ALUMNO
+        [HttpGet("qr/{alumnoId}")]
+        public async Task<IActionResult> ObtenerQRAlumno(int alumnoId)
+        {
+            var alumno = await _context.Alumnos.FindAsync(alumnoId);
+            if (alumno == null || string.IsNullOrEmpty(alumno.CodigoQR))
+                return NotFound("Alumno no encontrado o sin código QR asignado.");
+
+            using var qrGenerator = new QRCodeGenerator();
+            var qrData = qrGenerator.CreateQrCode(alumno.CodigoQR, QRCodeGenerator.ECCLevel.Q);
+
+            var pngQrCode = new PngByteQRCode(qrData);
+            byte[] qrCodeAsPng = pngQrCode.GetGraphic(20);
+
+            return File(qrCodeAsPng, "image/png");
+        }
+
 
 
         [HttpGet("buscar")]
@@ -88,24 +119,28 @@ namespace MonitoreoEscolar.Server.Controllers
         [HttpGet("grupo/{grupoStr}")]
         public async Task<IActionResult> ObtenerAlumnosPorGrupo(string grupoStr)
         {
-            try
+             try
             {
                 var alumnos = await _context.Alumnos
                     .Include(a => a.TutorUsuario)
                     .Where(a => a.Grupo == grupoStr)
                     .OrderBy(a => a.NombreCompleto)
                     .Select(a => new
+
                     {
                         id = a.Id,
                         nombre = a.Nombre,
-                        apellidos = a.Apellidos,
+                        apellidoPaterno = a.ApellidoPaterno,
+                        apellidoMaterno = a.ApellidoMaterno,
                         domicilio = a.Domicilio,
                         grupo = a.Grupo,
                         tutorUsuario = a.TutorUsuario == null ? null : new
+
                         {
                             id_Usuario = a.TutorUsuario.Id_Usuario,
                             nombre = a.TutorUsuario.Nombre,
-                            apellidos = a.TutorUsuario.Apellidos,
+                            apellidopaterno = a.TutorUsuario.ApellidoPaterno,
+                            apellidomaterno = a.TutorUsuario.ApellidoMaterno,
                             telefono = a.TutorUsuario.Telefono,  
                             correo = a.TutorUsuario.Correo
                         }
@@ -167,11 +202,15 @@ namespace MonitoreoEscolar.Server.Controllers
 
                 // Actualizando datos del alumno
                 alumnoExistente.Nombre = alumnoEditado.Nombre.Trim();
-                alumnoExistente.Apellidos = alumnoEditado.Apellidos.Trim();
-                alumnoExistente.NombreCompleto = $"{alumnoEditado.Nombre.Trim()} {alumnoEditado.Apellidos.Trim()}";
+                alumnoExistente.ApellidoPaterno = alumnoEditado.ApellidoPaterno.Trim();
+                alumnoExistente.ApellidoMaterno = alumnoEditado.ApellidoMaterno.Trim();
+                alumnoExistente.NombreCompleto = $"{alumnoEditado.Nombre.Trim()} {alumnoEditado.ApellidoPaterno.Trim()} {alumnoEditado.ApellidoMaterno.Trim()}";
                 alumnoExistente.NombreCompletoNormalizado = RemoveDiacritics(alumnoExistente.NombreCompleto.ToLower());
                 alumnoExistente.Grupo = alumnoEditado.Grupo.Trim();
-                alumnoExistente.Domicilio = alumnoEditado.Domicilio.Trim();
+                alumnoEditado.Domicilio = alumnoEditado.Domicilio.Trim();
+                alumnoExistente.CURP = alumnoEditado.CURP.Trim().ToUpper();
+                alumnoExistente.NumeroControl = alumnoEditado.NumeroControl?.Trim();
+                alumnoExistente.Carrera = alumnoEditado.Carrera?.Trim();
 
                 // Actualiza el TutorId solo si se proporciona un nuevo valor (no es null)
                 if (alumnoEditado.TutorId != null)

@@ -472,7 +472,7 @@ const ListaAlumnos = () => {
                                 ? isGroupSearch
                                     ? alumnosPorGrupo[grupo.id] || []
                                     : (alumnosPorGrupo[grupo.id] || []).filter((alumno) =>
-                                        removeDiacritics((alumno.nombre + " " + alumno.apellidos).toLowerCase()).includes(normalizedSearch)
+                                        removeDiacritics((alumno.nombre + " " + alumno.ApellidoPaterno + "" + alumno.ApellidoMaterno).toLowerCase()).includes(normalizedSearch)
                                     )
                                 : expandedGroup && expandedGroup.id === grupo.id
                                     ? alumnosGrupo
@@ -540,7 +540,7 @@ const ListaAlumnos = () => {
                                                         return (
                                                             <tr key={alumno.id}>
                                                                 <td>
-                                                                    {alumno.nombre} {alumno.apellidos}
+                                                                    {alumno.nombre} {alumno.apellidoPaterno} {alumno.apellidoMaterno}
                                                                 </td>
                                                                 <td className="padre-whatsapp">
                                                                     {alumno.tutorUsuario?.telefono && (
@@ -552,8 +552,9 @@ const ListaAlumnos = () => {
                                                                         />
                                                                     )}
                                                                     {alumno.tutorUsuario
-                                                                        ? `${alumno.tutorUsuario.nombre} ${alumno.tutorUsuario.apellidos}`
+                                                                        ? `${alumno.tutorUsuario.nombre} ${alumno.tutorUsuario.apellidopaterno} ${alumno.tutorUsuario.apellidomaterno}`
                                                                         : "Sin Tutor"}
+
                                                                 </td>
                                                                 <td>{alumno.domicilio}</td>
                                                                 <td className="acciones">
@@ -608,7 +609,7 @@ const ListaAlumnos = () => {
                                                                     />
                                                                 )}
                                                                 {alumno.tutorUsuario
-                                                                    ? `${alumno.tutorUsuario.nombre} ${alumno.tutorUsuario.apellidos}`
+                                                                    ? `${alumno.tutorUsuario.nombre} ${alumno.tutorUsuario.apellidopaterno} ${alumno.tutorUsuario.apellidomaterno}`
                                                                     : "Sin Tutor"}
                                                             </td>
                                                             <td>{alumno.domicilio}</td>
@@ -704,7 +705,7 @@ const ListaAlumnos = () => {
                         <h2>¿Estás seguro?</h2>
                         <p>
                             ¿Quieres eliminar al alumno {alumnoSeleccionado?.nombre}{" "}
-                            {alumnoSeleccionado?.apellidos}?
+                            {alumnoSeleccionado?.apellidoPaterno} {alumnoSeleccionado?.apellidoMaterno}?
                         </p>
                         <div className="modal-buttons">
                             <button className="confirm-button" onClick={eliminarAlumno}>
@@ -763,15 +764,28 @@ const ListaAlumnos = () => {
                         </div>
 
                         <div className="input-container">
-                            <label>Apellidos:</label>
+                            <label>Apellido Paterno:</label>
                             <input
                                 type="text"
-                                name="apellidos"
-                                value={alumnoSeleccionado.apellidos}
-                                onChange={(e) => setAlumnoSeleccionado({ ...alumnoSeleccionado, apellidos: e.target.value })}
+                                name="apellidoPaterno"
+                                value={alumnoSeleccionado.apellidoPaterno}
+                                onChange={(e) =>
+                                    setAlumnoSeleccionado({ ...alumnoSeleccionado, apellidoPaterno: e.target.value })
+                                }
                             />
                         </div>
 
+                        <div className="input-container">
+                            <label>Apellido Materno:</label>
+                            <input
+                                type="text"
+                                name="apellidoMaterno"
+                                value={alumnoSeleccionado.apellidoMaterno}
+                                onChange={(e) =>
+                                    setAlumnoSeleccionado({ ...alumnoSeleccionado, apellidoMaterno: e.target.value })
+                                }
+                            />
+                        </div>
                         <div className="input-container">
                             <label>Grupo:</label>
                             <Select

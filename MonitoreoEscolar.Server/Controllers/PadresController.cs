@@ -15,7 +15,7 @@ namespace MonitoreoEscolar.Server.Controllers
             _context = context;
         }
 
-        
+
         // ENDPOINT PARA OBTENER LOS REPORTES DE UN HIJO
         [HttpGet("obtener-reportes-hijo/{alumnoId}")]
         public async Task<IActionResult> ObtenerReportesDeHijo(int alumnoId)
@@ -31,7 +31,8 @@ namespace MonitoreoEscolar.Server.Controllers
                 .Select(r => new
                 {
                     r.Motivo,
-                    Fecha = r.Fecha
+                    r.Fecha,
+                    Responsable = r.ResponsableDelReporte
                 })
                 .ToListAsync();
 
@@ -47,7 +48,7 @@ namespace MonitoreoEscolar.Server.Controllers
                 .Select(a => new
                 {
                     AlumnoId = a.Id,
-                    NombreCompleto = a.Nombre + " " + a.Apellidos,
+                    NombreCompleto = a.Nombre + " " + a.ApellidoPaterno + " " + a.ApellidoMaterno,
                     Grupo = a.Grupo ?? "Sin grupo" 
                 })
                 .ToListAsync();

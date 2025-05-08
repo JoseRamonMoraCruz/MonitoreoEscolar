@@ -34,7 +34,8 @@ namespace MonitoreoEscolar.Server.Migrations
                     Id_Usuario = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Nombre = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Apellidos = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    ApellidoPaterno = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    ApellidoMaterno = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Contrasena = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Correo = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Telefono = table.Column<string>(type: "nvarchar(max)", nullable: false),
@@ -54,19 +55,21 @@ namespace MonitoreoEscolar.Server.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Nombre = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Apellidos = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    ApellidoPaterno = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    ApellidoMaterno = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     NombreCompleto = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     NombreCompletoNormalizado = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Grupo = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Carrera = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Plantel = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Turno = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    CURP = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    CURP = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     NumeroControl = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Ciclo = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Generacion = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     TutorId = table.Column<int>(type: "int", nullable: true),
                     Domicilio = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    CodigoQR = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     GrupoId = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
@@ -130,6 +133,7 @@ namespace MonitoreoEscolar.Server.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Fecha = table.Column<DateTime>(type: "datetime2", nullable: false),
                     Motivo = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    ResponsableDelReporte = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     AlumnoId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>

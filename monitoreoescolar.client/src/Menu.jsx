@@ -1,5 +1,5 @@
 ﻿import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";  
+import { Link } from "react-router-dom";
 import axios from "axios";
 import "./Menu.css";
 import perfil from "./assets/perfil.png";
@@ -55,7 +55,7 @@ const Menu = () => {
                 return;
             }
             try {
-                await axios.post("/api/usuarios/actualizar-password", {
+                await axios.post("http://localhost:5099/api/usuarios/actualizar-password", {
                     correo: editedUser.correo,
                     NewPassword: editedUser.newPassword
                 });
@@ -74,7 +74,7 @@ const Menu = () => {
                 Correo: editedUser.correo,
                 Telefono: editedUser.telefono
             };
-            const resp = await axios.put("/api/usuarios/actualizar-perfil", payload);
+            const resp = await axios.put("http://localhost:5099/api/usuarios/actualizar-perfil", payload);
             alert(resp.data.mensaje);
 
             // sincronizar localStorage
@@ -102,7 +102,7 @@ const Menu = () => {
             <ul className="menu-links">
                 <li><Link to="/subir-calif">Subir Calificaciones</Link></li>
                 <li><Link to="/generar-reportes">Reporte de Conducta</Link></li>
-                <li><Link to="/notificaciones">Envío de Notificaciones</Link></li>
+                <li><Link to="/TomaDeAsistencia">Toma de Asistencias</Link></li>
                 <li><Link to="/agregar-alumno">Agregar Alumno</Link></li>
                 <li><Link to="/lista-alumnos">Lista de Grupos</Link></li>
                 <li><Link to="/">Cerrar Sesión</Link></li>

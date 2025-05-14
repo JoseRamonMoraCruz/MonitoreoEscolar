@@ -61,7 +61,7 @@ namespace MonitoreoEscolar.Server.Controllers
             return Ok(hijos);
         }
 
-        /*OBTENER CALIFCACIONES DE LOS ALUMNOS*/
+        /*OBTENER CALIFCACIONES DE LOS ALUMNOS EN CADA COSA*/
         [HttpGet("obtener-calificaciones-alumno/{alumnoId}")]
         public async Task<IActionResult> ObtenerCalificacionesPorAlumno(int alumnoId)
         {

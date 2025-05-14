@@ -8,5 +8,4 @@
         public string? Carrera { get; set; }
         public string? NombreDocente { get; set; }
     }
-
 }

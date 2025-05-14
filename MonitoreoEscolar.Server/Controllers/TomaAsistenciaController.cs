@@ -134,7 +134,7 @@ namespace MonitoreoEscolar.Server.Controllers
         <div style='font-family: Segoe UI, sans-serif; padding: 20px; background-color: #eef2f7;'>
             <div style='max-width: 600px; margin: auto; background-color: white; border-radius: 12px; padding: 30px; box-shadow: 0 4px 12px rgba(0,0,0,0.15);'>
                 <div style='text-align: center;'>
-                    <h2 style='color: #007bff; margin-bottom: 10px;'>📘 Monitoreo Escolar</h2>
+                    <h2 style='color: #007bff; margin-bottom: 10px;'> Monitoreo Escolar</h2>
                     <p style='font-size: 15px; color: #555;'>Seguimiento en tiempo real de entradas y salidas escolares.</p>
                 </div>
                 <hr style='margin: 20px 0; border: none; height: 1px; background-color: #ddd;' />

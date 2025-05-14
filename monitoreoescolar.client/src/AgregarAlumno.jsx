@@ -7,14 +7,13 @@ import agregarIcon from "./assets/agregar-alumno.png";
 const AgregarAlumno = () => {
     // Estado para almacenar los datos del alumno
     const [alumno, setAlumno] = useState({
-        Nombre: "", // <- CORRECTO
+        Nombre: "",
         ApellidoPaterno: "",
         ApellidoMaterno: "",
-        grupo: "",
-        grado: "",
-        letra: "",
-        tutor: "",
-        domicilio: "",
+        Grupo: "",       
+        Grado: "",       
+        letra: "",       
+        Domicilio: "",   
         CURP: "",
         NumeroControl: "",
         Carrera: "",
@@ -24,6 +23,7 @@ const AgregarAlumno = () => {
         Ciclo: "",
         TutorId: null
     });
+
 
 
     //Variable para el nombre de la imagen del qr
@@ -157,14 +157,14 @@ const AgregarAlumno = () => {
 
             // Limpiar formulario
             setAlumno({
-                nombre: "",
-                apellidoPaterno: "",
-                apellidoMaterno: "",
+                Nombre: "",
+                ApellidoPaterno: "",
+                ApellidoMaterno: "",
                 grupo: "",
-                grado: "",
+                Grado: "",
                 letra: "",
                 tutor: "",
-                domicilio: "",
+                Domicilio: "",
                 TutorId: null,
                 CURP: "",
                 NumeroControl: "",
@@ -282,8 +282,8 @@ const AgregarAlumno = () => {
                             <label> Domicilio:</label>
                             <input
                                 type="text"
-                                name="domicilio"
-                                value={alumno.domicilio}
+                                name="Domicilio"
+                                value={alumno.Domicilio}
                                 onChange={handleChange}
                                 placeholder="Ingrese el domicilio"
                                 required

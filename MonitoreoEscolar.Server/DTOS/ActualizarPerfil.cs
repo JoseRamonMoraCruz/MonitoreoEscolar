@@ -6,9 +6,8 @@ public class ActualizarPerfilRequest
     public int Id_Usuario { get; set; }
 
     [Required]
-    public string PrimerNombre { get; set; } = string.Empty;
+    public string Nombre { get; set; } = string.Empty;
 
-    public string? SegundoNombre { get; set; }
 
     [Required]
     public string ApellidoPaterno { get; set; } = string.Empty;

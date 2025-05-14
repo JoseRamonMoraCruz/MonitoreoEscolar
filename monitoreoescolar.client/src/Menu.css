@@ -87,9 +87,11 @@
 /* Para pantallas pequeñas */
 @media (max-width: 800px) {
     .menu {
-        flex-direction: column;
+        display: flex;
+        justify-content: center;
         align-items: center;
     }
+
 
     .menu-links {
         flex-direction: column;

@@ -300,7 +300,7 @@ namespace MonitoreoEscolar.Server.Controllers
             }
 
             // Actualizar sólo los campos permitidos
-            usuario.Nombre = request.PrimerNombre;
+            usuario.Nombre = request.Nombre;
             usuario.ApellidoPaterno = request.ApellidoPaterno;
             usuario.ApellidoMaterno = request.ApellidoMaterno;
             usuario.Correo = request.Correo;

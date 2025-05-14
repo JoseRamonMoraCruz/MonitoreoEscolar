@@ -5,7 +5,7 @@ import "./Menu.css";
 import perfil from "./assets/perfil.png";
 
 const Menu = () => {
-    const [editedUser, setEditedUser] = useState({
+       const [editedUser, setEditedUser] = useState({
         id_Usuario: "",
         nombre: "",
         apellidoPaterno: "",
@@ -108,7 +108,7 @@ const Menu = () => {
             <ul className="menu-links">
                 <li><Link to="/subir-calif">Subir Calificaciones</Link></li>
                 <li><Link to="/generar-reportes">Reporte de Conducta</Link></li>
-                <li><Link to="/TomaDeAsistencia">Toma de Asistencias</Link></li>
+                <li><Link to="/toma-de-asistencia">Toma de Asistencias</Link></li>
                 <li><Link to="/agregar-alumno">Agregar Alumno</Link></li>
                 <li><Link to="/lista-alumnos">Lista de Grupos</Link></li>
                 <li><Link to="/">Cerrar Sesión</Link></li>

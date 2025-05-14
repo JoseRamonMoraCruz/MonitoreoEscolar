@@ -1,12 +1,12 @@
-﻿.dashboard-container {
+﻿.dashboard-layout {
     display: flex;
     flex-direction: column;
-    height: 100vh;
+    min-height: 100vh;
+    background: linear-gradient(135deg, #89f7fe, #66a6ff);
 }
 
-.content {
+.main-content {
     flex: 1;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    padding: 0;
+    overflow-y: auto;
 }

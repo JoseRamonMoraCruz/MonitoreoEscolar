@@ -1,3 +1,34 @@
+.toma-asistencia-container {
+    height: 100vh;
+    background: linear-gradient(to bottom right, #89f7fe, #66a6ff);
+    font-family: 'Segoe UI', sans-serif;
+    position: relative;
+}
+
+/* Barra superior */
+.barra-superior {
+    background-color: #0c1e34;
+    height: 60px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 20px;
+    color: white;
+}
+
+.logo {
+    height: 40px;
+}
+
+.cerrar-sesion-btn {
+    background: transparent;
+    border: none;
+    color: white;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+/* Buscador */
 .buscador-alumno-container {
     display: flex;
     justify-content: center;
@@ -15,12 +46,172 @@
 .icono-lupa {
     color: #1976d2;
 }
-/* Quita completamente el borde del TextField */
+
 .no-outline {
     border: none !important;
 }
 
-/* O puedes usar esto directamente si el de arriba no se aplica */
 .buscador-alumno-input .MuiOutlinedInput-notchedOutline {
     border: none !important;
+}
+
+/* Botón QR */
+.boton-qr {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    background: linear-gradient(to right, #4facfe, #00f2fe);
+    border: none;
+    border-radius: 50%;
+    width: 70px;
+    height: 70px;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+    cursor: pointer;
+    transition: transform 0.2s ease-in-out;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 999;
+}
+
+.boton-qr:hover {
+    transform: scale(1.1);
+}
+
+.boton-qr img {
+    width: 32px;
+    height: 32px;
+}
+
+/* Aqui esta el modal del QR */
+.modal-qr-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.6);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.modal-qr-content {
+    background-color: white;
+    padding: 20px;
+    border-radius: 10px;
+    width: 90%;
+    max-width: 600px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+}
+
+/* Botón flotante de cierre (X) arriba a la derecha del modal */
+.btn-cerrar-flotante {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    font-size: 24px;
+    background: transparent;
+    border: none;
+    color: #444;
+    cursor: pointer;
+    font-weight: bold;
+    z-index: 10;
+    transition: color 0.2s ease-in-out;
+}
+
+    .btn-cerrar-flotante:hover {
+        color: #f44336;
+    }
+/* Contenedor de la tabla de asistencia */
+.tabla-asistencia-container {
+    margin: 40px auto 0 auto;
+    width: 95%;
+    max-width: 1200px;
+    background: white;
+    border-radius: 16px;
+    padding: 25px;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+    overflow-x: auto;
+}
+
+/* Tabla en sí */
+.tabla-asistencia {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 15px;
+}
+
+    .tabla-asistencia th, .tabla-asistencia td {
+        padding: 14px 18px;
+        text-align: left;
+        border-bottom: 1px solid #e0e0e0;
+        color: #333;
+    }
+
+    .tabla-asistencia th {
+        background-color: #f9f9f9;
+        font-weight: 600;
+        text-transform: uppercase;
+        color: #2c3e50;
+    }
+
+    .tabla-asistencia tr:hover {
+        background-color: #f2f9ff;
+    }
+
+    /*Mensaje de aviso */
+
+.toast-mensaje {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    color: white;
+    padding: 12px 24px;
+    border-radius: 30px;
+    font-size: 16px;
+    font-weight: 500;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    z-index: 9999;
+    opacity: 0;
+    animation: fadeInOut 2.5s ease-in-out forwards;
+}
+
+    .toast-mensaje.success {
+        background-color: #4CAF50;
+    }
+
+    .toast-mensaje.error {
+        background-color: #f44336;
+    }
+
+    .toast-mensaje::before {
+        content: attr(data-icon);
+        font-weight: bold;
+        margin-right: 10px;
+        font-size: 18px;
+    }
+
+@keyframes fadeInOut {
+    0% {
+        opacity: 0;
+        transform: translateX(-50%) translateY(-10px);
+    }
+
+    10% {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+    }
+
+    80% {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+    }
+
+    100% {
+        opacity: 0;
+        transform: translateX(-50%) translateY(-10px);
+    }
 }

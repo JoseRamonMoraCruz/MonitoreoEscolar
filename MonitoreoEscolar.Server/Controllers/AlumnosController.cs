@@ -41,7 +41,7 @@ namespace MonitoreoEscolar.Server.Controllers
                 if (existeQr)
                     return BadRequest(new { mensaje = "Ya existe un alumno con esa CURP asignada como código QR." });
 
-                var nombreCompleto = $"{request.Nombre.Trim()} {request.ApellidoPaterno.Trim()} { request.ApellidoMaterno.Trim()}".Trim();
+                var nombreCompleto = $"{request.Nombre.Trim()} {request.ApellidoPaterno.Trim()} {request.ApellidoMaterno.Trim()}".Trim();
                 var nombreNormalizado = RemoveDiacritics(nombreCompleto.ToLower());
 
                 var alumno = new Alumno
@@ -119,7 +119,7 @@ namespace MonitoreoEscolar.Server.Controllers
         [HttpGet("grupo/{grupoStr}")]
         public async Task<IActionResult> ObtenerAlumnosPorGrupo(string grupoStr)
         {
-             try
+            try
             {
                 var alumnos = await _context.Alumnos
                     .Include(a => a.TutorUsuario)
@@ -141,7 +141,7 @@ namespace MonitoreoEscolar.Server.Controllers
                             nombre = a.TutorUsuario.Nombre,
                             apellidopaterno = a.TutorUsuario.ApellidoPaterno,
                             apellidomaterno = a.TutorUsuario.ApellidoMaterno,
-                            telefono = a.TutorUsuario.Telefono,  
+                            telefono = a.TutorUsuario.Telefono,
                             correo = a.TutorUsuario.Correo
                         }
                     })
@@ -217,7 +217,7 @@ namespace MonitoreoEscolar.Server.Controllers
                 {
                     alumnoExistente.TutorId = alumnoEditado.TutorId;
                 }
-                
+
 
                 // Guardar cambios
                 await _context.SaveChangesAsync();

@@ -14,7 +14,7 @@ import WhatsappIcon from "./assets/whatsapp.png";
 const ListaAlumnos = () => {
     const [grupos, setGrupos] = useState([]);
     const [modalGrupo, setModalGrupo] = useState(false);
-    const [nuevoGrupo, setNuevoGrupo] = useState({ grado: "", letra: "", nombreDocente: "", carrera: ""});
+    const [nuevoGrupo, setNuevoGrupo] = useState({ grado: "", letra: "", nombreDocente: "" });
     const [expandedGroup, setExpandedGroup] = useState(null);
     const [alumnosGrupo, setAlumnosGrupo] = useState([]);
     const [modalEliminarAlumno, setModalEliminarAlumno] = useState(false);
@@ -39,23 +39,12 @@ const ListaAlumnos = () => {
     const [modalEditarDocente, setModalEditarDocente] = useState(false);
     const [grupoDocenteEditado, setGrupoDocenteEditado] = useState(null);
     const menuRef = useRef(null);
-     // Estados para el select de grupos en edición
+    // Estados para el select de grupos en edición
     const [groupOptions, setGroupOptions] = useState([]);
     const [selectedGroupEdit, setSelectedGroupEdit] = useState(null);
 
-    // Carreras
-    const [carreras, setCarreras] = useState([]);
-    const [showModalCarrera, setShowModalCarrera] = useState(false);
-    const [nuevaCarrera, setNuevaCarrera] = useState("");
-
-    // al lado de tus estados de carreras
-    const [carreraOptions, setCarreraOptions] = useState([]);
-    const [selectedCarrera, setSelectedCarrera] = useState(null);
-
-
     useEffect(() => {
         obtenerGrupos();
-        obtenerCarreras();
     }, []);
 
     // 1) Efecto para armar las opciones de <Select> de grupos
@@ -68,6 +57,30 @@ const ListaAlumnos = () => {
             setGroupOptions(opciones);
         }
     }, [grupos]);
+
+    useEffect(() => {
+        if (grupos.length > 0) {
+            const fetchAllStudents = async () => {
+                const newAlumnosPorGrupo = {};
+                for (const grupo of grupos) {
+                    const groupString = `${grupo.grado}${grupo.letra}`;
+                    try {
+                        // Asegúrate de que este endpoint incluya TutorUsuario (usando Include en el backend)
+                        const response = await axios.get(`/api/alumnos/grupo/${groupString}`);
+                        newAlumnosPorGrupo[grupo.id] = response.data;
+                    } catch (error) {
+                        console.error("Error al obtener alumnos para el grupo", grupo, error);
+                        newAlumnosPorGrupo[grupo.id] = [];
+                    }
+                }
+                setAlumnosPorGrupo(newAlumnosPorGrupo);
+            };
+            fetchAllStudents();
+        }
+    }, [grupos]);
+
+    const [showModalCarrera, setShowModalCarrera] = useState(false);
+    const [nuevaCarrera, setNuevaCarrera] = useState("");
 
     useEffect(() => {
         if (grupos.length > 0) {
@@ -109,22 +122,6 @@ const ListaAlumnos = () => {
         };
     }, [menuGrupo]);
 
-    //OBTENER CARRERAS
-    const obtenerCarreras = async () => {
-        try {
-            const resp = await axios.get("/api/carreras");
-            setCarreras(resp.data);
-            setCarreraOptions(
-                resp.data.map(c => ({
-                    value: c.nombre,      // usamos sólo el nombre
-                    label: c.nombre
-                }))
-            );
-        } catch (err) {
-            console.error("Error al obtener carreras:", err);
-        }
-    };
-
     const fetchTutorOptionsEdit = async (inputValue) => {
         if (!inputValue || inputValue.length < 2) {
             setTutorOptionsEdit([]);
@@ -134,7 +131,7 @@ const ListaAlumnos = () => {
             const response = await axios.get(`/api/usuarios/autocompletePadres?termino=${inputValue}`);
             const optionsData = response.data.map((padre) => ({
                 value: padre.id_Usuario,
-                label: `${padre.nombre} ${padre.apellidoPaterno}  ${padre.apellidoMaterno}`
+                label: `${padre.nombre} ${padre.apellidoPaterno} ${padre.apellidoMaterno}`
             }));
             setTutorOptionsEdit(optionsData);
         } catch (error) {
@@ -157,6 +154,7 @@ const ListaAlumnos = () => {
         }));
     };
 
+    //
     // debajo de handleTutorChangeSelect
     const handleGroupChangeSelect = option => {
         setSelectedGroupEdit(option);
@@ -164,15 +162,6 @@ const ListaAlumnos = () => {
             ...prev,
             // actualiza aquí la propiedad compuesta que envías al backend
             grupo: option.value
-        }));
-    };
-
-    //carreras
-    const handleCarreraChange = option => {
-        setSelectedCarrera(option);
-        setNuevoGrupo(prev => ({
-            ...prev,
-            carrera: option ? option.value : ""
         }));
     };
 
@@ -198,20 +187,20 @@ const ListaAlumnos = () => {
 
     /* EDITAR */
     const abrirModalEditarAlumno = (alumno) => {
-      // toma el string completo (puede venir como alumno.grupo o alumno.Grupo)
-      const groupValue = alumno.grupo ?? alumno.Grupo ?? "";
-        
-       // carga el alumno en el state
+        // toma el string completo (puede venir como alumno.grupo o alumno.Grupo)
+        const groupValue = alumno.grupo ?? alumno.Grupo ?? "";
+
+        // carga el alumno en el state
         setAlumnoSeleccionado({
-           ...alumno,
-           grupo: groupValue
+            ...alumno,
+            grupo: groupValue
         });
-    
-       // inicializa el Select con la opción correspondiente
-      setSelectedGroupEdit({
-        value: groupValue,
-        label: groupValue
-      });
+
+        // inicializa el Select con la opción correspondiente
+        setSelectedGroupEdit({
+            value: groupValue,
+            label: groupValue
+        });
         // Inicializa el autocompletado si ya existe tutor asignado
         if (alumno.tutorId && alumno.TutorUsuario) {
             setSelectedTutorEdit({
@@ -252,18 +241,26 @@ const ListaAlumnos = () => {
 
             const alumnoParaActualizar = {
                 ...alumnoSinTutor,
+                // Aquí ya no concatenas nada: grupo es directamente "1A", "2C", etc.
                 Grupo: alumno.grupo
             };
+
+            // 4) Llamada al API
             const response = await axios.put(
                 `/api/alumnos/editar/${alumno.id}`,
                 alumnoParaActualizar
             );
+
             alert(response.data.mensaje);
+
+            // 5) Refrescar tu lista local de alumnos
             setAlumnosGrupo((prev) =>
                 prev.map((al) =>
                     al.id === alumno.id ? alumnoParaActualizar : al
                 )
             );
+
+            // 6) Cerrar el modal
             cerrarModalEditarAlumno();
         } catch (error) {
             console.error(
@@ -283,7 +280,7 @@ const ListaAlumnos = () => {
     };
 
     const agregarGrupo = async () => {
-        if (!nuevoGrupo.grado || !nuevoGrupo.letra || !nuevoGrupo.nombreDocente || !nuevoGrupo.carrera) {
+        if (!nuevoGrupo.grado || !nuevoGrupo.letra || !nuevoGrupo.nombreDocente) {
             alert("Por favor, complete todos los campos.");
             return;
         }
@@ -387,7 +384,7 @@ const ListaAlumnos = () => {
             const groupString = `${grupo.grado}${grupo.letra}`.toLowerCase();
             const matchGroup = groupString.includes(normalizedSearch);
             const matchAlumno = (alumnosPorGrupo[grupo.id] || []).some((alumno) =>
-                removeDiacritics((alumno.nombre + " " + alumno.apellidos).toLowerCase()).includes(normalizedSearch)
+                removeDiacritics((alumno.nombre + " " + alumno.apellidoPaterno + " " + alumno.apellidoMaterno).toLowerCase()).includes(normalizedSearch)
             );
             return matchGroup || matchAlumno;
         })
@@ -481,16 +478,9 @@ const ListaAlumnos = () => {
                 <div className="lista-header">
                     <h2 className="lista-title">Lista de Grupos</h2>
                 </div>
-                <div className="carreras-container">
-                    {carreras.map(c => (
-                        <div key={c.id} className="carrera-card">
-                            <h2>{c.nombre}</h2>
-                        </div>
-                    ))}
-                </div>
                 <div className="grupos-container">
-                    {carreras.length === 0 ? (
-                        <p>No hay carreras registradas.</p>
+                    {grupos.length === 0 ? (
+                        <p>No hay grupos registrados.</p>
                     ) : (
                         gruposFiltrados.map((grupo) => {
                             const groupString = `${grupo.grado}${grupo.letra}`.toLowerCase();
@@ -717,18 +707,6 @@ const ListaAlumnos = () => {
                                     placeholder="Nombre del docente"
                                 />
                             </div>
-                            {/* → Select de Carrera */}
-                            <div className="input-group">
-                                <label>Carrera:</label>
-                                <Select
-                                    classNamePrefix="my-select"
-                                    options={carreraOptions}
-                                    value={selectedCarrera}
-                                    onChange={handleCarreraChange}
-                                    placeholder="Seleccione una carrera"
-                                    noOptionsMessage={() => "No hay carreras aún"}
-                                />
-                            </div>
                         </div>
                         <button className="save-button" onClick={agregarGrupo}>
                             Guardar
@@ -831,9 +809,9 @@ const ListaAlumnos = () => {
                             <label>Grupo:</label>
                             <Select
                                 classNamePrefix="my-select"
-                                options={groupOptions}                
-                                value={selectedGroupEdit}             
-                                onChange={handleGroupChangeSelect}    
+                                options={groupOptions}
+                                value={selectedGroupEdit}
+                                onChange={handleGroupChangeSelect}
                                 placeholder="Seleccione un grupo..."
                                 noOptionsMessage={() => "No hay grupos aún"}
                             />
@@ -841,7 +819,7 @@ const ListaAlumnos = () => {
 
                         {/* Selección del tutor en el modal de edición */}
                         <div className="input-container">
-                            <label>Padre:(opcional)</label>
+                            <label>Padre:</label>
                             <Select
                                 classNamePrefix="my-select"
                                 value={selectedTutorEdit}
@@ -936,17 +914,20 @@ const ListaAlumnos = () => {
                             <option value="PUERICULTURA">PUERICULTURA</option>
                         </select>
                         <button
-                            onClick={async () => {
+                            onClick={() => {
                                 if (!nuevaCarrera) return alert("Seleccione una carrera válida");
-                                try {
-                                    await axios.post("/api/carreras/agregar", { nombre: nuevaCarrera });
-                                    setNuevaCarrera("");
-                                    setShowModalCarrera(false);
-                                    await obtenerCarreras();
-                                } catch (err) {
-                                    console.error(err);
-                                    alert("❌ Error al registrar la carrera");
-                                }
+                                // Aquí llamas a tu endpoint o función para guardar
+                                axios.post("/api/carreras", { nombre: nuevaCarrera })
+                                    .then(() => {
+                                        alert("✅ Carrera registrada correctamente");
+                                        setShowModalCarrera(false);
+                                        setNuevaCarrera("");
+                                        // Opcional: recargar lista de grupos/carreras si es necesario
+                                    })
+                                    .catch((err) => {
+                                        console.error(err);
+                                        alert("❌ Error al registrar la carrera");
+                                    });
                             }}
                             style={{
                                 backgroundColor: "#4CAF50",

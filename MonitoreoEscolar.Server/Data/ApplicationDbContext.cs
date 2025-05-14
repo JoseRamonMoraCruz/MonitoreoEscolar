@@ -15,7 +15,7 @@ namespace MonitoreoEscolar.Server.Data
         public DbSet<Grupo> Grupos { get; set; }
         public DbSet<Calificacion> Calificaciones { get; set; }
         public DbSet<Reporte> Reportes { get; set; }
-        public DbSet<Carrera> Carreras { get; set; }
+        public DbSet<Asistencia> Asistencias { get; set; }
 
 
 

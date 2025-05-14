@@ -99,5 +99,24 @@ namespace MonitoreoEscolar.Server.Controllers
 
             return Ok(filtradas);
         }
+
+        // ENDPOINT PARA OBTENER ASISTENCIAS DE UN ALUMNO
+        [HttpGet("obtener-asistencias-alumno/{alumnoId}")]
+        public async Task<IActionResult> ObtenerAsistenciasPorAlumno(int alumnoId)
+        {
+            var asistencias = await _context.Asistencias
+                .Where(a => a.AlumnoId == alumnoId)
+                .OrderByDescending(a => a.Fecha)
+                .Select(a => new
+                {
+                    Fecha = a.Fecha.ToString("yyyy/MM/dd"),
+                    HoraEntrada = a.HoraEntrada.HasValue ? a.HoraEntrada.Value.ToString("hh:mm:ss tt") : "-",
+                    HoraSalida = a.HoraSalida.HasValue ? a.HoraSalida.Value.ToString("hh:mm:ss tt") : "-"
+                })
+                .ToListAsync();
+
+            return Ok(asistencias);
+        }
+
     }
 }

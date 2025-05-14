@@ -7,6 +7,7 @@ const Padre = () => {
     const [hijos, setHijos] = useState([]);
     const [reportesPorAlumno, setReportesPorAlumno] = useState({});
     const [expandedAlumnoId, setExpandedAlumnoId] = useState(null);
+    const [asistenciasPorAlumno, setAsistenciasPorAlumno] = useState({});
     const navigate = useNavigate();
 
     const [nombrePadre, setNombrePadre] = useState("");
@@ -65,8 +66,14 @@ const Padre = () => {
         if (expandedAlumnoId === alumnoId) {
             setExpandedAlumnoId(null);
             return;
+        } if (!asistenciasPorAlumno[alumnoId]) {
+            try {
+                const response = await axios.get(`http://localhost:5099/api/padres/obtener-asistencias-alumno/${alumnoId}`);
+                setAsistenciasPorAlumno(prev => ({ ...prev, [alumnoId]: response.data }));
+            } catch (error) {
+                console.error("❌ Error al obtener asistencias:", error);
+            }
         }
-
         setExpandedAlumnoId(alumnoId);
 
         // Obtener reportes si aún no están
@@ -147,19 +154,29 @@ const Padre = () => {
                                     </tbody>
                                 </table>
 
-                                <h3>📅 Asistencias</h3>
+                                <h3> Asistencias</h3>
                                 <table className="styled-table">
                                     <thead>
                                         <tr>
-                                            <th>Asistencia</th>
-                                            <th>Fecha y hora de entrada</th>
-                                            <th>Fecha y hora de salida</th>
+                                            <th>Fecha</th>
+                                            <th>Hora de entrada</th>
+                                            <th>Hora de salida</th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <tr><td>Presente</td><td>2025/01/25 08:46:12 AM</td><td>2025/01/25 02:46:12 PM</td></tr>
-                                        <tr><td>Ausente</td><td>-</td><td>-</td></tr>
-                                        <tr><td>Presente</td><td>2025/01/27 08:50:00 AM</td><td>2025/01/27 02:40:00 PM</td></tr>
+                                        {asistenciasPorAlumno[hijo.alumnoId]?.length > 0 ? (
+                                            asistenciasPorAlumno[hijo.alumnoId].map((a, idx) => (
+                                                <tr key={idx}>
+                                                    <td>{a.fecha}</td>
+                                                    <td>{a.horaEntrada}</td>
+                                                    <td>{a.horaSalida}</td>
+                                                </tr>
+                                            ))
+                                        ) : (
+                                            <tr>
+                                                <td colSpan="3">Sin asistencias registradas.</td>
+                                            </tr>
+                                        )}
                                     </tbody>
                                 </table>
 

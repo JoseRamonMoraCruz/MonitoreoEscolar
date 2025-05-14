@@ -27,7 +27,7 @@ const GenerarReportes = () => {
     // Guardar cambios
     const handleUpdateReporte = async () => {
         try {
-            await axios.put(`http://localhost:5099/api/reportes/${editingReport.id}`, {
+            await axios.put(`/api/reportes/${editingReport.id}`, {
                 AlumnoId: editingReport.alumnoId,
                 Fecha: editingReport.fecha,
                 Motivo: editingReport.motivo
@@ -52,7 +52,7 @@ const GenerarReportes = () => {
     // Traer la lista de reportes siempre que abra el modal
     useEffect(() => {
         if (isModalOpen) {
-            axios.get("http://localhost:5099/api/reportes")
+            axios.get("/api/reportes")
                 .then(res => setReportesList(res.data))
                 .catch(err => console.error(err));
         }
@@ -62,7 +62,7 @@ const GenerarReportes = () => {
     const handleDeleteReporte = async (id) => {
         if (!window.confirm("¿Eliminar este reporte?")) return;
         try {
-            await axios.delete(`http://localhost:5099/api/reportes/${id}`);
+            await axios.delete(`/api/reportes/${id}`);
             setReportesList(r => r.filter(x => x.id !== id));
         } catch (err) {
             console.error(err);
@@ -92,7 +92,7 @@ const GenerarReportes = () => {
             return;
         }
         try {
-            const response = await axios.get(`http://localhost:5099/api/alumnos/buscar?termino=${inputValue}`);
+            const response = await axios.get(`/api/alumnos/buscar?termino=${inputValue}`);
             const optionsData = response.data.map((alumno) => ({
                 value: alumno.id,
                 label: alumno.nombreCompleto
@@ -136,7 +136,7 @@ const GenerarReportes = () => {
             return;
         }
         try {
-            const response = await axios.post("http://localhost:5099/api/reportes/generar", reporte); // AQUÍ ESTÁ
+            const response = await axios.post("/api/reportes/generar", reporte); // AQUÍ ESTÁ
             alert(response.data.mensaje);
             // Limpiar formulario
             setReporte({

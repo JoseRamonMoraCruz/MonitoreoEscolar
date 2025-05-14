@@ -62,14 +62,14 @@ namespace MonitoreoEscolar.Server.Controllers
             }
 
             // Sólo el Personal Escolar debe conocer la clave maestra para registrarse:
-               if (request.Tipo_Usuario == "personal")
-                   {
-                    var masterPass = "EscolarPerson123";  
-                       if (request.Contrasena != masterPass)
-                           {
-                               return BadRequest(new { mensaje = "Contraseña de acceso para personal inválida." });
-                       }
-               }
+            if (request.Tipo_Usuario == "personal")
+            {
+                var masterPass = "EscolarPerson123";
+                if (request.Contrasena != masterPass)
+                {
+                    return BadRequest(new { mensaje = "Contraseña de acceso para personal inválida." });
+                }
+            }
 
             var nuevoUsuario = new Usuario
             {
@@ -226,7 +226,7 @@ namespace MonitoreoEscolar.Server.Controllers
             var padres = await _context.Usuarios
                 .Where(u => u.Tipo_Usuario.ToLower() == "padre" &&
                             EF.Functions.Collate(
-                                (u.Nombre +  " " + u.ApellidoPaterno + " " + u.ApellidoMaterno).ToLower(),
+                                (u.Nombre + " " + u.ApellidoPaterno + " " + u.ApellidoMaterno).ToLower(),
                                 "Latin1_General_CI_AI"
                             ).Contains(lowerTerm))
                 .Select(u => new
@@ -268,12 +268,12 @@ namespace MonitoreoEscolar.Server.Controllers
                 .ToListAsync();
 
             // Filtrar en memoria usando la normalización de texto
-                var resultados = padres.Where(u =>
-                NormalizarTexto(u.Nombre).Contains(searchTerm) ||
-                NormalizarTexto(u.ApellidoPaterno).Contains(searchTerm) ||
-                NormalizarTexto(u.ApellidoMaterno).Contains(searchTerm) ||
-                NormalizarTexto(u.NombreCompleto).Contains(searchTerm)
-            ).ToList();
+            var resultados = padres.Where(u =>
+            NormalizarTexto(u.Nombre).Contains(searchTerm) ||
+            NormalizarTexto(u.ApellidoPaterno).Contains(searchTerm) ||
+            NormalizarTexto(u.ApellidoMaterno).Contains(searchTerm) ||
+            NormalizarTexto(u.NombreCompleto).Contains(searchTerm)
+        ).ToList();
 
             if (!resultados.Any())
                 return NotFound(new { mensaje = "No se encontraron padres con ese nombre." });
@@ -287,7 +287,7 @@ namespace MonitoreoEscolar.Server.Controllers
         {
             if (!ModelState.IsValid)
             {
-                
+
                 return BadRequest(ModelState);
             }
 
@@ -300,7 +300,7 @@ namespace MonitoreoEscolar.Server.Controllers
             }
 
             // Actualizar sólo los campos permitidos
-            usuario.Nombre = request.PrimerNombre;
+            usuario.Nombre = request.Nombre;
             usuario.ApellidoPaterno = request.ApellidoPaterno;
             usuario.ApellidoMaterno = request.ApellidoMaterno;
             usuario.Correo = request.Correo;
@@ -316,7 +316,7 @@ namespace MonitoreoEscolar.Server.Controllers
         public async Task<IActionResult> ObtenerUsuarioLogueado()
         {
             // Obtén el usuario autenticado desde el contexto actual
-            var usuarioId = User?.FindFirstValue(ClaimTypes.NameIdentifier); 
+            var usuarioId = User?.FindFirstValue(ClaimTypes.NameIdentifier);
 
             if (usuarioId == null)
             {

@@ -14,7 +14,7 @@ import WhatsappIcon from "./assets/whatsapp.png";
 const ListaAlumnos = () => {
     const [grupos, setGrupos] = useState([]);
     const [modalGrupo, setModalGrupo] = useState(false);
-    const [nuevoGrupo, setNuevoGrupo] = useState({ grado: "", letra: "", nombreDocente: "" });
+    const [nuevoGrupo, setNuevoGrupo] = useState({ grado: "", letra: "", nombreDocente: "", carreraId: null});
     const [expandedGroup, setExpandedGroup] = useState(null);
     const [alumnosGrupo, setAlumnosGrupo] = useState([]);
     const [modalEliminarAlumno, setModalEliminarAlumno] = useState(false);
@@ -43,8 +43,29 @@ const ListaAlumnos = () => {
     const [groupOptions, setGroupOptions] = useState([]);
     const [selectedGroupEdit, setSelectedGroupEdit] = useState(null);
 
+    // Carreras
+    const [carreras, setCarreras] = useState([]);
+    const [showModalCarrera, setShowModalCarrera] = useState(false);
+    const [nuevaCarrera, setNuevaCarrera] = useState("");
+
+    // al lado de tus estados de carreras
+    const [carreraOptions, setCarreraOptions] = useState([]);
+    const [selectedCarrera, setSelectedCarrera] = useState(null);
+
+
     useEffect(() => {
         obtenerGrupos();
+        (async function obtenerCarreras() {
+            try {
+                const resp = await axios.get("/api/carreras");
+                setCarreras(resp.data);
+                setCarreraOptions(
+                    resp.data.map(c => ({ value: c.id, label: c.nombre }))
+                );
+            } catch (err) {
+                console.error("Error al obtener carreras:", err);
+            }
+        })();
     }, []);
 
     // 1) Efecto para armar las opciones de <Select> de grupos
@@ -65,7 +86,6 @@ const ListaAlumnos = () => {
                 for (const grupo of grupos) {
                     const groupString = `${grupo.grado}${grupo.letra}`;
                     try {
-                        // Asegúrate de que este endpoint incluya TutorUsuario (usando Include en el backend)
                         const response = await axios.get(`/api/alumnos/grupo/${groupString}`);
                         newAlumnosPorGrupo[grupo.id] = response.data;
                     } catch (error) {
@@ -78,10 +98,6 @@ const ListaAlumnos = () => {
             fetchAllStudents();
         }
     }, [grupos]);
-
-    const [showModalCarrera, setShowModalCarrera] = useState(false);
-    const [nuevaCarrera, setNuevaCarrera] = useState("");
-
 
     //Es pa ver si el usuario hizo click afuera se cierre el menu de los puntitos
     useEffect(() => {
@@ -103,6 +119,16 @@ const ListaAlumnos = () => {
         };
     }, [menuGrupo]);
 
+    //OBTENER CARRERAS
+    const obtenerCarreras = async () => {
+        try {
+            const resp = await axios.get("/api/carreras");
+            setCarreras(resp.data);
+        } catch (err) {
+            console.error("Error al obtener carreras:", err);
+        }
+    };
+
     const fetchTutorOptionsEdit = async (inputValue) => {
         if (!inputValue || inputValue.length < 2) {
             setTutorOptionsEdit([]);
@@ -112,7 +138,7 @@ const ListaAlumnos = () => {
             const response = await axios.get(`/api/usuarios/autocompletePadres?termino=${inputValue}`);
             const optionsData = response.data.map((padre) => ({
                 value: padre.id_Usuario,
-                label: `${padre.nombre} ${padre.apellidos} - ${padre.correo}`
+                label: `${padre.nombre} ${padre.apellidoPaterno}  ${padre.apellidoMaterno}`
             }));
             setTutorOptionsEdit(optionsData);
         } catch (error) {
@@ -135,7 +161,6 @@ const ListaAlumnos = () => {
         }));
     };
 
-    //
     // debajo de handleTutorChangeSelect
     const handleGroupChangeSelect = option => {
         setSelectedGroupEdit(option);
@@ -143,6 +168,15 @@ const ListaAlumnos = () => {
             ...prev,
             // actualiza aquí la propiedad compuesta que envías al backend
             grupo: option.value
+        }));
+    };
+
+    //carreras
+    const handleCarreraChange = option => {
+        setSelectedCarrera(option);
+        setNuevoGrupo(prev => ({
+            ...prev,
+            carreraId: option ? option.value : null
         }));
     };
 
@@ -186,7 +220,7 @@ const ListaAlumnos = () => {
         if (alumno.tutorId && alumno.TutorUsuario) {
             setSelectedTutorEdit({
                 value: alumno.tutorId,
-                label: `${alumno.TutorUsuario.nombre} ${alumno.TutorUsuario.apellidos} - ${alumno.TutorUsuario.correo}`
+                label: `${alumno.TutorUsuario.nombre} ${alumno.TutorUsuario.apellidoPaterno} - ${alumno.TutorUsuario.apellidoMaterno}`
             });
         } else {
             setSelectedTutorEdit(null);
@@ -222,26 +256,18 @@ const ListaAlumnos = () => {
 
             const alumnoParaActualizar = {
                 ...alumnoSinTutor,
-                // Aquí ya no concatenas nada: grupo es directamente "1A", "2C", etc.
                 Grupo: alumno.grupo
             };
-
-            // 4) Llamada al API
             const response = await axios.put(
                 `/api/alumnos/editar/${alumno.id}`,
                 alumnoParaActualizar
             );
-
             alert(response.data.mensaje);
-
-            // 5) Refrescar tu lista local de alumnos
             setAlumnosGrupo((prev) =>
                 prev.map((al) =>
                     al.id === alumno.id ? alumnoParaActualizar : al
                 )
             );
-
-            // 6) Cerrar el modal
             cerrarModalEditarAlumno();
         } catch (error) {
             console.error(
@@ -261,7 +287,7 @@ const ListaAlumnos = () => {
     };
 
     const agregarGrupo = async () => {
-        if (!nuevoGrupo.grado || !nuevoGrupo.letra || !nuevoGrupo.nombreDocente) {
+        if (!nuevoGrupo.grado || !nuevoGrupo.letra || !nuevoGrupo.nombreDocente || !nuevoGrupo.carreraId) {
             alert("Por favor, complete todos los campos.");
             return;
         }
@@ -459,9 +485,16 @@ const ListaAlumnos = () => {
                 <div className="lista-header">
                     <h2 className="lista-title">Lista de Grupos</h2>
                 </div>
+                <div className="carreras-container">
+                    {carreras.map(c => (
+                        <div key={c.id} className="carrera-card">
+                            <h2>{c.nombre}</h2>
+                        </div>
+                    ))}
+                </div>
                 <div className="grupos-container">
-                    {grupos.length === 0 ? (
-                        <p>No hay grupos registrados.</p>
+                    {carreras.length === 0 ? (
+                        <p>No hay carreras registradas.</p>
                     ) : (
                         gruposFiltrados.map((grupo) => {
                             const groupString = `${grupo.grado}${grupo.letra}`.toLowerCase();
@@ -688,6 +721,18 @@ const ListaAlumnos = () => {
                                     placeholder="Nombre del docente"
                                 />
                             </div>
+                            {/* → Select de Carrera */}
+                            <div className="input-group">
+                                <label>Carrera:</label>
+                                <Select
+                                    classNamePrefix="my-select"
+                                    options={carreraOptions}
+                                    value={selectedCarrera}
+                                    onChange={handleCarreraChange}
+                                    placeholder="Seleccione una carrera"
+                                    noOptionsMessage={() => "No hay carreras aún"}
+                                />
+                            </div>
                         </div>
                         <button className="save-button" onClick={agregarGrupo}>
                             Guardar
@@ -800,7 +845,7 @@ const ListaAlumnos = () => {
 
                         {/* Selección del tutor en el modal de edición */}
                         <div className="input-container">
-                            <label>Padre:</label>
+                            <label>Padre:(opcional)</label>
                             <Select
                                 classNamePrefix="my-select"
                                 value={selectedTutorEdit}
@@ -895,20 +940,17 @@ const ListaAlumnos = () => {
                             <option value="PUERICULTURA">PUERICULTURA</option>
                         </select>
                         <button
-                            onClick={() => {
+                            onClick={async () => {
                                 if (!nuevaCarrera) return alert("Seleccione una carrera válida");
-                                // Aquí llamas a tu endpoint o función para guardar
-                                axios.post("/api/carreras", { nombre: nuevaCarrera })
-                                    .then(() => {
-                                        alert("✅ Carrera registrada correctamente");
-                                        setShowModalCarrera(false);
-                                        setNuevaCarrera("");
-                                        // Opcional: recargar lista de grupos/carreras si es necesario
-                                    })
-                                    .catch((err) => {
-                                        console.error(err);
-                                        alert("❌ Error al registrar la carrera");
-                                    });
+                                try {
+                                    await axios.post("/api/carreras/agregar", { nombre: nuevaCarrera });
+                                    setNuevaCarrera("");
+                                    setShowModalCarrera(false);
+                                    await obtenerCarreras();
+                                } catch (err) {
+                                    console.error(err);
+                                    alert("❌ Error al registrar la carrera");
+                                }
                             }}
                             style={{
                                 backgroundColor: "#4CAF50",

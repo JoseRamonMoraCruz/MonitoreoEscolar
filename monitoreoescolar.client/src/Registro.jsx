@@ -22,7 +22,7 @@ export default function Registro() {
 
     useEffect(() => {
         if (toastMensaje) {
-            const timer = setTimeout(() => setToastMensaje(""), 8000); // 3 segundos se muestra el mensaje
+            const timer = setTimeout(() => setToastMensaje(""), 8000); 
             return () => clearTimeout(timer);
         }
     }, [toastMensaje]);
@@ -66,7 +66,7 @@ export default function Registro() {
         };
 
         try {
-            const response = await axios.post("http://localhost:5099/api/usuarios/registro", usuario);
+            const response = await axios.post("/api/usuarios/registro", usuario);
             alert(response.data.mensaje);
             navigate("/"); 
         } catch (error) {

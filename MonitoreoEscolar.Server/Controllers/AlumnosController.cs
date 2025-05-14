@@ -207,7 +207,7 @@ namespace MonitoreoEscolar.Server.Controllers
                 alumnoExistente.NombreCompleto = $"{alumnoEditado.Nombre.Trim()} {alumnoEditado.ApellidoPaterno.Trim()} {alumnoEditado.ApellidoMaterno.Trim()}";
                 alumnoExistente.NombreCompletoNormalizado = RemoveDiacritics(alumnoExistente.NombreCompleto.ToLower());
                 alumnoExistente.Grupo = alumnoEditado.Grupo.Trim();
-                alumnoEditado.Domicilio = alumnoEditado.Domicilio.Trim();
+                alumnoExistente.Domicilio = alumnoEditado.Domicilio.Trim();
                 alumnoExistente.CURP = alumnoEditado.CURP.Trim().ToUpper();
                 alumnoExistente.NumeroControl = alumnoEditado.NumeroControl?.Trim();
                 alumnoExistente.Carrera = alumnoEditado.Carrera?.Trim();

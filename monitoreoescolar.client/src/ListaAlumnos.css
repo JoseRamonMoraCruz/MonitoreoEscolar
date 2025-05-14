@@ -526,3 +526,41 @@ input {
     .boton-carrera:hover {
         transform: scale(1.1);
     }
+
+    /*carreras*/
+.carreras-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin-bottom: 20px;
+    justify-content: center;
+}
+
+.carrera-card {
+    background: #fff;
+    color: #333;
+    border-radius: 30px;
+    padding: 50px 40px; /* Más espacio interior */
+    min-width: 900px; /* Ensanchamos la tarjeta */
+    max-width: 600px; /* Límite superior */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    cursor: pointer;
+    transition: transform .2s ease-in-out, box-shadow .2s ease-in-out;
+    text-align: left; /* Mejor alineación de texto */
+    font-size: 22px; /* Texto más grande */
+    margin: 15px auto; /* Separación vertical y centrar */
+}
+
+    .carrera-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+    }
+
+    /* Título dentro de la carta */
+    .carrera-card h2 {
+        margin: 0 0 10px;
+        font-size: 28px; /* Título aún más grande */
+        font-weight: bold;
+        color: #333;
+    }
+

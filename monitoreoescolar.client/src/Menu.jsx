@@ -8,12 +8,14 @@ const Menu = () => {
     const [editedUser, setEditedUser] = useState({
         id_Usuario: "",
         nombre: "",
-        apellidos: "",
+        apellidoPaterno: "",
+        apellidoMaterno: "",
         correo: "",
         telefono: "",
         newPassword: "",
         confirmPassword: ""
     });
+
     const [showModal, setShowModal] = useState(false);
     const [showToast, setShowToast] = useState(false);
 
@@ -29,13 +31,15 @@ const Menu = () => {
         setEditedUser({
             id_Usuario: localStorage.getItem("idUsuario") || "",
             nombre: localStorage.getItem("nombre") || "",
-            apellidos: localStorage.getItem("apellidos") || "",
+            apellidoPaterno: localStorage.getItem("apellidoPaterno") || "",
+            apellidoMaterno: localStorage.getItem("apellidoMaterno") || "",
             correo: localStorage.getItem("correo") || "",
             telefono: localStorage.getItem("telefono") || "",
             newPassword: "",
             confirmPassword: ""
         });
     }, []);
+
 
     const handleOpenModal = () => setShowModal(true);
     const handleCloseModal = () => setShowModal(false);
@@ -55,7 +59,7 @@ const Menu = () => {
                 return;
             }
             try {
-                await axios.post("http://localhost:5099/api/usuarios/actualizar-password", {
+                await axios.post("/api/usuarios/actualizar-password", {
                     correo: editedUser.correo,
                     NewPassword: editedUser.newPassword
                 });
@@ -70,16 +74,18 @@ const Menu = () => {
             const payload = {
                 Id_Usuario: editedUser.id_Usuario,
                 Nombre: editedUser.nombre,
-                Apellidos: editedUser.apellidos,
+                ApellidoPaterno: editedUser.apellidoPaterno,
+                ApellidoMaterno: editedUser.apellidoMaterno,
                 Correo: editedUser.correo,
                 Telefono: editedUser.telefono
             };
-            const resp = await axios.put("http://localhost:5099/api/usuarios/actualizar-perfil", payload);
+            const resp = await axios.put("/api/usuarios/actualizar-perfil", payload);
             alert(resp.data.mensaje);
 
             // sincronizar localStorage
             localStorage.setItem("nombre", editedUser.nombre);
-            localStorage.setItem("apellidos", editedUser.apellidos);
+            localStorage.setItem("apellidoPaterno", editedUser.apellidoPaterno);
+            localStorage.setItem("apellidoMaterno", editedUser.apellidoMaterno);
             localStorage.setItem("correo", editedUser.correo);
             localStorage.setItem("telefono", editedUser.telefono);
 
@@ -124,10 +130,19 @@ const Menu = () => {
                                 />
                             </div>
                             <div className="perfil-field-group">
-                                <label>Apellidos:</label>
+                                <label>Apellido Paterno:</label>
                                 <input
-                                    name="apellidos"
-                                    value={editedUser.apellidos}
+                                    name="apellidoPaterno"
+                                    value={editedUser.apellidoPaterno}
+                                    onChange={handleInputChange}
+                                    required
+                                />
+                            </div>
+                            <div className="perfil-field-group">
+                                <label>Apellido Materno:</label>
+                                <input
+                                    name="apellidoMaterno"
+                                    value={editedUser.apellidoMaterno}
                                     onChange={handleInputChange}
                                     required
                                 />

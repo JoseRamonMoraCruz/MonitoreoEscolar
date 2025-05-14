@@ -14,7 +14,7 @@ import WhatsappIcon from "./assets/whatsapp.png";
 const ListaAlumnos = () => {
     const [grupos, setGrupos] = useState([]);
     const [modalGrupo, setModalGrupo] = useState(false);
-    const [nuevoGrupo, setNuevoGrupo] = useState({ grado: "", letra: "", nombreDocente: "", carreraId: null});
+    const [nuevoGrupo, setNuevoGrupo] = useState({ grado: "", letra: "", nombreDocente: "", carrera: ""});
     const [expandedGroup, setExpandedGroup] = useState(null);
     const [alumnosGrupo, setAlumnosGrupo] = useState([]);
     const [modalEliminarAlumno, setModalEliminarAlumno] = useState(false);
@@ -55,17 +55,7 @@ const ListaAlumnos = () => {
 
     useEffect(() => {
         obtenerGrupos();
-        (async function obtenerCarreras() {
-            try {
-                const resp = await axios.get("/api/carreras");
-                setCarreras(resp.data);
-                setCarreraOptions(
-                    resp.data.map(c => ({ value: c.id, label: c.nombre }))
-                );
-            } catch (err) {
-                console.error("Error al obtener carreras:", err);
-            }
-        })();
+        obtenerCarreras();
     }, []);
 
     // 1) Efecto para armar las opciones de <Select> de grupos
@@ -124,6 +114,12 @@ const ListaAlumnos = () => {
         try {
             const resp = await axios.get("/api/carreras");
             setCarreras(resp.data);
+            setCarreraOptions(
+                resp.data.map(c => ({
+                    value: c.nombre,      // usamos sólo el nombre
+                    label: c.nombre
+                }))
+            );
         } catch (err) {
             console.error("Error al obtener carreras:", err);
         }
@@ -176,7 +172,7 @@ const ListaAlumnos = () => {
         setSelectedCarrera(option);
         setNuevoGrupo(prev => ({
             ...prev,
-            carreraId: option ? option.value : null
+            carrera: option ? option.value : ""
         }));
     };
 
@@ -287,7 +283,7 @@ const ListaAlumnos = () => {
     };
 
     const agregarGrupo = async () => {
-        if (!nuevoGrupo.grado || !nuevoGrupo.letra || !nuevoGrupo.nombreDocente || !nuevoGrupo.carreraId) {
+        if (!nuevoGrupo.grado || !nuevoGrupo.letra || !nuevoGrupo.nombreDocente || !nuevoGrupo.carrera) {
             alert("Por favor, complete todos los campos.");
             return;
         }

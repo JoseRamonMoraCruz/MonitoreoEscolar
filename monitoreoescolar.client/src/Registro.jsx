@@ -132,8 +132,7 @@ export default function Registro() {
                     <input type="text" placeholder="Apellido Paterno" className="input-field" value={apellidoPaterno} onChange={(e) => setApellidoPaterno(e.target.value)} required />
                     <input type="text" placeholder="Apellido Materno" className="input-field" value={apellidoMaterno} onChange={(e) => setApellidoMaterno(e.target.value)} required />
                     <input type="tel" placeholder="Teléfono" className="input-field" value={telefono} onChange={(e) => setTelefono(e.target.value)} required />                
-                    <input type="email" placeholder="Correo" className="input-field" value={correo} onChange={(e) => setCorreo(e.target.value)} required />
-                    <input type="tel" placeholder="Teléfono" className="input-field" value={telefono} onChange={(e) => setTelefono(e.target.value)} required />  
+                    <input type="email" placeholder="Correo" className="input-field" value={correo} onChange={(e) => setCorreo(e.target.value)} required /> 
                     <input type="password" placeholder="Contraseña" className="input-field" value={contrasena} onChange={(e) => setContrasena(e.target.value)} required />
                     <input
                         type="password"

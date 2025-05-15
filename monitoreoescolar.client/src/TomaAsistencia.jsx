@@ -18,7 +18,7 @@ const TomaAsistencia = () => {
 
     const obtenerAsistenciasDelDia = async () => {
         try {
-            const response = await axios.get("http://localhost:5099/api/tomaasistencia/hoy");
+            const response = await axios.get("/api/tomaasistencia/hoy");
             console.log("📊 Asistencias cargadas:", response.data);
             setAlumnos(response.data);
         } catch (error) {
@@ -39,7 +39,7 @@ const TomaAsistencia = () => {
         console.log("📦 Código recibido del QR:", codigo);
 
         try {
-            const response = await axios.post("http://localhost:5099/api/tomaasistencia/registrar", {
+            const response = await axios.post("/api/tomaasistencia/registrar", {
                 curp: codigo
             });
 
@@ -146,5 +146,6 @@ const TomaAsistencia = () => {
         </div>
     );
 };
+
 
 export default TomaAsistencia;

@@ -95,8 +95,6 @@ namespace MonitoreoEscolar.Server.Controllers
             return File(qrCodeAsPng, "image/png");
         }
 
-
-
         [HttpGet("buscar")]
         public async Task<IActionResult> BuscarAlumnos([FromQuery] string termino)
         {

@@ -134,6 +134,9 @@ namespace MonitoreoEscolar.Server.Controllers
                         apellidoMaterno = a.ApellidoMaterno,
                         domicilio = a.Domicilio,
                         grupo = a.Grupo,
+                        carrera = a.Carrera,
+                        numeroControl = a.NumeroControl,
+                        curp = a.CURP,
                         tutorUsuario = a.TutorUsuario == null ? null : new
 
                         {
@@ -217,7 +220,6 @@ namespace MonitoreoEscolar.Server.Controllers
                 {
                     alumnoExistente.TutorId = alumnoEditado.TutorId;
                 }
-
 
                 // Guardar cambios
                 await _context.SaveChangesAsync();

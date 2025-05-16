@@ -24,8 +24,6 @@ const AgregarAlumno = () => {
         TutorId: null
     });
 
-
-
     //Variable para el nombre de la imagen del qr
     const [nombreArchivoQR, setNombreArchivoQR] = useState("QR_alumno");
 
@@ -332,7 +330,6 @@ const AgregarAlumno = () => {
                                 <option value="PUERICULTURA">PUERICULTURA</option>
                             </select>
                         </div>
-
 
                         {/* Plantel */}
                         <div className="agregar-alumno-group">

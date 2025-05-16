@@ -68,7 +68,7 @@ const Padre = () => {
             return;
         } if (!asistenciasPorAlumno[alumnoId]) {
             try {
-                const response = await axios.get(`http://localhost:5099/api/padres/obtener-asistencias-alumno/${alumnoId}`);
+                const response = await axios.get(`/api/padres/obtener-asistencias-alumno/${alumnoId}`);
                 setAsistenciasPorAlumno(prev => ({ ...prev, [alumnoId]: response.data }));
             } catch (error) {
                 console.error("❌ Error al obtener asistencias:", error);

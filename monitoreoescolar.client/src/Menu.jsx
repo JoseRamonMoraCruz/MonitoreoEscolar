@@ -118,7 +118,7 @@ const Menu = () => {
                 <div className="perfil-modal">
                     <div className="perfil-modal-content">
                         <span className="perfil-modal-close" onClick={handleCloseModal}>X</span>
-                        <h3>Editar Perfil</h3>
+                        <div className="perfil-modal-h3">👤 Editar Perfil</div>
                         <form onSubmit={handleSubmit}>
                             <div className="perfil-field-group">
                                 <label>Nombre:</label>

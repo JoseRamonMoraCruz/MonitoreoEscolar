@@ -124,7 +124,6 @@ namespace MonitoreoEscolar.Server.Controllers
                     .Where(a => a.Grupo == grupoStr)
                     .OrderBy(a => a.NombreCompleto)
                     .Select(a => new
-
                     {
                         id = a.Id,
                         nombre = a.Nombre,
@@ -135,8 +134,10 @@ namespace MonitoreoEscolar.Server.Controllers
                         carrera = a.Carrera,
                         numeroControl = a.NumeroControl,
                         curp = a.CURP,
+                        turno = a.Turno,
+                        generacion = a.Generacion,
+                        ciclo = a.Ciclo,
                         tutorUsuario = a.TutorUsuario == null ? null : new
-
                         {
                             id_Usuario = a.TutorUsuario.Id_Usuario,
                             nombre = a.TutorUsuario.Nombre,
@@ -152,10 +153,9 @@ namespace MonitoreoEscolar.Server.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new { mensaje = " Error al obtener alumnos por grupo.", error = ex.Message });
+                return StatusCode(500, new { mensaje = "Error al obtener alumnos por grupo.", error = ex.Message });
             }
         }
-
 
         //  ELIMINAR ALUMNO
         [HttpDelete("eliminar/{id}")]
@@ -212,6 +212,9 @@ namespace MonitoreoEscolar.Server.Controllers
                 alumnoExistente.CURP = alumnoEditado.CURP.Trim().ToUpper();
                 alumnoExistente.NumeroControl = alumnoEditado.NumeroControl?.Trim();
                 alumnoExistente.Carrera = alumnoEditado.Carrera?.Trim();
+                alumnoExistente.Turno = alumnoEditado.Turno?.Trim();
+                alumnoExistente.Generacion = alumnoEditado.Generacion?.Trim();
+                alumnoExistente.Ciclo = alumnoEditado.Ciclo?.Trim();
 
                 // Actualiza el TutorId solo si se proporciona un nuevo valor (no es null)
                 if (alumnoEditado.TutorId != null)

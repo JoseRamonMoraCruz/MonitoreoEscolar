@@ -1,4 +1,4 @@
-﻿import { useState, useEffect } from "react"; 
+﻿import { useState, useEffect } from "react";
 import axios from "axios";
 import Select from "react-select";
 import "./GenerarReportes.css";
@@ -170,7 +170,7 @@ const GenerarReportes = () => {
                 <form className="generar-reportes-form" onSubmit={handleSubmit}>
                     <div className="generar-reportes-row">
                         <div className="generar-reportes-group">
-                            <label>Nombre del Alumno:</label>
+                            <label>👨🏻‍🎓 Nombre del Alumno:</label>
                             <Select
                                 classNamePrefix="my-select"
                                 value={selectedAlumno}
@@ -182,7 +182,7 @@ const GenerarReportes = () => {
                             />
                         </div>
                         <div className="generar-reportes-group">
-                            <label>Fecha:</label>
+                            <label>📆 Fecha:</label>
                             <input
                                 type="datetime-local"
                                 name="fecha"
@@ -193,7 +193,7 @@ const GenerarReportes = () => {
                         </div>
                     </div>
                     <div className="generar-reportes-group">
-                        <label>Motivo del Reporte:</label>
+                        <label>🤔 Motivo del Reporte:</label>
                         <textarea
                             name="motivo"
                             value={reporte.motivo}

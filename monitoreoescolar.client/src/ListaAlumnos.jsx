@@ -216,6 +216,7 @@ const ListaAlumnos = () => {
             carrera: alumno.carrera ?? "",
             numeroControl: alumno.numeroControl ?? "",
             curp: alumno.curp ?? ""
+           
         });
 
         // 2) Inicializa cada Select con su opción correspondiente
@@ -587,13 +588,16 @@ const ListaAlumnos = () => {
                                                 <table className="tabla-alumnos">
                                                     <thead>
                                                         <tr>
-                                                            <th>Nombre Alumno</th>
-                                                            <th>Padre</th>
-                                                            <th>Domicilio</th>
-                                                            <th>Carrera</th>
-                                                            <th>No. Control</th>
-                                                            <th>Curp</th>
-                                                            <th>Acciones</th>
+                                                           <th>Nombre Alumno</th>
+                                                           <th>Padre</th>
+                                                           <th>Domicilio</th>
+                                                           <th>Carrera</th>
+                                                           <th>No. Control</th>
+                                                           <th>Curp</th>
+                                                           <th>Turno</th>
+                                                           <th>Generación</th>
+                                                           <th>Periodo</th>
+                                                           <th>Acciones</th>
                                                         </tr>
                                                     </thead>
                                                     <tbody>{ /*ELIMINAR POR SI LAS DUDAS POR SI NO FUNCIONA*/}
@@ -622,6 +626,9 @@ const ListaAlumnos = () => {
                                                                     <td>{alumno.carrera}</td>
                                                                     <td>{alumno.numeroControl}</td>
                                                                     <td>{alumno.curp}</td>
+                                                                    <td>{alumno.turno}</td>
+                                                                    <td>{alumno.generacion}</td>
+                                                                    <td>{alumno.ciclo}</td>
                                                                     <td className="acciones">
                                                                         <img
                                                                             src={editIcon}
@@ -659,6 +666,9 @@ const ListaAlumnos = () => {
                                                             <th>Carrera</th>
                                                             <th>No. Control</th>
                                                             <th>Curp</th>
+                                                            <th>Turno</th>
+                                                            <th>Generación</th>
+                                                            <th>Periodo</th>
                                                             <th>Acciones</th>
                                                         </tr>
                                                     </thead>
@@ -686,6 +696,9 @@ const ListaAlumnos = () => {
                                                                 <td>{alumno.carrera}</td>
                                                                 <td>{alumno.numeroControl}</td>
                                                                 <td>{alumno.curp}</td>
+                                                                <td>{alumno.turno}</td>
+                                                                <td>{alumno.generacion}</td>
+                                                                <td>{alumno.ciclo}</td>
                                                                 <td className="acciones">
                                                                     <img
                                                                         src={editIcon}
@@ -960,6 +973,45 @@ const ListaAlumnos = () => {
                                         ...prev,
                                         alumnoSeleccionado, curp: e.target.value
                                     }))
+                                }
+                            />
+                        </div>
+
+                        {/* Turno */}
+                        <div className="input-container">
+                            <label>Turno:</label>
+                            <input
+                                type="text"
+                                name="turno"
+                                value={alumnoSeleccionado.turno || ""}
+                                onChange={e =>
+                                    setAlumnoSeleccionado({ ...alumnoSeleccionado, turno: e.target.value })
+                                }
+                            />
+                        </div>
+
+                        {/* Generación */}
+                        <div className="input-container">
+                            <label>Generación:</label>
+                            <input
+                                type="text"
+                                name="generacion"
+                                value={alumnoSeleccionado.generacion || ""}
+                                onChange={e =>
+                                    setAlumnoSeleccionado({ ...alumnoSeleccionado, generacion: e.target.value })
+                                }
+                            />
+                        </div>
+
+                        {/* Periodo Escolar (Ciclo) */}
+                        <div className="input-container">
+                            <label>Periodo Escolar:</label>
+                            <input
+                                type="text"
+                                name="Ciclo"
+                                value={alumnoSeleccionado.ciclo || ""}
+                                onChange={e =>
+                                    setAlumnoSeleccionado({ ...alumnoSeleccionado, ciclo: e.target.value })
                                 }
                             />
                         </div>

@@ -188,7 +188,7 @@ const AgregarAlumno = () => {
                     <form onSubmit={handleSubmit}>
                         {/* Nombre */}
                         <div className="agregar-alumno-group">
-                            <label>Nombre:</label>
+                            <label>👨🏻‍🎓 Nombre:</label>
                             <input
                                 type="text"
                                 name="Nombre"
@@ -201,7 +201,7 @@ const AgregarAlumno = () => {
 
                         {/* Apellido Paterno */}
                         <div className="agregar-alumno-group">
-                            <label>Apellido Paterno:</label>
+                            <label>👨🏻‍🎓 Apellido Paterno:</label>
                             <input
                                 type="text"
                                 name="ApellidoPaterno"
@@ -214,7 +214,7 @@ const AgregarAlumno = () => {
 
                         {/* Apellido Materno */}
                         <div className="agregar-alumno-group">
-                            <label>Apellido Materno:</label>
+                            <label>👨🏻‍🎓 Apellido Materno:</label>
                             <input
                                 type="text"
                                 name="ApellidoMaterno"
@@ -263,7 +263,7 @@ const AgregarAlumno = () => {
 
                         {/* Autocompletado para seleccionar padre/tutor */}
                         <div className="agregar-alumno-group">
-                            <label> Seleccionar padre del alumno:</label>
+                            <label> 👨🏻‍🦰 Seleccionar padre del alumno:</label>
                             <Select
                                 classNamePrefix="my-select"
                                 value={selectedTutor}
@@ -276,7 +276,7 @@ const AgregarAlumno = () => {
                         </div>
                         {/* Domicilio */}
                         <div className="agregar-alumno-group">
-                            <label> Domicilio:</label>
+                            <label>🏠 Domicilio:</label>
                             <input
                                 type="text"
                                 name="Domicilio"
@@ -289,7 +289,7 @@ const AgregarAlumno = () => {
 
                         {/* CURP */}
                         <div className="agregar-alumno-group">
-                            <label> CURP:</label>
+                            <label>👤 CURP:</label>
                             <input
                                 type="text"
                                 name="CURP"
@@ -301,7 +301,7 @@ const AgregarAlumno = () => {
 
                         {/* Número de Control */}
                         <div className="agregar-alumno-group">
-                            <label> Número de Control:</label>
+                            <label>🆔 Número de Control:</label>
                             <input
                                 type="text"
                                 name="NumeroControl"
@@ -313,7 +313,7 @@ const AgregarAlumno = () => {
 
                         {/* Carrera */}
                         <div className="agregar-alumno-group">
-                            <label> Carrera:</label>
+                            <label>📝 Carrera:</label>
                             <select
                                 name="Carrera"
                                 value={alumno.Carrera}
@@ -333,7 +333,7 @@ const AgregarAlumno = () => {
 
                         {/* Plantel */}
                         <div className="agregar-alumno-group">
-                            <label> Plantel:</label>
+                            <label>🏫 Plantel:</label>
                             <input
                                 type="text"
                                 name="Plantel"
@@ -345,7 +345,7 @@ const AgregarAlumno = () => {
 
                         {/* Turno */}
                         <div className="agregar-alumno-group">
-                            <label> Turno:</label>
+                            <label>☀️🌜 Turno:</label>
                             <input
                                 type="text"
                                 name="Turno"
@@ -357,7 +357,7 @@ const AgregarAlumno = () => {
 
                         {/* Generación */}
                         <div className="agregar-alumno-group">
-                            <label> Generación:</label>
+                            <label>🔢 Generación:</label>
                             <input
                                 type="text"
                                 name="Generacion"
@@ -369,20 +369,14 @@ const AgregarAlumno = () => {
 
                         {/* Perdiodo Escolar */}
                         <div className="agregar-alumno-group">
-                            <label> Periodo Escolar:</label>
-                            <select
+                            <label>🔢 Perdiodo Escolar:</label>
+                            <input
+                                type="text"
                                 name="Ciclo"
                                 value={alumno.Ciclo}
                                 onChange={handleChange}
-                                required
-                            >
-                                <option value="">Seleccione un periodo</option>
-                                <option value="SEMESTRAL 1 - 2024">SEMESTRAL 1 - 2024</option>
-                                <option value="SEMESTRAL 2 - 2024">SEMESTRAL 2 - 2024</option>
-                                <option value="SEMESTRAL 1 - 2025">SEMESTRAL 1 - 2025</option>
-                                <option value="SEMESTRAL 2 - 2025">SEMESTRAL 2 - 2025</option>
-                            </select>
-
+                                placeholder="(EJEMPLO) :SEMESTRAL 1 - 2024"
+                            />
                         </div>
 
                         {/* Botones */}

@@ -3,7 +3,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    padding: 10px 30px;
+    padding: 16px 30px;
     gap: 10px;
     box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.4);
     animation: slideDown 0.6s ease-out;
@@ -159,6 +159,12 @@
         border: 1px solid #ccc;
         font-size: 14px;
     }
+.perfil-modal-h3 {
+    font-size: 30px;
+    margin-bottom: 15px;
+    text-align: center;
+    color:black
+}
 
 button {
     background-color: #4CAF50;

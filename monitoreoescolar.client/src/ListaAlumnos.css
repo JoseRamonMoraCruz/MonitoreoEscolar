@@ -93,7 +93,7 @@
     flex-direction: column;
     align-items: stretch; /* Ocupa todo el ancho disponible */
     justify-content: flex-start;
-    margin: 20px auto; /* Separación arriba/abajo */
+    margin: 6px auto; /* Separación arriba/abajo */
 }
 
     .grupo-card:hover {

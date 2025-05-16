@@ -65,13 +65,13 @@ using (var scope = app.Services.CreateScope())
         if (context.Database.CanConnect())
         {
             Console.ForegroundColor = ConsoleColor.Green;
-            Console.WriteLine("✅ Conexión exitosa a SQL Server.");
+            Console.WriteLine(" Conexión exitosa a SQL Server.");
             Console.ResetColor();
         }
         else
         {
             Console.ForegroundColor = ConsoleColor.Red;
-            Console.WriteLine("❌ No se pudo conectar a SQL Server.");
+            Console.WriteLine(" No se pudo conectar a SQL Server.");
             Console.ResetColor();
         }
     }

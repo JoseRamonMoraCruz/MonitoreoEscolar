@@ -43,6 +43,11 @@ const ListaAlumnos = () => {
     const [groupOptions, setGroupOptions] = useState([]);
     const [selectedGroupEdit, setSelectedGroupEdit] = useState(null);
 
+    // Carreras para el Select de edición
+    const [carreraOptions, setCarreraOptions] = useState([]);
+    const [selectedCarreraEdit, setSelectedCarreraEdit] = useState(null);
+
+
     useEffect(() => {
         obtenerGrupos();
     }, []);
@@ -58,6 +63,18 @@ const ListaAlumnos = () => {
         }
     }, [grupos]);
 
+    //carreras creo
+    useEffect(() => {
+        axios.get("/api/carreras")
+            .then(resp => {
+                setCarreraOptions(resp.data.map(c => ({
+                    value: c.nombre,
+                    label: c.nombre
+                })));
+            })
+            .catch(console.error);
+    }, []);
+
     useEffect(() => {
         if (grupos.length > 0) {
             const fetchAllStudents = async () => {
@@ -66,7 +83,7 @@ const ListaAlumnos = () => {
                     const groupString = `${grupo.grado}${grupo.letra}`;
                     try {
                         // Asegúrate de que este endpoint incluya TutorUsuario (usando Include en el backend)
-                        const response = await axios.get(`http://localhost:5099/api/alumnos/grupo/${groupString}`);
+                        const response = await axios.get(`/api/alumnos/grupo/${groupString}`);
                         newAlumnosPorGrupo[grupo.id] = response.data;
                     } catch (error) {
                         console.error("Error al obtener alumnos para el grupo", grupo, error);
@@ -79,9 +96,25 @@ const ListaAlumnos = () => {
         }
     }, [grupos]);
 
-    const [showModalCarrera, setShowModalCarrera] = useState(false);
-    const [nuevaCarrera, setNuevaCarrera] = useState("");
-
+    useEffect(() => {
+        if (grupos.length > 0) {
+            const fetchAllStudents = async () => {
+                const newAlumnosPorGrupo = {};
+                for (const grupo of grupos) {
+                    const groupString = `${grupo.grado}${grupo.letra}`;
+                    try {
+                        const response = await axios.get(`/api/alumnos/grupo/${groupString}`);
+                        newAlumnosPorGrupo[grupo.id] = response.data;
+                    } catch (error) {
+                        console.error("Error al obtener alumnos para el grupo", grupo, error);
+                        newAlumnosPorGrupo[grupo.id] = [];
+                    }
+                }
+                setAlumnosPorGrupo(newAlumnosPorGrupo);
+            };
+            fetchAllStudents();
+        }
+    }, [grupos]);
 
     //Es pa ver si el usuario hizo click afuera se cierre el menu de los puntitos
     useEffect(() => {
@@ -109,7 +142,7 @@ const ListaAlumnos = () => {
             return;
         }
         try {
-            const response = await axios.get(`http://localhost:5099/api/usuarios/autocompletePadres?termino=${inputValue}`);
+            const response = await axios.get(`/api/usuarios/autocompletePadres?termino=${inputValue}`);
             const optionsData = response.data.map((padre) => ({
                 value: padre.id_Usuario,
                 label: `${padre.nombre} ${padre.apellidoPaterno} ${padre.apellidoMaterno}`
@@ -125,6 +158,14 @@ const ListaAlumnos = () => {
             return inputValue;
         }
         return inputValue;
+    };
+
+    const handleCarreraChangeEdit = option => {
+        setSelectedCarreraEdit(option);
+        setAlumnoSeleccionado(prev => ({
+            ...prev,
+            carrera: option ? option.value : ""
+        }));
     };
 
     const handleTutorChangeSelect = (selectedOption) => {
@@ -145,10 +186,9 @@ const ListaAlumnos = () => {
             grupo: option.value
         }));
     };
-
     const obtenerGrupos = async () => {
         try {
-            const response = await axios.get("http://localhost:5099/api/grupos");
+            const response = await axios.get("/api/grupos");
             const gruposOrdenados = response.data.sort((a, b) => {
                 const gradeA = parseInt(a.grado, 10);
                 const gradeB = parseInt(b.grado, 10);
@@ -167,21 +207,35 @@ const ListaAlumnos = () => {
     const cerrarModalGrupo = () => setModalGrupo(false);
 
     /* EDITAR */
-    const abrirModalEditarAlumno = (alumno) => {
-        // toma el string completo (puede venir como alumno.grupo o alumno.Grupo)
-        const groupValue = alumno.grupo ?? alumno.Grupo ?? "";
-
-        // carga el alumno en el state
+    const abrirModalEditarAlumno = alumno => {
+        const grupoStr = alumno.grupo ?? alumno.Grupo ?? "";
+        // 1) Inyecta TODOS los campos que luego vas a editar
         setAlumnoSeleccionado({
             ...alumno,
-            grupo: groupValue
+            grupo: grupoStr,
+            carrera: alumno.carrera ?? "",
+            numeroControl: alumno.numeroControl ?? "",
+            curp: alumno.curp ?? ""
         });
 
-        // inicializa el Select con la opción correspondiente
-        setSelectedGroupEdit({
-            value: groupValue,
-            label: groupValue
-        });
+        // 2) Inicializa cada Select con su opción correspondiente
+        setSelectedGroupEdit(
+            grupoStr ? { value: grupoStr, label: grupoStr } : null
+        );
+        setSelectedCarreraEdit(
+            alumno.carrera
+                ? { value: alumno.carrera, label: alumno.carrera }
+                : null
+        );
+        setSelectedTutorEdit(
+            alumno.tutorUsuario
+                ? {
+                    value: alumno.tutorUsuario.id_Usuario,
+                    label: `${alumno.tutorUsuario.nombre} ${alumno.tutorUsuario.apellidopaterno} ${alumno.tutorUsuario.apellidomaterno}`
+                }
+                : null
+        );
+
         // Inicializa el autocompletado si ya existe tutor asignado
         if (alumno.tutorId && alumno.TutorUsuario) {
             setSelectedTutorEdit({
@@ -191,6 +245,9 @@ const ListaAlumnos = () => {
         } else {
             setSelectedTutorEdit(null);
         }
+        setModalEditarAlumno(true);
+
+        // 3) Finalmente abre el modal UNA vez
         setModalEditarAlumno(true);
     };
 
@@ -228,7 +285,7 @@ const ListaAlumnos = () => {
 
             // 4) Llamada al API
             const response = await axios.put(
-                `http://localhost:5099/api/alumnos/editar/${alumno.id}`,
+                `/api/alumnos/editar/${alumno.id}`,
                 alumnoParaActualizar
             );
 
@@ -254,6 +311,7 @@ const ListaAlumnos = () => {
             );
         }
     };
+
     /*FIN DE EDITAR */
 
     const handleChange = (e) => {
@@ -266,7 +324,7 @@ const ListaAlumnos = () => {
             return;
         }
         try {
-            await axios.post("http://localhost:5099/api/grupos/agregar", nuevoGrupo);
+            await axios.post("/api/grupos/agregar", nuevoGrupo);
             alert("✅ Grupo agregado correctamente.");
             obtenerGrupos();
             cerrarModalGrupo();
@@ -288,7 +346,7 @@ const ListaAlumnos = () => {
             return;
         }
         try {
-            const response = await axios.get(`http://localhost:5099/api/alumnos/grupo/${groupString}`);
+            const response = await axios.get(`/api/alumnos/grupo/${groupString}`);
             setAlumnosGrupo(response.data);
             setExpandedGroup(grupo);
         } catch (error) {
@@ -312,7 +370,7 @@ const ListaAlumnos = () => {
     const eliminarGrupo = async () => {
         if (!grupoSeleccionado) return;
         try {
-            await axios.delete(`http://localhost:5099/api/grupos/eliminar/${grupoSeleccionado.id}`);
+            await axios.delete(`/api/grupos/eliminar/${grupoSeleccionado.id}`);
             alert("✅ Grupo eliminado exitosamente.");
             setGrupos(grupos.filter((g) => g.id !== grupoSeleccionado.id));
             if (expandedGroup && expandedGroup.id === grupoSeleccionado.id) {
@@ -340,7 +398,7 @@ const ListaAlumnos = () => {
     const eliminarAlumno = async () => {
         if (!alumnoSeleccionado) return;
         try {
-            await axios.delete(`http://localhost:5099/api/alumnos/eliminar/${alumnoSeleccionado.id}`);
+            await axios.delete(`/api/alumnos/eliminar/${alumnoSeleccionado.id}`);
             alert("✅ Alumno eliminado correctamente.");
             setAlumnosGrupo(alumnosGrupo.filter((al) => al.id !== alumnoSeleccionado.id));
             cerrarModalEliminarAlumno();
@@ -403,7 +461,7 @@ const ListaAlumnos = () => {
         }
         try {
             const response = await axios.put(
-                `http://localhost:5099/api/grupos/editar/${grupoDocenteEditado.id}`,
+                `/api/grupos/editar/${grupoDocenteEditado.id}`,
                 grupoDocenteEditado
             );
             alert(response.data.mensaje);
@@ -427,7 +485,7 @@ const ListaAlumnos = () => {
 
         try {
             // Llamada al nuevo endpoint para eliminar el docente
-            const response = await axios.put(`http://localhost:5099/api/grupos/eliminarDocente/${grupo.id}`);
+            const response = await axios.put(`/api/grupos/eliminarDocente/${grupo.id}`);
             alert(response.data.mensaje);
             obtenerGrupos();
             cerrarMenuGrupo();
@@ -525,23 +583,92 @@ const ListaAlumnos = () => {
                                         tableData.length === 0 ? (
                                             <p>No hay alumnos registrados en este grupo.</p>
                                         ) : (
-                                            <table className="tabla-alumnos">
-                                                <thead>
-                                                    <tr>
-                                                        <th>Nombre Alumno</th>
-                                                        <th>Padre</th>
-                                                        <th>Domicilio</th>
-                                                        <th>Acciones</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>{ /*ELIMINAR POR SI LAS DUDAS POR SI NO FUNCIONA*/}
-                                                    {tableData.map((alumno) => {
-                                                        console.log("ALUMNO:", alumno);
-                                                        return (
+                                            <div className="tabla-wrapper">
+                                                <table className="tabla-alumnos">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>Nombre Alumno</th>
+                                                            <th>Padre</th>
+                                                            <th>Domicilio</th>
+                                                            <th>Carrera</th>
+                                                            <th>No. Control</th>
+                                                            <th>Curp</th>
+                                                            <th>Acciones</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>{ /*ELIMINAR POR SI LAS DUDAS POR SI NO FUNCIONA*/}
+                                                        {tableData.map((alumno) => {
+                                                            console.log("ALUMNO:", alumno);
+                                                            return (
+                                                                <tr key={alumno.id}>
+                                                                    <td>
+                                                                        {alumno.nombre} {alumno.apellidoPaterno} {alumno.apellidoMaterno}
+                                                                    </td>
+                                                                    <td className="padre-whatsapp">
+                                                                        {alumno.tutorUsuario?.telefono && (
+                                                                            <img
+                                                                                src={WhatsappIcon}
+                                                                                alt="WhatsApp"
+                                                                                className="accion-icon whatsapp"
+                                                                                onClick={() => abrirWhatsApp(alumno.tutorUsuario.telefono)}
+                                                                            />
+                                                                        )}
+                                                                        {alumno.tutorUsuario
+                                                                            ? `${alumno.tutorUsuario.nombre} ${alumno.tutorUsuario.apellidopaterno} ${alumno.tutorUsuario.apellidomaterno}`
+                                                                            : "Sin Tutor"}
+
+                                                                    </td>
+                                                                    <td>{alumno.domicilio}</td>
+                                                                    <td>{alumno.carrera}</td>
+                                                                    <td>{alumno.numeroControl}</td>
+                                                                    <td>{alumno.curp}</td>
+                                                                    <td className="acciones">
+                                                                        <img
+                                                                            src={editIcon}
+                                                                            alt="Editar"
+                                                                            className="accion-icon editar"
+                                                                            onClick={() => abrirModalEditarAlumno(alumno)}
+                                                                        />
+                                                                        <img
+                                                                            src={removeIcon}
+                                                                            alt="Eliminar"
+                                                                            className="accion-icon eliminar"
+                                                                            onClick={() => abrirModalEliminarAlumno(alumno)}
+                                                                        />
+                                                                    </td>
+                                                                </tr>
+                                                            );
+                                                        })}
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        )
+                                    ) : (
+                                        expandedGroup &&
+                                        expandedGroup.id === grupo.id &&
+                                        (alumnosGrupo.length === 0 ? (
+                                            <p>No hay alumnos registrados en este grupo.</p>
+                                        ) : (
+                                            <div className="tabla-wrapper">
+                                                <table className="tabla-alumnos">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>Nombre Alumno</th>
+                                                            <th>Padre</th>
+                                                            <th>Domicilio</th>
+                                                            <th>Carrera</th>
+                                                            <th>No. Control</th>
+                                                            <th>Curp</th>
+                                                            <th>Acciones</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        {alumnosGrupo.map((alumno) => (
                                                             <tr key={alumno.id}>
                                                                 <td>
-                                                                    {alumno.nombre} {alumno.apellidoPaterno} {alumno.apellidoMaterno}
+                                                                    {alumno.nombre} {alumno.apellidos}
                                                                 </td>
+                                                                {/*SECCION DE LA PARTE DEL WHATS, SI NO FUNCIONA DEBERIAS ELIMINARLO*/}
                                                                 <td className="padre-whatsapp">
                                                                     {alumno.tutorUsuario?.telefono && (
                                                                         <img
@@ -554,15 +681,16 @@ const ListaAlumnos = () => {
                                                                     {alumno.tutorUsuario
                                                                         ? `${alumno.tutorUsuario.nombre} ${alumno.tutorUsuario.apellidopaterno} ${alumno.tutorUsuario.apellidomaterno}`
                                                                         : "Sin Tutor"}
-
                                                                 </td>
                                                                 <td>{alumno.domicilio}</td>
+                                                                <td>{alumno.carrera}</td>
+                                                                <td>{alumno.numeroControl}</td>
+                                                                <td>{alumno.curp}</td>
                                                                 <td className="acciones">
                                                                     <img
                                                                         src={editIcon}
                                                                         alt="Editar"
                                                                         className="accion-icon editar"
-                                                                        onClick={() => abrirModalEditarAlumno(alumno)}
                                                                     />
                                                                     <img
                                                                         src={removeIcon}
@@ -572,64 +700,10 @@ const ListaAlumnos = () => {
                                                                     />
                                                                 </td>
                                                             </tr>
-                                                        );
-                                                    })}
-                                                </tbody>
-                                            </table>
-                                        )
-                                    ) : (
-                                        expandedGroup &&
-                                        expandedGroup.id === grupo.id &&
-                                        (alumnosGrupo.length === 0 ? (
-                                            <p>No hay alumnos registrados en este grupo.</p>
-                                        ) : (
-                                            <table className="tabla-alumnos">
-                                                <thead>
-                                                    <tr>
-                                                        <th>Nombre Alumno</th>
-                                                        <th>Padre</th>
-                                                        <th>Domicilio</th>
-                                                        <th>Acciones</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    {alumnosGrupo.map((alumno) => (
-                                                        <tr key={alumno.id}>
-                                                            <td>
-                                                                {alumno.nombre} {alumno.apellidos}
-                                                            </td>
-                                                            {/*SECCION DE LA PARTE DEL WHATS, SI NO FUNCIONA DEBERIAS ELIMINARLO*/}
-                                                            <td className="padre-whatsapp">
-                                                                {alumno.tutorUsuario?.telefono && (
-                                                                    <img
-                                                                        src={WhatsappIcon}
-                                                                        alt="WhatsApp"
-                                                                        className="accion-icon whatsapp"
-                                                                        onClick={() => abrirWhatsApp(alumno.tutorUsuario.telefono)}
-                                                                    />
-                                                                )}
-                                                                {alumno.tutorUsuario
-                                                                    ? `${alumno.tutorUsuario.nombre} ${alumno.tutorUsuario.apellidopaterno} ${alumno.tutorUsuario.apellidomaterno}`
-                                                                    : "Sin Tutor"}
-                                                            </td>
-                                                            <td>{alumno.domicilio}</td>
-                                                            <td className="acciones">
-                                                                <img
-                                                                    src={editIcon}
-                                                                    alt="Editar"
-                                                                    className="accion-icon editar"
-                                                                />
-                                                                <img
-                                                                    src={removeIcon}
-                                                                    alt="Eliminar"
-                                                                    className="accion-icon eliminar"
-                                                                    onClick={() => abrirModalEliminarAlumno(alumno)}
-                                                                />
-                                                            </td>
-                                                        </tr>
-                                                    ))}
-                                                </tbody>
-                                            </table>
+                                                        ))}
+                                                    </tbody>
+                                                </table>
+                                            </div>
                                         ))
                                     )}
                                 </div>
@@ -641,10 +715,6 @@ const ListaAlumnos = () => {
             <button className="boton-agregar" onClick={abrirModalGrupo}>
                 <img src={addIcon} alt="Agregar Grupo" />
             </button>
-            <button className="boton-agregar boton-carrera" onClick={() => setShowModalCarrera(true)}>
-                <img src={addIcon} alt="Agregar Carrera" />
-            </button>
-
 
             {modalGrupo && (
                 <div className="modal-overlay">
@@ -748,8 +818,8 @@ const ListaAlumnos = () => {
 
             {/* MODAL DE EDITAR ALUMNO */}
             {modalEditarAlumno && alumnoSeleccionado && (
-                <div className="modal-overlay">
-                    <div className="modal-content">
+                <div className="modal-editar-overlay">
+                    <div className="modal-editar-content">
                         <button className="close-button" onClick={cerrarModalEditarAlumno}>✖</button>
                         <h2 className="modal-title">Editar Alumno</h2>
 
@@ -759,7 +829,12 @@ const ListaAlumnos = () => {
                                 type="text"
                                 name="nombre"
                                 value={alumnoSeleccionado.nombre}
-                                onChange={(e) => setAlumnoSeleccionado({ ...alumnoSeleccionado, nombre: e.target.value })}
+                                onChange={e =>
+                                    setAlumnoSeleccionado(prev => ({
+                                        ...prev,
+                                        nombre: e.target.value
+                                    }))
+                                }
                             />
                         </div>
 
@@ -770,7 +845,10 @@ const ListaAlumnos = () => {
                                 name="apellidoPaterno"
                                 value={alumnoSeleccionado.apellidoPaterno}
                                 onChange={(e) =>
-                                    setAlumnoSeleccionado({ ...alumnoSeleccionado, apellidoPaterno: e.target.value })
+                                    setAlumnoSeleccionado(prev => ({
+                                        ...prev,
+                                        alumnoSeleccionado, apellidoPaterno: e.target.value
+                                    }))
                                 }
                             />
                         </div>
@@ -782,7 +860,10 @@ const ListaAlumnos = () => {
                                 name="apellidoMaterno"
                                 value={alumnoSeleccionado.apellidoMaterno}
                                 onChange={(e) =>
-                                    setAlumnoSeleccionado({ ...alumnoSeleccionado, apellidoMaterno: e.target.value })
+                                    setAlumnoSeleccionado(prev => ({
+                                        ...prev,
+                                        alumnoSeleccionado, apellidoMaterno: e.target.value
+                                    }))
                                 }
                             />
                         </div>
@@ -818,7 +899,68 @@ const ListaAlumnos = () => {
                                 type="text"
                                 name="domicilio"
                                 value={alumnoSeleccionado.domicilio}
-                                onChange={(e) => setAlumnoSeleccionado({ ...alumnoSeleccionado, domicilio: e.target.value })}
+                                onChange={(e) =>
+                                    setAlumnoSeleccionado(prev => ({
+                                        ...prev,
+                                        alumnoSeleccionado, domicilio: e.target.value
+                                    }))
+                                }
+                            />
+                        </div>
+
+                        {/* Carrera */}
+                        <div className="input-container">
+                            <label>Carrera:</label>
+                            <select
+                                name="carrera"
+                                value={alumnoSeleccionado.carrera || ""}
+                                onChange={e =>
+                                    setAlumnoSeleccionado({
+                                        ...alumnoSeleccionado,
+                                        carrera: e.target.value
+                                    })
+                                }
+                            >
+                                <option value="">Seleccione una carrera</option>
+                                <option value="CIENCIA DE DATOS E INFORMACIÓN">CIENCIA DE DATOS E INFORMACIÓN </option>
+                                <option value="CONSTRUCCIÓN">CONSTRUCCIÓN</option>
+                                <option value="CONTABILIDAD">CONTABILIDAD</option>
+                                <option value="LABORATORISTA CLÍNICO">LABORATORISTA CLÍNICO</option>
+                                <option value="MANTENIMIENTO AUTOMOTRIZ">MANTENIMIENTO AUTOMOTRIZ</option>
+                                <option value="MECATRÓNICA">MECATRÓNICA</option>
+                                <option value="PUERICULTURA">PUERICULTURA</option>
+                            </select>
+                        </div>
+
+                        {/* Número de Control */}
+                        <div className="input-container">
+                            <label>Número de Control:</label>
+                            <input
+                                type="text"
+                                name="numeroControl"
+                                value={alumnoSeleccionado.numeroControl || ""}
+                                onChange={(e) =>
+                                    setAlumnoSeleccionado(prev => ({
+                                        ...prev,
+                                        alumnoSeleccionado, numeroControl: e.target.value
+                                    }))
+                                }
+                            />
+                        </div>
+
+                        {/* CURP */}
+                        <div className="input-container">
+                            <label>CURP:</label>
+                            <input
+                                type="text"
+                                name="curp"
+                                value={alumnoSeleccionado.curp || ""}
+                                onChange={(e) =>
+                                    setAlumnoSeleccionado(prev => ({
+                                        ...prev,
+                                        alumnoSeleccionado, curp: e.target.value
+                                    }))
+                                }
                             />
                         </div>
 
@@ -868,65 +1010,7 @@ const ListaAlumnos = () => {
                     </div>
                 </div>
             )}
-            {showModalCarrera && (
-                <div className="modal-huella">
-                    <div className="modal-content">
-                        <span className="close" onClick={() => setShowModalCarrera(false)}>X</span>
-                        <h3>Selecciona una Carrera</h3>
-                        <select
-                            value={nuevaCarrera}
-                            onChange={(e) => setNuevaCarrera(e.target.value)}
-                            style={{
-                                padding: "10px",
-                                borderRadius: "8px",
-                                backgroundColor: "#D9D9D9",
-                                fontSize: "16px",
-                                marginBottom: "15px",
-                                width: "100%"
-                            }}
-                        >
-                            <option value="">Seleccione una carrera</option>
-                            <option value="CIENCIA DE DATOS E INFORMACIÓN">CIENCIA DE DATOS E INFORMACIÓN</option>
-                            <option value="CONSTRUCCIÓN">CONSTRUCCIÓN</option>
-                            <option value="CONTABILIDAD">CONTABILIDAD</option>
-                            <option value="LABORATORISTA CLÍNICO">LABORATORISTA CLÍNICO</option>
-                            <option value="MANTENIMIENTO AUTOMOTRIZ">MANTENIMIENTO AUTOMOTRIZ</option>
-                            <option value="MECATRÓNICA">MECATRÓNICA</option>
-                            <option value="PUERICULTURA">PUERICULTURA</option>
-                        </select>
-                        <button
-                            onClick={() => {
-                                if (!nuevaCarrera) return alert("Seleccione una carrera válida");
-                                // Aquí llamas a tu endpoint o función para guardar
-                                axios.post("/api/carreras", { nombre: nuevaCarrera })
-                                    .then(() => {
-                                        alert("✅ Carrera registrada correctamente");
-                                        setShowModalCarrera(false);
-                                        setNuevaCarrera("");
-                                        // Opcional: recargar lista de grupos/carreras si es necesario
-                                    })
-                                    .catch((err) => {
-                                        console.error(err);
-                                        alert("❌ Error al registrar la carrera");
-                                    });
-                            }}
-                            style={{
-                                backgroundColor: "#4CAF50",
-                                color: "white",
-                                padding: "10px 20px",
-                                borderRadius: "5px",
-                                border: "none",
-                                cursor: "pointer"
-                            }}
-                        >
-                            Registrar Carrera
-                        </button>
-                    </div>
-                </div>
-            )}
-
         </div>
-
     );
 };
 

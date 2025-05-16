@@ -59,7 +59,7 @@ const Menu = () => {
                 return;
             }
             try {
-                await axios.post("http://localhost:5099/api/usuarios/actualizar-password", {
+                await axios.post("/api/usuarios/actualizar-password", {
                     correo: editedUser.correo,
                     NewPassword: editedUser.newPassword
                 });
@@ -79,7 +79,7 @@ const Menu = () => {
                 Correo: editedUser.correo,
                 Telefono: editedUser.telefono
             };
-            const resp = await axios.put("http://localhost:5099/api/usuarios/actualizar-perfil", payload);
+            const resp = await axios.put("/api/usuarios/actualizar-perfil", payload);
             alert(resp.data.mensaje);
 
             // sincronizar localStorage

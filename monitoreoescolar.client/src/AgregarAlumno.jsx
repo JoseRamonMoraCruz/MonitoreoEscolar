@@ -24,8 +24,6 @@ const AgregarAlumno = () => {
         TutorId: null
     });
 
-
-
     //Variable para el nombre de la imagen del qr
     const [nombreArchivoQR, setNombreArchivoQR] = useState("QR_alumno");
 
@@ -72,7 +70,7 @@ const AgregarAlumno = () => {
             return;
         }
         try {
-            const response = await axios.get(`http://localhost:5099/api/usuarios/autocompletePadres?termino=${inputValue}`);
+            const response = await axios.get(`/api/usuarios/autocompletePadres?termino=${inputValue}`);
             const optionsData = response.data.map((padre) => ({
                 value: padre.id_Usuario,
                 label: `${padre.nombre} ${padre.apellidoPaterno} ${padre.apellidoMaterno} - ${padre.correo}`
@@ -109,7 +107,7 @@ const AgregarAlumno = () => {
 
         // Verificar que el grupo seleccionado exista
         try {
-            const gruposResponse = await axios.get("http://localhost:5099/api/grupos");
+            const gruposResponse = await axios.get("/api/grupos");
             const gruposExistentes = gruposResponse.data;
             const grupoEncontrado = gruposExistentes.find(
                 (g) =>
@@ -134,14 +132,14 @@ const AgregarAlumno = () => {
 
         // Registrar al alumno
         try {
-            const response = await axios.post("http://localhost:5099/api/alumnos/registro", alumno);
+            const response = await axios.post("/api/alumnos/registro", alumno);
             alert(response.data.mensaje);
 
             // Obtener el ID del nuevo alumno
             const alumnoId = response.data.alumno.id;
 
             // Obtener el QR desde el backend
-            const qrResponse = await axios.get(`http://localhost:5099/api/alumnos/qr/${alumnoId}`, {
+            const qrResponse = await axios.get(`/api/alumnos/qr/${alumnoId}`, {
                 responseType: "blob"
             });
             const qrBlob = new Blob([qrResponse.data], { type: "image/png" });
@@ -155,6 +153,7 @@ const AgregarAlumno = () => {
                 setQrUrl(null);
             }, 10000);
 
+            // Limpiar formulario
             // Limpiar formulario
             setAlumno({
                 Nombre: "",
@@ -181,8 +180,6 @@ const AgregarAlumno = () => {
             alert("❌ No se pudo registrar al alumno.");
         }
     };
-
-
     return (
         <div className="bootstrap-scope">
             <div className="agregar-alumno-container">
@@ -289,32 +286,32 @@ const AgregarAlumno = () => {
                                 required
                             />
                         </div>
-                      
-                            {/* CURP */}
-                            <div className="agregar-alumno-group">
-                                <label> CURP:</label>
-                                <input
-                                    type="text"
-                                    name="CURP"
-                                    value={alumno.CURP}
-                                    onChange={handleChange}
-                                    placeholder="CURP del alumno"
-                                />
-                            </div>
 
-                            {/* Número de Control */}
-                            <div className="agregar-alumno-group">
-                                <label> Número de Control:</label>
-                                <input
-                                    type="text"
-                                    name="NumeroControl"
-                                    value={alumno.NumeroControl}
-                                    onChange={handleChange}
-                                    placeholder="Número de control del alumno"
-                                />
-                            </div>
+                        {/* CURP */}
+                        <div className="agregar-alumno-group">
+                            <label> CURP:</label>
+                            <input
+                                type="text"
+                                name="CURP"
+                                value={alumno.CURP}
+                                onChange={handleChange}
+                                placeholder="CURP del alumno"
+                            />
+                        </div>
 
-                            {/* Carrera */}
+                        {/* Número de Control */}
+                        <div className="agregar-alumno-group">
+                            <label> Número de Control:</label>
+                            <input
+                                type="text"
+                                name="NumeroControl"
+                                value={alumno.NumeroControl}
+                                onChange={handleChange}
+                                placeholder="Número de control del alumno"
+                            />
+                        </div>
+
+                        {/* Carrera */}
                         <div className="agregar-alumno-group">
                             <label> Carrera:</label>
                             <select
@@ -334,46 +331,45 @@ const AgregarAlumno = () => {
                             </select>
                         </div>
 
-
-                            {/* Plantel */}
-                            <div className="agregar-alumno-group">
-                                <label> Plantel:</label>
-                                <input
-                                    type="text"
-                                    name="Plantel"
-                                    value={alumno.Plantel}
-                                    onChange={handleChange}
-                                    placeholder="Plantel asignado"
-                                />
-                            </div>
-
-                            {/* Turno */}
-                            <div className="agregar-alumno-group">
-                                <label> Turno:</label>
-                                <input
-                                    type="text"
-                                    name="Turno"
-                                    value={alumno.Turno}
-                                    onChange={handleChange}
-                                    placeholder="Turno (Matutino/Vespertino)"
-                                />
-                            </div>
-
-                            {/* Generación */}
-                            <div className="agregar-alumno-group">
-                                <label> Generación:</label>
-                                <input
-                                    type="text"
-                                    name="Generacion"
-                                    value={alumno.Generacion}
-                                    onChange={handleChange}
-                                    placeholder="Generación del alumno"
-                                />
+                        {/* Plantel */}
+                        <div className="agregar-alumno-group">
+                            <label> Plantel:</label>
+                            <input
+                                type="text"
+                                name="Plantel"
+                                value={alumno.Plantel}
+                                onChange={handleChange}
+                                placeholder="Plantel asignado"
+                            />
                         </div>
-                        
-                            {/* Perdiodo Escolar */}
-                            <div className="agregar-alumno-group">
-                                <label> Periodo Escolar:</label>
+
+                        {/* Turno */}
+                        <div className="agregar-alumno-group">
+                            <label> Turno:</label>
+                            <input
+                                type="text"
+                                name="Turno"
+                                value={alumno.Turno}
+                                onChange={handleChange}
+                                placeholder="Turno (Matutino/Vespertino)"
+                            />
+                        </div>
+
+                        {/* Generación */}
+                        <div className="agregar-alumno-group">
+                            <label> Generación:</label>
+                            <input
+                                type="text"
+                                name="Generacion"
+                                value={alumno.Generacion}
+                                onChange={handleChange}
+                                placeholder="Generación del alumno"
+                            />
+                        </div>
+
+                        {/* Perdiodo Escolar */}
+                        <div className="agregar-alumno-group">
+                            <label> Periodo Escolar:</label>
                             <select
                                 name="Ciclo"
                                 value={alumno.Ciclo}
@@ -388,7 +384,7 @@ const AgregarAlumno = () => {
                             </select>
 
                         </div>
-                      
+
                         {/* Botones */}
                         <div className="button-container">
                             <button type="submit" className="agregar-alumno-btn">

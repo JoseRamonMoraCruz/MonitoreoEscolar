@@ -102,10 +102,22 @@ namespace MonitoreoEscolar.Server.Controllers
 
         // ENDPOINT PARA OBTENER ASISTENCIAS DE UN ALUMNO
         [HttpGet("obtener-asistencias-alumno/{alumnoId}")]
-        public async Task<IActionResult> ObtenerAsistenciasPorAlumno(int alumnoId)
+        public async Task<IActionResult> ObtenerAsistenciasPorAlumno(
+            int alumnoId,
+            [FromQuery] DateTime? fechaInicio = null,
+            [FromQuery] DateTime? fechaFin = null)
         {
-            var asistencias = await _context.Asistencias
-                .Where(a => a.AlumnoId == alumnoId)
+            var query = _context.Asistencias
+                .Where(a => a.AlumnoId == alumnoId);
+
+            if (fechaInicio.HasValue && fechaFin.HasValue)
+            {
+                var inicio = DateOnly.FromDateTime(fechaInicio.Value);
+                var fin = DateOnly.FromDateTime(fechaFin.Value);
+                query = query.Where(a => a.Fecha >= inicio && a.Fecha <= fin);
+            }
+
+            var asistencias = await query
                 .OrderByDescending(a => a.Fecha)
                 .Select(a => new
                 {
@@ -117,6 +129,5 @@ namespace MonitoreoEscolar.Server.Controllers
 
             return Ok(asistencias);
         }
-
     }
 }

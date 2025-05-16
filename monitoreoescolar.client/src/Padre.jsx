@@ -8,6 +8,9 @@ const Padre = () => {
     const [reportesPorAlumno, setReportesPorAlumno] = useState({});
     const [expandedAlumnoId, setExpandedAlumnoId] = useState(null);
     const [asistenciasPorAlumno, setAsistenciasPorAlumno] = useState({});
+    const [fechasPorAlumno, setFechasPorAlumno] = useState({});
+    const [rangosPorAlumno, setRangosPorAlumno] = useState({});
+
     const navigate = useNavigate();
 
     const [nombrePadre, setNombrePadre] = useState("");
@@ -62,6 +65,21 @@ const Padre = () => {
         obtenerHijosConGrupo();
     }, [navigate]);
 
+    // Obtener asistencias por fecha
+    const cambiarRangoAsistencia = async (alumnoId, inicio, fin) => {
+        setRangosPorAlumno(prev => ({
+            ...prev,
+            [alumnoId]: { inicio, fin }
+        }));
+
+        try {
+            const response = await axios.get(`http://localhost:5099/api/padres/obtener-asistencias-alumno/${alumnoId}?fechaInicio=${inicio}&fechaFin=${fin}`);
+            setAsistenciasPorAlumno(prev => ({ ...prev, [alumnoId]: response.data }));
+        } catch (error) {
+            console.error("❌ Error al obtener asistencias por rango:", error);
+        }
+    };
+
     const toggleExpand = async (alumnoId) => {
         if (expandedAlumnoId === alumnoId) {
             setExpandedAlumnoId(null);
@@ -73,7 +91,11 @@ const Padre = () => {
             } catch (error) {
                 console.error("❌ Error al obtener asistencias:", error);
             }
+        } if (!fechasPorAlumno[alumnoId]) {
+            const hoy = new Date().toISOString().split("T")[0];
+            setFechasPorAlumno(prev => ({ ...prev, [alumnoId]: hoy }));
         }
+
         setExpandedAlumnoId(alumnoId);
 
         // Obtener reportes si aún no están
@@ -153,6 +175,42 @@ const Padre = () => {
                                         )}
                                     </tbody>
                                 </table>
+
+                                <div style={{ margin: "10px 0" }}>
+                                    <label style={{ display: "block", marginBottom: "8px" }}>
+                                        Filtrar asistencias por rango:
+                                    </label>
+
+                                    <div style={{ display: "flex", gap: "15px", alignItems: "center" }}>
+                                        <div style={{ display: "flex", flexDirection: "column", flex: 1 }}>
+                                            <span style={{ marginBottom: "4px" }}>Fecha Inicio:</span>
+                                            <input
+                                                type="date"
+                                                value={rangosPorAlumno[hijo.alumnoId]?.inicio || ""}
+                                                onChange={(e) => {
+                                                    const nuevaInicio = e.target.value;
+                                                    const fin = rangosPorAlumno[hijo.alumnoId]?.fin || nuevaInicio;
+                                                    cambiarRangoAsistencia(hijo.alumnoId, nuevaInicio, fin);
+                                                }}
+                                                style={{ padding: "5px", width: "100%" }}
+                                            />
+                                        </div>
+
+                                        <div style={{ display: "flex", flexDirection: "column", flex: 1 }}>
+                                            <span style={{ marginBottom: "4px" }}>Fecha Fin:</span>
+                                            <input
+                                                type="date"
+                                                value={rangosPorAlumno[hijo.alumnoId]?.fin || ""}
+                                                onChange={(e) => {
+                                                    const nuevaFin = e.target.value;
+                                                    const inicio = rangosPorAlumno[hijo.alumnoId]?.inicio || nuevaFin;
+                                                    cambiarRangoAsistencia(hijo.alumnoId, inicio, nuevaFin);
+                                                }}
+                                                style={{ padding: "5px", width: "100%" }}
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
 
                                 <h3> Asistencias</h3>
                                 <table className="styled-table">

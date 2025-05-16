@@ -28,9 +28,8 @@ const GenerarReportes = () => {
     const handleUpdateReporte = async () => {
         try {
             await axios.put(`http://localhost:5099/api/reportes/${editingReport.id}`, {
-                AlumnoId: editingReport.alumnoId,
-                Fecha: editingReport.fecha,
-                Motivo: editingReport.motivo
+                fecha: editingReport.fecha,
+                motivo: editingReport.motivo
             });
             // Refresca la lista en pantalla
             setReportesList(list =>

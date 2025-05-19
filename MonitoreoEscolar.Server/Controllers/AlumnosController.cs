@@ -95,21 +95,25 @@ namespace MonitoreoEscolar.Server.Controllers
             return File(qrCodeAsPng, "image/png");
         }
 
-
-
         [HttpGet("buscar")]
         public async Task<IActionResult> BuscarAlumnos([FromQuery] string termino)
         {
             if (string.IsNullOrWhiteSpace(termino))
                 return BadRequest(new { mensaje = "El término de búsqueda no puede estar vacío." });
 
-            // Convertimos el término a minúsculas
-            var lowerTerm = termino.ToLower();
+            var lowerTerm = termino.Trim().ToLower();
 
             var alumnos = await _context.Alumnos
-                .Where(a => EF.Functions.Collate(a.NombreCompleto.ToLower(), "Latin1_General_CI_AI")
-                                .Contains(lowerTerm))
-                .Select(a => new { a.Id, a.NombreCompleto })
+                .Where(a =>
+                    a.NombreCompleto.ToLower().Contains(lowerTerm)
+                    // Si Carrera es null se convierte en cadena vacía antes de ToLower()
+                    || (a.Carrera ?? string.Empty).ToLower().Contains(lowerTerm)
+                )
+                .Select(a => new {
+                    a.Id,
+                    a.NombreCompleto,
+                    a.Carrera
+                })
                 .ToListAsync();
 
             return Ok(alumnos);

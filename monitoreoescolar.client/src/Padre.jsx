@@ -73,7 +73,7 @@ const Padre = () => {
         }));
 
         try {
-            const response = await axios.get(`http://localhost:5099/api/padres/obtener-asistencias-alumno/${alumnoId}?fechaInicio=${inicio}&fechaFin=${fin}`);
+            const response = await axios.get(`/api/padres/obtener-asistencias-alumno/${alumnoId}?fechaInicio=${inicio}&fechaFin=${fin}`);
             setAsistenciasPorAlumno(prev => ({ ...prev, [alumnoId]: response.data }));
         } catch (error) {
             console.error("❌ Error al obtener asistencias por rango:", error);

@@ -176,7 +176,6 @@ const ListaAlumnos = () => {
         }));
     };
 
-    //
     // debajo de handleTutorChangeSelect
     const handleGroupChangeSelect = option => {
         setSelectedGroupEdit(option);
@@ -424,7 +423,7 @@ const ListaAlumnos = () => {
             const groupString = `${grupo.grado}${grupo.letra}`.toLowerCase();
             const matchGroup = groupString.includes(normalizedSearch);
             const matchAlumno = (alumnosPorGrupo[grupo.id] || []).some((alumno) =>
-                removeDiacritics((alumno.nombre + " " + alumno.apellidoPaterno + " " + alumno.apellidoMaterno).toLowerCase()).includes(normalizedSearch)
+                removeDiacritics((alumno.nombre + " " + alumno.apellidoPaterno + " " + alumno.apellidoMaterno + " " + alumno.carrera).toLowerCase()).includes(normalizedSearch)
             );
             return matchGroup || matchAlumno;
         })
@@ -504,12 +503,12 @@ const ListaAlumnos = () => {
     };
 
     return (
-        <div className="lista-container">
+        <div className="buscador-alumno-container">
             <div className="lista-content">
                 <div className="lista-search-container">
                     <input
                         type="text"
-                        placeholder="Buscar un grupo o alumno por su nombre"
+                        placeholder="Buscar un grupo y alumno por su nombre o por carrera"
                         value={searchTerm}
                         onChange={handleSearchChange}
                     />
@@ -531,7 +530,7 @@ const ListaAlumnos = () => {
                                 ? isGroupSearch
                                     ? alumnosPorGrupo[grupo.id] || []
                                     : (alumnosPorGrupo[grupo.id] || []).filter((alumno) =>
-                                        removeDiacritics((alumno.nombre + " " + alumno.ApellidoPaterno + "" + alumno.ApellidoMaterno).toLowerCase()).includes(normalizedSearch)
+                                        removeDiacritics((alumno.nombre + " " + alumno.apellidoPaterno + " " + alumno.apellidoMaterno + " " + alumno.carrera).toLowerCase()).includes(normalizedSearch)
                                     )
                                 : expandedGroup && expandedGroup.id === grupo.id
                                     ? alumnosGrupo

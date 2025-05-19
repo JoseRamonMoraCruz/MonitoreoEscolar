@@ -15,7 +15,6 @@ namespace MonitoreoEscolar.Server.Controllers
             _context = context;
         }
 
-
         // ENDPOINT PARA OBTENER LOS REPORTES DE UN HIJO
         [HttpGet("obtener-reportes-hijo/{alumnoId}")]
         public async Task<IActionResult> ObtenerReportesDeHijo(int alumnoId)

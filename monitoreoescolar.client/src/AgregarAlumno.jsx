@@ -14,7 +14,7 @@ const AgregarAlumno = () => {
         Grado: "",       
         letra: "",       
         Domicilio: "",   
-        CURP: "",
+        CURP: "", 
         NumeroControl: "",
         Carrera: "",
         Plantel: "",

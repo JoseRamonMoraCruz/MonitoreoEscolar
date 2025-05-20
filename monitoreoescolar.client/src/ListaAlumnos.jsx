@@ -9,7 +9,7 @@ import removeIcon from "./assets/eliminar-informacion.png";
 import aceptarIcon from "./assets/aceptar.png";
 import rechazarIcon from "./assets/rechazar.png";
 import WhatsappIcon from "./assets/whatsapp.png";
-
+import QrIcon from "./assets/codigo-qr.png";
 
 const ListaAlumnos = () => {
     const [grupos, setGrupos] = useState([]);
@@ -176,12 +176,11 @@ const ListaAlumnos = () => {
         }));
     };
 
-    // debajo de handleTutorChangeSelect
     const handleGroupChangeSelect = option => {
         setSelectedGroupEdit(option);
         setAlumnoSeleccionado(prev => ({
             ...prev,
-            // actualiza aquí la propiedad compuesta que envías al backend
+           
             grupo: option.value
         }));
     };
@@ -495,6 +494,29 @@ const ListaAlumnos = () => {
         }
     };
 
+    const [qrUrl, setQrUrl] = useState(null);
+    const [showQrModal, setShowQrModal] = useState(false);
+    const [nombreArchivoQR, setNombreArchivoQR] = useState("QR_Alumno");
+
+    const mostrarModalQR = async (alumnoId, nombre, apellidoPaterno, apellidoMaterno) => {
+        try {
+            setNombreArchivoQR(`QR_${(nombre + "_" + apellidoPaterno + "_" + apellidoMaterno).replace(/\s+/g, "_")}`);
+
+            const response = await axios.get(`/api/alumnos/qr/${alumnoId}`, {
+                responseType: "blob"
+            });
+
+            const qrBlob = new Blob([response.data], { type: "image/png" });
+            const qrImageUrl = URL.createObjectURL(qrBlob);
+            setQrUrl(qrImageUrl);
+            setShowQrModal(true);
+        } catch (error) {
+            console.error("Error al obtener el QR:", error);
+            alert("❌ No se pudo obtener el código QR.");
+        }
+    };
+
+
     // Constante para la parte del whats
     const abrirWhatsApp = (telefono) => {
         const mensaje = `Hola!, nos comunicamos desde la escuela de tu hij@ por el siguiente asunto:\n\nEl asunto es......`; // Mensaje predeterminado
@@ -604,9 +626,24 @@ const ListaAlumnos = () => {
                                                             console.log("ALUMNO:", alumno);
                                                             return (
                                                                 <tr key={alumno.id}>
-                                                                    <td>
-                                                                        {alumno.nombre} {alumno.apellidoPaterno} {alumno.apellidoMaterno}
+                                                                    <td className="alumno-con-qr">
+                                                                        <img
+                                                                            src={QrIcon}
+                                                                            alt="QR"
+                                                                            className="icono-qr"
+                                                                            onClick={(e) => {
+                                                                                e.stopPropagation();
+                                                                                mostrarModalQR(alumno.id, alumno.nombre, alumno.apellidoPaterno, alumno.apellidoMaterno);
+                                                                            }}
+                                                                            title="Ver código QR"
+                                                                        />
+                                                                        <span>
+                                                                            {alumno.nombre} {alumno.apellidoPaterno} {alumno.apellidoMaterno}
+                                                                        </span>
                                                                     </td>
+
+
+
                                                                     <td className="padre-whatsapp">
                                                                         {alumno.tutorUsuario?.telefono && (
                                                                             <img
@@ -674,9 +711,23 @@ const ListaAlumnos = () => {
                                                     <tbody>
                                                         {alumnosGrupo.map((alumno) => (
                                                             <tr key={alumno.id}>
-                                                                <td>
-                                                                    {alumno.nombre} {alumno.apellidos}
+                                                                <td className="alumno-con-qr">
+                                                                    <img
+                                                                        src={QrIcon}
+                                                                        alt="QR"
+                                                                        className="icono-qr"
+                                                                        onClick={(e) => {
+                                                                            e.stopPropagation();
+                                                                            mostrarModalQR(alumno.id, alumno.nombre, alumno.apellidoPaterno, alumno.apellidoMaterno);
+                                                                        }}
+                                                                        title="Ver código QR"
+                                                                    />
+                                                                    <span>
+                                                                        {alumno.nombre} {alumno.apellidoPaterno} {alumno.apellidoMaterno}
+                                                                    </span>
                                                                 </td>
+
+
                                                                 {/*SECCION DE LA PARTE DEL WHATS, SI NO FUNCIONA DEBERIAS ELIMINARLO*/}
                                                                 <td className="padre-whatsapp">
                                                                     {alumno.tutorUsuario?.telefono && (
@@ -1061,6 +1112,23 @@ const ListaAlumnos = () => {
                     </div>
                 </div>
             )}
+            {showQrModal && (
+                <div className="modal-qr">
+                    <div className="modal-qr-content">
+                        <span className="close" onClick={() => setShowQrModal(false)}>×</span>
+                        <h3>Código QR del alumno</h3>
+                        <img src={qrUrl} alt="Código QR" className="qr-image" />
+                        <a
+                            href={qrUrl}
+                            download={`${nombreArchivoQR}.png`}
+                            className="qr-download-btn"
+                        >
+                            Descargar QR
+                        </a>
+                    </div>
+                </div>
+            )}
+
         </div>
     );
 };

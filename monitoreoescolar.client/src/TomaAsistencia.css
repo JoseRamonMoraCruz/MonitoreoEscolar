@@ -5,55 +5,7 @@
     position: relative;
 }
 
-/* Barra superior */
-.barra-superior {
-    background-color: #0c1e34;
-    height: 60px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 0 20px;
-    color: white;
-}
 
-.logo {
-    height: 40px;
-}
-
-.cerrar-sesion-btn {
-    background: transparent;
-    border: none;
-    color: white;
-    font-size: 14px;
-    cursor: pointer;
-}
-
-/* Buscador */
-.buscador-alumno-container {
-    display: flex;
-    justify-content: center;
-    margin-top: 40px;
-    width: 100%;
-}
-
-.buscador-alumno-input {
-    background-color: white;
-    border-radius: 30px;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-    max-width: 600px;
-}
-
-.icono-lupa {
-    color: #1976d2;
-}
-
-.no-outline {
-    border: none !important;
-}
-
-.buscador-alumno-input .MuiOutlinedInput-notchedOutline {
-    border: none !important;
-}
 
 /* Botón QR */
 .boton-qr {
@@ -215,3 +167,40 @@
         transform: translateX(-50%) translateY(-10px);
     }
 }
+
+
+.botones-accion-container {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 15px;
+    margin: 20px 0;
+}
+
+.boton-limpiar {
+    position: fixed;
+    bottom: 30px;
+    right: 150px;
+    background: linear-gradient(to right, #4facfe, #00f2fe);
+    border: none;
+    border-radius: 50%;
+    width: 70px;
+    height: 70px;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+    cursor: pointer;
+    transition: transform 0.2s ease-in-out;
+    display: flex;
+    align-items: end;
+    justify-content: end;
+    z-index: 999;
+}
+
+    .boton-limpiar:hover {
+        transform: scale(1.1);
+    }
+
+
+    .boton-limpiar img {
+        width: 32px;
+        height: 32px;
+    }

@@ -44,8 +44,6 @@ export default function Registro() {
             return;
         }
 
-
-
          const MASTER_PASS = "EscolarPerson123";  
            if (tipoUsuario === "personal" && contrasena !== MASTER_PASS) {
                    setError("❌ Contraseña de acceso para personal inválida.");
@@ -66,7 +64,7 @@ export default function Registro() {
         };
 
         try {
-            const response = await axios.post("/api/usuarios/registro", usuario);
+            const response = await axios.post("http://localhost:5099/api/usuarios/registro", usuario);
             alert(response.data.mensaje);
             navigate("/"); 
         } catch (error) {

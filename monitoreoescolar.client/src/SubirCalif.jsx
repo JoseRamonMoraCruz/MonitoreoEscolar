@@ -42,15 +42,15 @@ const SubirCalif = () => {
         setCargando(true);
 
         try {
-            // 1️⃣ Subir archivo
-            const response = await axios.post("/api/calificaciones/subirCalificaciones", formData, {
+            // 1️ Subir archivo
+            const response = await axios.post("http://localhost:5099/api/calificaciones/subirCalificaciones", formData, {
                 headers: { "Content-Type": "multipart/form-data" }
             });
 
             alert(` ${response.data.mensaje}`);
 
-            // 2️⃣ Obtener resumen ya procesado desde el backend
-            const resumen = await axios.get("/api/calificaciones/obtenerResumenAgrupado");
+            // 2️ Obtener resumen ya procesado desde el backend
+            const resumen = await axios.get("http://localhost:5099/api/calificaciones/obtenerResumenAgrupado");
 
             setDatos(resumen.data);
 

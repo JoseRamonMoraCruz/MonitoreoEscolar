@@ -1,10 +1,10 @@
 ﻿import { useState, useEffect } from "react";
 import axios from "axios";
-import { TextField, InputAdornment } from "@mui/material";
-import SearchIcon from "@mui/icons-material/Search";
 import qrIcon from "./assets/codigo-qr.png";
 import EscanerQR from "./EscanerQR";
 import "./TomaAsistencia.css";
+import limpiarIcon from "./assets/limpiardatos.png";
+
 
 const TomaAsistencia = () => {
     const [mostrarQR, setMostrarQR] = useState(false);
@@ -18,7 +18,7 @@ const TomaAsistencia = () => {
 
     const obtenerAsistenciasDelDia = async () => {
         try {
-            const response = await axios.get("/api/tomaasistencia/hoy");
+            const response = await axios.get("http://localhost:5099/api/tomaasistencia/hoy");
             console.log("📊 Asistencias cargadas:", response.data);
             setAlumnos(response.data);
         } catch (error) {
@@ -39,7 +39,7 @@ const TomaAsistencia = () => {
         console.log("📦 Código recibido del QR:", codigo);
 
         try {
-            const response = await axios.post("/api/tomaasistencia/registrar", {
+            const response = await axios.post("http://localhost:5099/api/tomaasistencia/registrar", {
                 curp: codigo
             });
 
@@ -70,23 +70,7 @@ const TomaAsistencia = () => {
 
     return (
         <div className="toma-asistencia-container">
-            <div className="buscador-alumno-container">
-                <TextField
-                    className="buscador-alumno-input"
-                    variant="outlined"
-                    placeholder="Escribe el nombre del Alumno"
-                    fullWidth
-                    InputProps={{
-                        startAdornment: (
-                            <InputAdornment position="start">
-                                <SearchIcon className="icono-lupa" />
-                            </InputAdornment>
-                        ),
-                        classes: { notchedOutline: "no-outline" }
-                    }}
-                />
-            </div>
-
+            
             {/* Tabla */}
             <div className="tabla-asistencia-container">
                 <table className="tabla-asistencia">
@@ -119,10 +103,15 @@ const TomaAsistencia = () => {
                 </table>
             </div>
 
-            {/* Botón QR */}
-            <button className="boton-qr" onClick={abrirModalQR}>
-                <img src={qrIcon} alt="QR" />
-            </button>
+            <div className="botones-accion-container">
+                <button className="boton-limpiar" onClick={() => setAlumnos([])}>
+                    <img src={limpiarIcon} alt="Limpiar" />
+                </button>
+
+                <button className="boton-qr" onClick={abrirModalQR}>
+                    <img src={qrIcon} alt="QR" />
+                </button>
+            </div>
 
             {/* Modal */}
             {mostrarQR && (

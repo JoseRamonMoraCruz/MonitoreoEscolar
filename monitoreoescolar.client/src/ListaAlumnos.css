@@ -556,5 +556,42 @@ input {
     }
 
 
+/*Estilos del alumno con su QR*/
+.alumno-con-qr {
+    display: flex;
+    align-items: center; /* Centra verticalmente el texto con el ícono */
+    gap: 8px;
+    white-space: nowrap;
+    font-weight: 600;
+    font-size: 16px;
+    color: #000;
+    line-height: 1; /* Esto también ayuda a que no se despegue mucho hacia abajo */
+    vertical-align: middle;
+    padding: 10px;
+}
 
 
+.icono-qr {
+    width: 22px;
+    height: 22px;
+    cursor: pointer;
+    transition: transform 0.2s ease-in-out;
+    vertical-align: middle;
+}
+
+    .icono-qr:hover {
+        transform: scale(1.15);
+    }
+.tabla-alumnos td {
+    vertical-align: middle;
+}
+
+.alumno-flex {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    line-height: 1.2;
+    font-size: 16px;
+    font-weight: 600;
+    color: #000;
+}

@@ -70,7 +70,7 @@ const AgregarAlumno = () => {
             return;
         }
         try {
-            const response = await axios.get(`http://localhost:5099/api/usuarios/autocompletePadres?termino=${inputValue}`);
+            const response = await axios.get(`/api/usuarios/autocompletePadres?termino=${inputValue}`);
             const optionsData = response.data.map((padre) => ({
                 value: padre.id_Usuario,
                 label: `${padre.nombre} ${padre.apellidoPaterno} ${padre.apellidoMaterno} - ${padre.correo}`
@@ -107,7 +107,7 @@ const AgregarAlumno = () => {
 
         // Verificar que el grupo seleccionado exista
         try {
-            const gruposResponse = await axios.get("http://localhost:5099/api/grupos");
+            const gruposResponse = await axios.get("/api/grupos");
             const gruposExistentes = gruposResponse.data;
             const grupoEncontrado = gruposExistentes.find(
                 (g) =>
@@ -132,14 +132,14 @@ const AgregarAlumno = () => {
 
         // Registrar al alumno
         try {
-            const response = await axios.post("http://localhost:5099/api/alumnos/registro", alumno);
+            const response = await axios.post("/api/alumnos/registro", alumno);
             alert(response.data.mensaje);
 
             // Obtener el ID del nuevo alumno
             const alumnoId = response.data.alumno.id;
 
             // Obtener el QR desde el backend
-            const qrResponse = await axios.get(`http://localhost:5099/api/alumnos/qr/${alumnoId}`, {
+            const qrResponse = await axios.get(`/api/alumnos/qr/${alumnoId}`, {
                 responseType: "blob"
             });
             const qrBlob = new Blob([qrResponse.data], { type: "image/png" });

@@ -1,7 +1,16 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using MonitoreoEscolar.Server.Data;
+using MonitoreoEscolar.Server.Services;
+using QuestPDF;
+using QuestPDF.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
+
+QuestPDF.Settings.License = LicenseType.Community;
+
+//PARA DESCARGAR PDF
+builder.Services
+    .AddScoped<IReportePDFGenerator, ReportePDFGenerator>();
 
 //  Configurar la conexión a SQL Server desde appsettings.json con logs detallados
 builder.Services.AddDbContext<ApplicationDbContext>(options =>

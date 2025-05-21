@@ -22,7 +22,7 @@ const TomaAsistencia = () => {
             console.log("📊 Asistencias cargadas:", response.data);
             setAlumnos(response.data);
         } catch (error) {
-            console.error("❌ Error al cargar asistencias del día:", error);
+            console.error(" Error al cargar asistencias del día:", error);
         }
     };
 
@@ -36,24 +36,24 @@ const TomaAsistencia = () => {
 
 
     const manejarEscaneo = async (codigo) => {
-        console.log("📦 Código recibido del QR:", codigo);
+        console.log(" Código recibido del QR:", codigo);
 
         try {
             const response = await axios.post("http://localhost:5099/api/tomaasistencia/registrar", {
-                curp: codigo
+                alumnoId: codigo
             });
 
             const { mensaje, nombre, apellidoPaterno } = response.data;
-            mostrarToast(`✅ ${mensaje}: ${nombre} ${apellidoPaterno}`);
+            mostrarToast(` ${mensaje}: ${nombre} ${apellidoPaterno}`);
 
             await obtenerAsistenciasDelDia();
         } catch (error) {
-            console.error("❌ Error al registrar asistencia:", error);
+            console.error(" Error al registrar asistencia:", error);
 
             if (error.response && error.response.status === 404) {
                 mostrarToast("Alumno no encontrado. Verifica el QR.", "error");
             } else if (error.response?.data?.mensaje) {
-                mostrarToast(`❌ ${error.response.data.mensaje}`, "error");
+                mostrarToast(` ${error.response.data.mensaje}`, "error");
             } else {
                 mostrarToast("Error al registrar asistencia.", "error");
             }

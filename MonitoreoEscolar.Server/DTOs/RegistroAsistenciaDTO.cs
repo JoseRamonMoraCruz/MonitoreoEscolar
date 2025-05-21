@@ -2,7 +2,7 @@
 {
     public class RegistroAsistenciaDTO
     {
-        public string CURP { get; set; } = string.Empty;
+        public int AlumnoId { get; set; }
     }
 
 }

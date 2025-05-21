@@ -595,3 +595,57 @@ input {
     font-weight: 600;
     color: #000;
 }
+
+/*RESPONSIVO*/
+@media (max-width: 768px) {
+    .lista-container {
+        padding: 10px;
+    }
+
+    .grupo-card {
+        padding: 10px;
+        font-size: 14px;
+    }
+
+    .tabla-alumnos {
+        font-size: 13px;
+        min-width: 900px; /* Forzar scroll lateral en tablas grandes */
+    }
+
+    .tabla-wrapper {
+        overflow-x: auto;
+    }
+
+    .boton-agregar {
+        width: 50px;
+        height: 50px;
+        bottom: 15px;
+        right: 15px;
+    }
+
+        .boton-agregar img {
+            width: 20px;
+            height: 20px;
+        }
+
+    .modal-editar-content {
+        width: 95%;
+        padding: 15px;
+    }
+
+    .modal-content {
+        width: 90%;
+        padding: 20px;
+    }
+
+    .alumno-con-qr, .padre-whatsapp {
+        font-size: 13px;
+    }
+
+    .accion-icon,
+    .delete-icon {
+        width: 28px;
+        height: 28px;
+    }
+
+}

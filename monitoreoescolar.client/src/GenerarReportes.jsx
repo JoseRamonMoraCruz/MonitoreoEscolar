@@ -229,8 +229,14 @@ const GenerarReportes = () => {
                                         <td>{r.motivo}</td>
                                         <td>{r.responsable}</td>
                                         <td>
-                                            {<button onClick={() => handleEditReporte(r)}>✏️</button>}
-                                            <button onClick={() => handleDeleteReporte(r.id)}>🗑️</button>
+                                            {<button onClick={() => handleEditReporte(r)}
+                                                title="Editar Reporte"
+                                                aria-label="Editar Reporte"
+                                            >✏️</button>}
+                                            <button onClick={() => handleDeleteReporte(r.id)}
+                                                title="Eliminar Reporte"
+                                                aria-label="Eliminar Reporte"
+                                            >🗑️</button>
                                         </td>
                                     </tr>
                                 ))}

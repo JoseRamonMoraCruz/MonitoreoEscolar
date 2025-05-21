@@ -582,6 +582,8 @@ const ListaAlumnos = () => {
                                                 alt="Eliminar Grupo"
                                                 className="delete-icon"
                                                 onClick={(e) => handleDeleteClick(e, grupo)}
+                                                title="Eliminar Grupo"
+                                                aria-label="Eliminar Grupo"
                                             />
                                         </div>
 
@@ -636,6 +638,7 @@ const ListaAlumnos = () => {
                                                                                 mostrarModalQR(alumno.id, alumno.nombre, alumno.apellidoPaterno, alumno.apellidoMaterno);
                                                                             }}
                                                                             title="Ver código QR"
+                                                                            aria-label="Ver código QR"
                                                                         />
                                                                         <span>
                                                                             {alumno.nombre} {alumno.apellidoPaterno} {alumno.apellidoMaterno}
@@ -651,6 +654,8 @@ const ListaAlumnos = () => {
                                                                                 alt="WhatsApp"
                                                                                 className="accion-icon whatsapp"
                                                                                 onClick={() => abrirWhatsApp(alumno.tutorUsuario.telefono)}
+                                                                                title="Enviar WhatsApp"
+                                                                                aria-label="Enviar WhatsApp"
                                                                             />
                                                                         )}
                                                                         {alumno.tutorUsuario
@@ -671,12 +676,16 @@ const ListaAlumnos = () => {
                                                                             alt="Editar"
                                                                             className="accion-icon editar"
                                                                             onClick={() => abrirModalEditarAlumno(alumno)}
+                                                                            title="Editar Alumno"
+                                                                            aria-label="Editar Alumno"
                                                                         />
                                                                         <img
                                                                             src={removeIcon}
                                                                             alt="Eliminar"
                                                                             className="accion-icon eliminar"
                                                                             onClick={() => abrirModalEliminarAlumno(alumno)}
+                                                                            title="Eliminar Alumno"
+                                                                            aria-label="Eliminar Alumno"
                                                                         />
                                                                     </td>
                                                                 </tr>
@@ -721,6 +730,7 @@ const ListaAlumnos = () => {
                                                                             mostrarModalQR(alumno.id, alumno.nombre, alumno.apellidoPaterno, alumno.apellidoMaterno);
                                                                         }}
                                                                         title="Ver código QR"
+                                                                        aria-label="Ver código QR"
                                                                     />
                                                                     <span>
                                                                         {alumno.nombre} {alumno.apellidoPaterno} {alumno.apellidoMaterno}
@@ -736,6 +746,8 @@ const ListaAlumnos = () => {
                                                                             alt="WhatsApp"
                                                                             className="accion-icon whatsapp"
                                                                             onClick={() => abrirWhatsApp(alumno.tutorUsuario.telefono)}
+                                                                            title="Enviar WhatsApp"
+                                                                            aria-label="Enviar WhatsApp"
                                                                         />
                                                                     )}
                                                                     {alumno.tutorUsuario
@@ -754,12 +766,16 @@ const ListaAlumnos = () => {
                                                                         src={editIcon}
                                                                         alt="Editar"
                                                                         className="accion-icon editar"
+                                                                        title="Editar Alumno"
+                                                                        aria-label="Editar Alumno"
                                                                     />
                                                                     <img
                                                                         src={removeIcon}
                                                                         alt="Eliminar"
                                                                         className="accion-icon eliminar"
                                                                         onClick={() => abrirModalEliminarAlumno(alumno)}
+                                                                        title="Eliminar Alumno"
+                                                                        aria-label="Eliminar Alumno"
                                                                     />
                                                                 </td>
                                                             </tr>
@@ -775,7 +791,10 @@ const ListaAlumnos = () => {
                     )}
                 </div>
             </div>
-            <button className="boton-agregar" onClick={abrirModalGrupo}>
+            <button className="boton-agregar" onClick={abrirModalGrupo}
+                title="Agregar Grupo"
+                aria-label="Agregar Grupo"
+            >
                 <img src={addIcon} alt="Agregar Grupo" />
             </button>
 

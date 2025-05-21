@@ -97,10 +97,16 @@ const SubirCalif = () => {
                     </div>
 
                     <div className="contenedor-botones">
-                        <button className="boton-reiniciar" onClick={handleReset}>
+                        <button className="boton-reiniciar" onClick={handleReset}
+                            title="Reiniciar tabla de calificaciones"
+                            aria-label="Reiniciar tabla de calificaciones"
+                        >
                             <img src={reiniciarIcono} alt="Reiniciar" className="icono-reiniciar" />
                         </button>
-                        <button className="boton-subir" onClick={handleUpload} disabled={cargando || !archivo}>
+                        <button className="boton-subir" onClick={handleUpload} disabled={cargando || !archivo}
+                            title="Cargar datos desde el archivo seleccionado"
+                            aria-label="Cargar datos desde el archivo seleccionado"
+                        >
                             {cargando ? "📥 Cargando..." : "📥 Cargar Datos"}
                         </button>
                     </div>

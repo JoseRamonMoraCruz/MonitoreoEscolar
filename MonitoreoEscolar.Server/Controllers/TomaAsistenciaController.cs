@@ -23,17 +23,18 @@ namespace MonitoreoEscolar.Server.Controllers
         [HttpPost("registrar")]
         public async Task<IActionResult> RegistrarAsistencia([FromBody] RegistroAsistenciaDTO dto)
         {
-            if (string.IsNullOrWhiteSpace(dto.CURP))
+            if (dto.AlumnoId <= 0)
                 return BadRequest(new AsistenciaRespuestaDTO
                 {
-                    Mensaje = "CURP inválida o vacía.",
+                    Mensaje = "El codigo es invalido o esta vacio.",
                     Nombre = "",
                     ApellidoPaterno = ""
                 });
 
             var alumno = await _context.Alumnos
-                .Include(a => a.TutorUsuario)
-                .FirstOrDefaultAsync(a => a.CURP == dto.CURP);
+            .Include(a => a.TutorUsuario)
+           .FirstOrDefaultAsync(a => a.Id == dto.AlumnoId);
+
 
             if (alumno == null)
                 return NotFound(new AsistenciaRespuestaDTO

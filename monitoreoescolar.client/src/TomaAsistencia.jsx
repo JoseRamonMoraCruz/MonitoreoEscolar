@@ -18,7 +18,7 @@ const TomaAsistencia = () => {
 
     const obtenerAsistenciasDelDia = async () => {
         try {
-            const response = await axios.get("http://localhost:5099/api/tomaasistencia/hoy");
+            const response = await axios.get("/api/tomaasistencia/hoy");
             console.log("📊 Asistencias cargadas:", response.data);
             setAlumnos(response.data);
         } catch (error) {
@@ -39,8 +39,8 @@ const TomaAsistencia = () => {
         console.log("📦 Código recibido del QR:", codigo);
 
         try {
-            const response = await axios.post("http://localhost:5099/api/tomaasistencia/registrar", {
-                curp: codigo
+            const response = await axios.post("/api/tomaasistencia/registrar", {
+                alumnoId: codigo
             });
 
             const { mensaje, nombre, apellidoPaterno } = response.data;
@@ -104,11 +104,21 @@ const TomaAsistencia = () => {
             </div>
 
             <div className="botones-accion-container">
-                <button className="boton-limpiar" onClick={() => setAlumnos([])}>
+                <button
+                    className="boton-limpiar"
+                    onClick={() => setAlumnos([])}
+                    title="Limpiar lista de alumnos"
+                    aria-label="Limpiar lista de alumnos"
+                >
                     <img src={limpiarIcon} alt="Limpiar" />
                 </button>
 
-                <button className="boton-qr" onClick={abrirModalQR}>
+                <button
+                    className="boton-qr"
+                    onClick={abrirModalQR}
+                    title="Escanear código QR"
+                    aria-label="Escanear código QR"
+                >
                     <img src={qrIcon} alt="QR" />
                 </button>
             </div>

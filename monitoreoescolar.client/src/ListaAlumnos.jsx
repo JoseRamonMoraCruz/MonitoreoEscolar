@@ -775,7 +775,12 @@ const ListaAlumnos = () => {
                     )}
                 </div>
             </div>
-            <button className="boton-agregar" onClick={abrirModalGrupo}>
+            <button
+                className="boton-agregar"
+                onClick={abrirModalGrupo}
+                title="Agregar grupo"
+                aria-label="Agregar grupo"
+            >
                 <img src={addIcon} alt="Agregar Grupo" />
             </button>
 

@@ -5,7 +5,7 @@
     justify-content: center;
     align-items: center;
     padding: 20px;
-    overflow: hidden; 
+    overflow: hidden;
 }
 
 /*  Caja principal */
@@ -15,13 +15,12 @@
     border-radius: 15px;
     box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.5);
     text-align: center;
-    width: 95vw; 
+    width: 95vw;
     max-width: 1400px;
     color: white;
     position: relative;
-    overflow-x: auto; 
+    overflow-x: auto;
 }
-
 
 /*  Estilo del título */
 .titulo-subir {
@@ -78,7 +77,7 @@
 .contenedor-botones {
     display: flex;
     align-items: center;
-    gap: 10px; 
+    gap: 10px;
 }
 
 /*  Botón para reiniciar (como imagen) */
@@ -94,7 +93,7 @@
 }
 
     .boton-reiniciar img {
-        width: 30px; 
+        width: 30px;
         height: 30px;
         transition: transform 0.2s;
     }
@@ -133,7 +132,7 @@
 .contenedor-tabla {
     max-height: 500px;
     overflow-y: auto;
-    overflow-x: auto; 
+    overflow-x: auto;
     margin-top: 10px;
     border-radius: 10px;
     width: 100%;
@@ -175,4 +174,80 @@
     color: black;
     font-weight: bold;
     border-radius: 5px;
+}
+
+/* =================================
+   MEDIA QUERIES
+   ================================= */
+
+/* --- Tablet y pantallas medianas --- */
+@media (max-width: 768px) {
+    .contenedor-superior {
+        flex-direction: column;
+        gap: 12px;
+        align-items: stretch;
+    }
+
+    .contenedor-archivo,
+    .contenedor-botones {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .contenedor-archivo {
+        padding: 8px 10px;
+    }
+
+    .boton-subir {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .titulo-subir {
+        font-size: 20px;
+    }
+}
+
+/* --- Móvil y pantallas pequeñas --- */
+@media (max-width: 480px) {
+    .caja-subir {
+        padding: 20px;
+    }
+
+    .titulo-subir {
+        font-size: 18px;
+        margin-bottom: 12px;
+    }
+
+    .contenedor-archivo {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+    }
+
+    .boton-seleccionar {
+        padding: 6px 10px;
+        font-size: 14px;
+    }
+
+    .contenedor-botones {
+        flex-direction: column;
+        gap: 8px;
+        margin-top: 10px;
+    }
+
+    .boton-subir {
+        padding: 10px;
+        font-size: 14px;
+    }
+
+    .contenedor-tabla {
+        max-height: 300px;
+    }
+
+    .tabla-subir th,
+    .tabla-subir td {
+        padding: 6px;
+        font-size: 12px;
+    }
 }

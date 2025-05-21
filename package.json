@@ -5,6 +5,8 @@
     "@mui/icons-material": "^7.1.0",
     "@mui/material": "^7.1.0",
     "html5-qrcode": "^2.3.8",
+    "motion": "^12.12.1",
+    "react-client": "^1.0.1",
     "react-router-dom": "^7.1.5",
     "react-transition-group": "^4.4.5",
     "sass": "^1.86.3"

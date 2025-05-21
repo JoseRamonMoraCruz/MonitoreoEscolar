@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MonitoreoEscolar.Server.Data;
+using MonitoreoEscolar.Server.Services;
 
 namespace MonitoreoEscolar.Server.Controllers
 {
@@ -128,5 +129,24 @@ namespace MonitoreoEscolar.Server.Controllers
 
             return Ok(asistencias);
         }
+
+        //DESCARGAR PDF ALUMNO
+        [HttpGet("descargar-reporte/{alumnoId}")]
+        public IActionResult DescargarReporte(int alumnoId,
+        [FromServices] IReportePDFGenerator pdfGen)
+        {
+            try
+            {
+                var pdfBytes = pdfGen.GenerarReporte(alumnoId);
+                return File(pdfBytes,
+                            "application/pdf",
+                            $"Reporte_Alumno_{alumnoId}.pdf");
+            }
+            catch (Exception ex)
+            {
+                return NotFound(new { mensaje = ex.Message });
+            }
+        }
+
     }
 }

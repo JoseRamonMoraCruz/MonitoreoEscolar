@@ -92,7 +92,7 @@ namespace MonitoreoEscolar.Server.Controllers
                 de la carrera <strong>{alumno.Carrera}</strong> del grupo <strong>{alumno.Grupo}</strong> en el turno <strong>{alumno.Turno}</strong> 
                 ha registrado su <strong>SALIDA</strong> de la escuela a las <strong>{hora}</strong>.";
 
-                asuntoCorreo = "Registro de SALIDAS Escolar";
+                asuntoCorreo = "Registro de Salida Escolar";
             }
 
             else

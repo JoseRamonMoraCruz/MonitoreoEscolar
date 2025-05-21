@@ -40,7 +40,6 @@ builder.Services.AddSwaggerGen();
 /**************************************************************/
 //BORRAR EN CASO DE QUE NO FUNCIONE
 builder.Services.AddControllersWithViews();
-// Añade esta línea para ver excepciones detalladas:
 builder.Services.AddLogging(logging =>
 {
     logging.ClearProviders();

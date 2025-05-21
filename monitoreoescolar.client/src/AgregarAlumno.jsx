@@ -116,12 +116,12 @@ const AgregarAlumno = () => {
             );
 
             if (!grupoEncontrado) {
-                alert("❌ El grupo seleccionado no ha sido creado. Por favor, cree el grupo antes de registrar al alumno.");
+                alert(" El grupo seleccionado no ha sido creado. Por favor, cree el grupo antes de registrar al alumno.");
                 return;
             }
         } catch (error) {
             console.error("Error al verificar grupos:", error);
-            alert("❌ No se pudo verificar la existencia del grupo.");
+            alert(" No se pudo verificar la existencia del grupo.");
             return;
         }
 
@@ -154,7 +154,6 @@ const AgregarAlumno = () => {
             }, 10000);
 
             // Limpiar formulario
-            // Limpiar formulario
             setAlumno({
                 Nombre: "",
                 ApellidoPaterno: "",
@@ -177,7 +176,7 @@ const AgregarAlumno = () => {
             setTutorOptions([]);
         } catch (error) {
             console.error("Error al registrar:", error);
-            alert("❌ No se pudo registrar al alumno.");
+            alert("No se pudo registrar al alumno.");
         }
     };
     return (

@@ -1,4 +1,4 @@
-.toma-asistencia-container {
+ï»¿.toma-asistencia-container {
     height: 100vh;
     background: linear-gradient(to bottom right, #89f7fe, #66a6ff);
     font-family: 'Segoe UI', sans-serif;
@@ -7,7 +7,7 @@
 
 
 
-/* Botón QR */
+/* BotÃ³n QR */
 .boton-qr {
     position: fixed;
     bottom: 30px;
@@ -58,7 +58,7 @@
     box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
 }
 
-/* Botón flotante de cierre (X) arriba a la derecha del modal */
+/* BotÃ³n flotante de cierre (X) arriba a la derecha del modal */
 .btn-cerrar-flotante {
     position: absolute;
     top: 10px;
@@ -88,7 +88,7 @@
     overflow-x: auto;
 }
 
-/* Tabla en sí */
+/* Tabla en sÃ­ */
 .tabla-asistencia {
     width: 100%;
     border-collapse: collapse;
@@ -204,3 +204,65 @@
         width: 32px;
         height: 32px;
     }
+
+    /*ESTILOS RESPONSIVOS*/
+@media (max-width: 768px) {
+    .tabla-asistencia-container {
+        width: 100%;
+        padding: 10px;
+        border-radius: 0;
+        margin-top: 20px;
+    }
+
+    .tabla-asistencia th,
+    .tabla-asistencia td {
+        padding: 10px 8px;
+        font-size: 13px;
+    }
+
+    .botones-accion-container {
+        flex-direction: column;
+        align-items: flex-end;
+        gap: 10px;
+        margin-right: 20px;
+    }
+
+    .boton-limpiar,
+    .boton-qr {
+        width: 55px;
+        height: 55px;
+        bottom: 20px;
+    }
+
+    .boton-qr {
+        right: 20px;
+    }
+
+    .boton-limpiar {
+        right: 90px;
+    }
+
+        .boton-qr img,
+        .boton-limpiar img {
+            width: 24px;
+            height: 24px;
+        }
+
+    .modal-qr-content {
+        width: 95%;
+        padding: 15px;
+    }
+
+    .btn-cerrar-flotante {
+        font-size: 20px;
+    }
+
+    .toast-mensaje {
+        font-size: 14px;
+        padding: 10px 20px;
+    }
+}
+
+.tabla-asistencia-container {
+    overflow-x: auto;
+}

@@ -2,7 +2,6 @@
 using MonitoreoEscolar.Server.DTOs;
 using MonitoreoEscolar.Server.Documents;
 using QuestPDF.Fluent;
-using Microsoft.EntityFrameworkCore;
 
 namespace MonitoreoEscolar.Server.Services
 {

@@ -15,7 +15,6 @@ function ActualizarPassword() {
     const navigate = useNavigate();
     const [confirmarPassword, setConfirmarPassword] = useState('');
 
-
     useEffect(() => {
         if (contador > 0) {
             const timer = setTimeout(() => setContador(contador - 1), 1000);
@@ -25,7 +24,7 @@ function ActualizarPassword() {
 
     const enviarCodigo = async () => {
         try {
-            await axios.post('/api/usuarios/enviar-codigo', { correo });
+            await axios.post('http://localhost:5099/api/usuarios/enviar-codigo', { correo });
             setMessage('Código enviado. Revisa tu correo.');
             setError('');
             setPaso(2);
@@ -38,7 +37,7 @@ function ActualizarPassword() {
 
     const validarCodigo = async () => {
         try {
-            await axios.post('/api/usuarios/validar-codigo', { correo, codigo });
+            await axios.post('http://localhost:5099/api/usuarios/validar-codigo', { correo, codigo });
             setMessage('Código válido. Ahora escribe tu nueva contraseña.');
             setError('');
             setPaso(3);
@@ -56,7 +55,7 @@ function ActualizarPassword() {
         }
 
         try {
-            await axios.post('/api/usuarios/actualizar-password', {
+            await axios.post('http://localhost:5099/api/usuarios/actualizar-password', {
                 correo,
                 newPassword
             });
@@ -70,7 +69,6 @@ function ActualizarPassword() {
             setMessage('');
         }
     };
-
 
     return (
         <div className="update-container-wrapper">

@@ -36,7 +36,7 @@ const Padre = () => {
 
         const obtenerHijosConGrupo = async () => {
             try {
-                const response = await axios.get(`/api/padres/obtener-hijos-con-grupo/${idPadre}`);
+                const response = await axios.get(`http://localhost:5099/api/padres/obtener-hijos-con-grupo/${idPadre}`);
                 setHijos(response.data);
             } catch (error) {
                 console.error("❌ Error al obtener hijos con grupo:", error);
@@ -50,7 +50,7 @@ const Padre = () => {
     const descargarPDF = async (alumnoId, nombreCompleto) => {
         try {
             const response = await axios.get(
-                `/api/padres/descargar-reporte/${alumnoId}`,
+                `http://localhost:5099/api/padres/descargar-reporte/${alumnoId}`,
                 { responseType: "blob" }
             );
 
@@ -88,7 +88,7 @@ const Padre = () => {
         }));
         try {
             const response = await axios.get(
-                `/api/padres/obtener-asistencias-alumno/${alumnoId}?fechaInicio=${inicio}&fechaFin=${fin}`
+                `http://localhost:5099/api/padres/obtener-asistencias-alumno/${alumnoId}?fechaInicio=${inicio}&fechaFin=${fin}`
             );
             setAsistenciasPorAlumno(prev => ({ ...prev, [alumnoId]: response.data }));
         } catch (error) {
@@ -106,7 +106,7 @@ const Padre = () => {
         // Si aún no tenemos asistencias, las traemos
         if (!asistenciasPorAlumno[alumnoId]) {
             try {
-                const resp = await axios.get(`/api/padres/obtener-asistencias-alumno/${alumnoId}`);
+                const resp = await axios.get(`http://localhost:5099/api/padres/obtener-asistencias-alumno/${alumnoId}`);
                 setAsistenciasPorAlumno(prev => ({ ...prev, [alumnoId]: resp.data }));
             } catch (err) {
                 console.error("❌ Error al obtener asistencias:", err);
@@ -124,7 +124,7 @@ const Padre = () => {
         // Si aún no tenemos reportes, los traemos
         if (!reportesPorAlumno[alumnoId]) {
             try {
-                const resp = await axios.get(`/api/padres/obtener-reportes-hijo/${alumnoId}`);
+                const resp = await axios.get(`http://localhost:5099/api/padres/obtener-reportes-hijo/${alumnoId}`);
                 setReportesPorAlumno(prev => ({ ...prev, [alumnoId]: resp.data }));
             } catch (err) {
                 console.error("❌ Error al obtener reportes:", err);
@@ -135,7 +135,7 @@ const Padre = () => {
         const hijo = hijos.find(h => h.alumnoId === alumnoId);
         if (hijo && !hijo.calificaciones) {
             try {
-                const resp = await axios.get(`/api/padres/obtener-calificaciones-alumno/${alumnoId}`);
+                const resp = await axios.get(`http://localhost:5099/api/padres/obtener-calificaciones-alumno/${alumnoId}`);
                 setHijos(prev =>
                     prev.map(h =>
                         h.alumnoId === alumnoId ? { ...h, calificaciones: resp.data } : h
@@ -250,8 +250,8 @@ const Padre = () => {
                                             asistenciasPorAlumno[hijo.alumnoId].map((a, idx) => (
                                                 <tr key={idx}>
                                                     <td>{a.fecha}</td>
-                                                    <td>{a.entrada}</td>
-                                                    <td>{a.salida}</td>
+                                                    <td>{a.horaEntrada}</td>
+                                                    <td>{a.horaSalida}</td>
                                                 </tr>
                                             ))
                                         ) : (

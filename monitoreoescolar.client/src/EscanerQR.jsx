@@ -3,14 +3,18 @@ import PropTypes from "prop-types";
 import beepSound from "./assets/beep.mp3";
 import { Html5Qrcode } from "html5-qrcode";
 
-const EscanerQR = ({ onScanSuccess }) => {
+const EscanerQR = ({ onScanSuccess, idQr = "qr-reader" }) => {
     const scannerRef = useRef(null);
-    const containerRef = useRef(null);
     const yaEscaneadoRef = useRef(false);
 
     useEffect(() => {
-        const qrRegionId = "qr-reader";
-        const scanner = new Html5Qrcode(qrRegionId);
+        const el = document.getElementById(idQr);
+        if (!el) {
+            console.error("❌ No se encontró el contenedor del escáner:", idQr);
+            return;
+        }
+
+        const scanner = new Html5Qrcode(idQr);
         scannerRef.current = scanner;
         yaEscaneadoRef.current = false;
 
@@ -46,20 +50,18 @@ const EscanerQR = ({ onScanSuccess }) => {
             });
 
         return () => {
-            // Evitar error si ya fue detenido antes
             if (scannerRef.current && scannerRef.current._isScanning) {
                 scannerRef.current.stop()
                     .then(() => scannerRef.current.clear())
                     .catch(() => { });
             }
         };
-    }, [onScanSuccess]);
+    }, [onScanSuccess, idQr]);
 
     return (
         <div>
             <div
-                ref={containerRef}
-                id="qr-reader"
+                id={idQr}
                 style={{
                     width: "100%",
                     maxWidth: "500px",
@@ -75,7 +77,8 @@ const EscanerQR = ({ onScanSuccess }) => {
 };
 
 EscanerQR.propTypes = {
-    onScanSuccess: PropTypes.func.isRequired
+    onScanSuccess: PropTypes.func.isRequired,
+    idQr: PropTypes.string
 };
 
 export default EscanerQR;

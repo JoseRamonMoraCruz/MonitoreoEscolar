@@ -12,8 +12,12 @@
   "dependencies": {
     "axios": "^1.7.9",
     "bootstrap": "^5.3.5",
+    "primeflex": "^4.0.0",
+    "primeicons": "^7.0.0",
+    "primereact": "^10.9.5",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
+    "react-loader-spinner": "^6.1.6",
     "react-select": "^5.10.1"
   },
   "devDependencies": {

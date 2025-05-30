@@ -1,15 +1,17 @@
-﻿import { useState, useEffect } from "react";
+﻿import { useState, useEffect, useRef }  from "react";
 import axios from "axios";
 import qrIcon from "./assets/codigo-qr.png";
 import EscanerQR from "./EscanerQR";
 import "./TomaAsistencia.css";
-import limpiarIcon from "./assets/limpiardatos.png";
+import { Dialog } from 'primereact/dialog';
+import { Toast } from 'primereact/toast'; 
 
 
 const TomaAsistencia = () => {
     const [mostrarQR, setMostrarQR] = useState(false);
     const [alumnos, setAlumnos] = useState([]);
-    const [mensajeToast, setMensajeToast] = useState(null);
+    const toast = useRef(null);
+
 
 
     useEffect(() => {
@@ -18,7 +20,7 @@ const TomaAsistencia = () => {
 
     const obtenerAsistenciasDelDia = async () => {
         try {
-            const response = await axios.get("/api/tomaasistencia/hoy");
+            const response = await axios.get("http://localhost:5099/api/tomaasistencia/hoy");
             console.log("📊 Asistencias cargadas:", response.data);
             setAlumnos(response.data);
         } catch (error) {
@@ -51,7 +53,7 @@ const TomaAsistencia = () => {
             console.error(" Error al registrar asistencia:", error);
 
             if (error.response && error.response.status === 404) {
-                mostrarToast("Alumno no encontrado. Verifica el QR.", "error");
+                mostrarToast("Alumno no encontrado", "Verifica el código QR.", "error");
             } else if (error.response?.data?.mensaje) {
                 mostrarToast(` ${error.response.data.mensaje}`, "error");
             } else {
@@ -63,14 +65,19 @@ const TomaAsistencia = () => {
     };
 
 
-    const mostrarToast = (texto, tipo = "success") => {
-        setMensajeToast({ texto, tipo });
-        setTimeout(() => setMensajeToast(null), 2500);
+    const mostrarToast = (summary, detail, severity = "success") => {
+        toast.current.show({
+            severity,
+            summary,
+            detail,
+            life: 3000
+        });
     };
 
     return (
         <div className="toma-asistencia-container">
-            
+            <Toast ref={toast} />
+
             {/* Tabla */}
             <div className="tabla-asistencia-container">
                 <table className="tabla-asistencia">
@@ -82,8 +89,8 @@ const TomaAsistencia = () => {
                             <th>Grupo</th>
                             <th>Carrera</th>
                             <th>Turno</th>
-                            <th>Fecha de Entrada</th>
-                            <th>Fecha de Salida</th>
+                            <th>Hora de Entrada</th>
+                            <th>Hora de Salida</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -105,15 +112,6 @@ const TomaAsistencia = () => {
 
             <div className="botones-accion-container">
                 <button
-                    className="boton-limpiar"
-                    onClick={() => setAlumnos([])}
-                    title="Limpiar lista de alumnos"
-                    aria-label="Limpiar lista de alumnos"
-                >
-                    <img src={limpiarIcon} alt="Limpiar" />
-                </button>
-
-                <button
                     className="boton-qr"
                     onClick={abrirModalQR}
                     title="Escanear código QR"
@@ -124,24 +122,18 @@ const TomaAsistencia = () => {
             </div>
 
             {/* Modal */}
-            {mostrarQR && (
-                <div className="modal-qr-overlay">
-                    <div className="modal-qr-content">
-                        <button className="btn-cerrar-flotante" onClick={cerrarModalQR}>×</button>
-                        <EscanerQR onScanSuccess={manejarEscaneo} />
-                    </div>
-                </div>
-            )}
-
-            {/* Toast */}
-            {mensajeToast && (
-                <div
-                    className={`toast-mensaje ${mensajeToast.tipo}`}
-                    data-icon={mensajeToast.tipo === "success" ? "✅" : "❌"}
-                >
-                    {mensajeToast.texto}
-                </div>
-            )}
+            <Dialog
+                header="Escanear QR para registrar asistencia"
+                visible={mostrarQR}
+                style={{ width: '90%', maxWidth: '600px' }}
+                onHide={cerrarModalQR}
+                position="center"
+                draggable={false}
+                resizable={false}
+                closable={true}
+            >
+                <EscanerQR idQr="qr-asistencia" onScanSuccess={manejarEscaneo} />
+            </Dialog>
         </div>
     );
 };

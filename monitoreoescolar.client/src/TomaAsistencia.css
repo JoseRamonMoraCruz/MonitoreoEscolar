@@ -35,43 +35,6 @@
     height: 32px;
 }
 
-/* Aqui esta el modal del QR */
-.modal-qr-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: rgba(0, 0, 0, 0.6);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 1000;
-}
-
-.modal-qr-content {
-    background-color: white;
-    padding: 20px;
-    border-radius: 10px;
-    width: 90%;
-    max-width: 600px;
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
-}
-
-/* Botón flotante de cierre (X) arriba a la derecha del modal */
-.btn-cerrar-flotante {
-    position: absolute;
-    top: 10px;
-    right: 15px;
-    font-size: 24px;
-    background: transparent;
-    border: none;
-    color: #444;
-    cursor: pointer;
-    font-weight: bold;
-    z-index: 10;
-    transition: color 0.2s ease-in-out;
-}
 
     .btn-cerrar-flotante:hover {
         color: #f44336;
@@ -176,35 +139,6 @@
     gap: 15px;
     margin: 20px 0;
 }
-
-.boton-limpiar {
-    position: fixed;
-    bottom: 30px;
-    right: 150px;
-    background: linear-gradient(to right, #4facfe, #00f2fe);
-    border: none;
-    border-radius: 50%;
-    width: 70px;
-    height: 70px;
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
-    cursor: pointer;
-    transition: transform 0.2s ease-in-out;
-    display: flex;
-    align-items: end;
-    justify-content: end;
-    z-index: 999;
-}
-
-    .boton-limpiar:hover {
-        transform: scale(1.1);
-    }
-
-
-    .boton-limpiar img {
-        width: 32px;
-        height: 32px;
-    }
-
     /*ESTILOS RESPONSIVOS*/
 @media (max-width: 768px) {
     .tabla-asistencia-container {
@@ -227,7 +161,6 @@
         margin-right: 20px;
     }
 
-    .boton-limpiar,
     .boton-qr {
         width: 55px;
         height: 55px;
@@ -237,13 +170,7 @@
     .boton-qr {
         right: 20px;
     }
-
-    .boton-limpiar {
-        right: 90px;
-    }
-
-        .boton-qr img,
-        .boton-limpiar img {
+        .boton-qr img{
             width: 24px;
             height: 24px;
         }

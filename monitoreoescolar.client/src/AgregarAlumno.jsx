@@ -5,180 +5,184 @@ import "./AgregarAlumno.css";
 import agregarIcon from "./assets/agregar-alumno.png";
 
 const AgregarAlumno = () => {
-    // Estado para almacenar los datos del alumno
+    // 1) Datos del alumno
     const [alumno, setAlumno] = useState({
         Nombre: "",
         ApellidoPaterno: "",
         ApellidoMaterno: "",
-        Grupo: "",       
-        Grado: "",       
-        letra: "",       
-        Domicilio: "",   
-        CURP: "", 
+        Grupo: "",
+        Grado: "",
+        letra: "",
+        Domicilio: "",
+        CURP: "",
         NumeroControl: "",
         Carrera: "",
         Plantel: "",
         Turno: "",
         Generacion: "",
         Ciclo: "",
-        TutorId: null
+        TutorId: null,
     });
 
-    //Variable para el nombre de la imagen del qr
-    const [nombreArchivoQR, setNombreArchivoQR] = useState("QR_alumno");
-
-
+    // 2) Autocomplete de tutores
     const [tutorOptions, setTutorOptions] = useState([]);
     const [selectedTutor, setSelectedTutor] = useState(null);
 
+    // 3) Estados para QR
+    const [qrCompositeUrl, setQrCompositeUrl] = useState(null);
+    const [showQrModal, setShowQrModal] = useState(false);
+    const [nombreArchivoQR, setNombreArchivoQR] = useState("QR_alumno");
+    const [nombreCompletoQR, setNombreCompletoQR] = useState("");
 
+    // Manejadores de inputs
     const handleChange = (e) => {
         const { name, value } = e.target;
-
-        // Convertir CURP a mayúsculas automáticamente
-        const valorFinal = name === "CURP" ? value.toUpperCase() : value;
-
-        setAlumno({
-            ...alumno,
-            [name]: valorFinal
-        });
+        setAlumno((a) => ({
+            ...a,
+            [name]: name === "CURP" ? value.toUpperCase() : value,
+        }));
     };
 
+    // Grado / letra -> arma Grupo
     const handleChangeGrado = (e) => {
-        const newGrado = e.target.value;
-        setAlumno({
-            ...alumno,
-            Grado: newGrado,
-            Grupo: newGrado && alumno.letra ? `${newGrado}${alumno.letra}` : ""
-        });
+        const g = e.target.value;
+        setAlumno((a) => ({
+            ...a,
+            Grado: g,
+            Grupo: g && a.letra ? `${g}${a.letra}` : "",
+        }));
     };
-
-    // Maneja el cambio de Letra 
     const handleChangeLetra = (e) => {
-        const newLetra = e.target.value;
-        setAlumno({
-            ...alumno,
-            letra: newLetra,
-            Grupo: alumno.Grado && newLetra ? `${alumno.Grado}${newLetra}` : ""
-        });
+        const l = e.target.value;
+        setAlumno((a) => ({
+            ...a,
+            letra: l,
+            Grupo: a.Grado && l ? `${a.Grado}${l}` : "",
+        }));
     };
 
-    // Función para buscar padres en base al término ingresado (autocompletado)
-    const fetchTutorOptions = async (inputValue) => {
-        if (!inputValue || inputValue.length < 2) {
-            setTutorOptions([]);
-            return;
-        }
+    // Autocomplete padres
+    const fetchTutorOptions = async (input) => {
+        if (!input || input.length < 2) return setTutorOptions([]);
         try {
-            const response = await axios.get(`/api/usuarios/autocompletePadres?termino=${inputValue}`);
-            const optionsData = response.data.map((padre) => ({
-                value: padre.id_Usuario,
-                label: `${padre.nombre} ${padre.apellidoPaterno} ${padre.apellidoMaterno} - ${padre.correo}`
-            }));
-            setTutorOptions(optionsData);
-        } catch (error) {
-            console.error("Error al buscar padres:", error);
+            const { data } = await axios.get(
+                `/api/usuarios/autocompletePadres?termino=${input}`
+            );
+            setTutorOptions(
+                data.map((p) => ({
+                    value: p.id_Usuario,
+                    label: `${p.nombre} ${p.apellidoPaterno} ${p.apellidoMaterno} – ${p.correo}`,
+                }))
+            );
+        } catch (err) {
+            console.error(err);
         }
     };
-
-    // Maneja el cambio de texto en el autocompletado
-    const handleTutorInputChange = (inputValue, { action }) => {
-        if (action === "input-change") {
-            fetchTutorOptions(inputValue);
-            return inputValue;
-        }
-        return inputValue;
+    const handleTutorInputChange = (input, { action }) => {
+        if (action === "input-change") fetchTutorOptions(input);
+        return input;
+    };
+    const handleTutorChangeSelect = (opt) => {
+        setSelectedTutor(opt);
+        setAlumno((a) => ({ ...a, TutorId: opt ? opt.value : null }));
     };
 
-    // Maneja la selección del tutor en el autocompletado
-    const handleTutorChangeSelect = (selectedOption) => {
-        setSelectedTutor(selectedOption);
-        setAlumno({ ...alumno, TutorId: selectedOption ? selectedOption.value : null });
-    };
-
-
-    // Estado para almacenar la URL del código QR
-    const [qrUrl, setQrUrl] = useState(null);
-    const [showQrModal, setShowQrModal] = useState(false);
-
-    // Función para enviar los datos del alumno al backend
+    // Envío del formulario, registro + QR + canvas
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        // Verificar que el grupo seleccionado exista
+        // 1) validar grupo existe
         try {
-            const gruposResponse = await axios.get("/api/grupos");
-            const gruposExistentes = gruposResponse.data;
-            const grupoEncontrado = gruposExistentes.find(
+            const { data: grupos } = await axios.get("/api/grupos");
+            const ok = grupos.find(
                 (g) =>
                     g.grado.toString() === alumno.Grado &&
                     g.letra.toUpperCase() === alumno.letra.toUpperCase()
             );
-
-            if (!grupoEncontrado) {
-                alert(" El grupo seleccionado no ha sido creado. Por favor, cree el grupo antes de registrar al alumno.");
+            if (!ok) {
+                alert("Crea el grupo antes de registrar.");
                 return;
             }
-        } catch (error) {
-            console.error("Error al verificar grupos:", error);
-            alert(" No se pudo verificar la existencia del grupo.");
+        } catch {
+            alert("Error verificando grupos.");
             return;
         }
 
-        setNombreArchivoQR(
-            `QR_${(alumno.Nombre + "_" + alumno.ApellidoPaterno + "_" + alumno.ApellidoMaterno).replace(/\s+/g, "_")}`
-        );
+        // 2) arma nombre completo
+        const nombreFull = `${alumno.Nombre} ${alumno.ApellidoPaterno} ${alumno.ApellidoMaterno}`;
+        setNombreCompletoQR(nombreFull);
+        setNombreArchivoQR(`QR_${nombreFull.replace(/\s+/g, "_")}`);
 
-
-        // Registrar al alumno
+        // 3) registrar alumno
         try {
-            const response = await axios.post("/api/alumnos/registro", alumno);
-            alert(response.data.mensaje);
+            const reg = await axios.post("/api/alumnos/registro", alumno);
+            alert(reg.data.mensaje);
+            const id = reg.data.alumno.id;
 
-            // Obtener el ID del nuevo alumno
-            const alumnoId = response.data.alumno.id;
-
-            // Obtener el QR desde el backend
-            const qrResponse = await axios.get(`/api/alumnos/qr/${alumnoId}`, {
-                responseType: "blob"
+            // 4) obtener blob QR
+            const qrResp = await axios.get(`/api/alumnos/qr/${id}`, {
+                responseType: "blob",
             });
-            const qrBlob = new Blob([qrResponse.data], { type: "image/png" });
-            const qrImageUrl = URL.createObjectURL(qrBlob);
-            setQrUrl(qrImageUrl);
-            setShowQrModal(true);
+            const blobUrl = URL.createObjectURL(
+                new Blob([qrResp.data], { type: "image/png" })
+            );
 
-            // Ocultar automáticamente el modal tras 10 segundos
-            setTimeout(() => {
-                setShowQrModal(false);
-                setQrUrl(null);
-            }, 10000);
-
-            // Limpiar formulario
-            setAlumno({
-                Nombre: "",
-                ApellidoPaterno: "",
-                ApellidoMaterno: "",
-                grupo: "",
-                Grado: "",
-                letra: "",
-                tutor: "",
-                Domicilio: "",
-                TutorId: null,
-                CURP: "",
-                NumeroControl: "",
-                Carrera: "",
-                Plantel: "",
-                Turno: "",
-                Generacion: "",
-                Ciclo: ""
-            });
-            setSelectedTutor(null);
-            setTutorOptions([]);
-        } catch (error) {
-            console.error("Error al registrar:", error);
-            alert("No se pudo registrar al alumno.");
+            // 5) componer canvas
+            const img = new Image();
+            img.onload = () => {
+                const pad = 20,
+                    th = 30;
+                const w = img.width + pad * 2,
+                    h = img.height + pad * 2 + th;
+                const c = document.createElement("canvas");
+                c.width = w;
+                c.height = h;
+                const ctx = c.getContext("2d");
+                ctx.fillStyle = "#fff";
+                ctx.fillRect(0, 0, w, h);
+                ctx.drawImage(img, pad, pad);
+                ctx.fillStyle = "#000";
+                ctx.font = "bold 18px sans-serif";
+                ctx.textAlign = "center";
+                ctx.fillText(nombreFull, w / 2, img.height + pad + th * 0.8);
+                c.toBlob((b) => {
+                    const url2 = URL.createObjectURL(b);
+                    setQrCompositeUrl(url2);
+                    setShowQrModal(true);
+                    setTimeout(() => {
+                        setShowQrModal(false);
+                        setQrCompositeUrl(null);
+                    }, 10000);
+                }, "image/png");
+            };
+            img.src = blobUrl;
+        } catch (err) {
+            console.error(err);
+            alert("Error al registrar.");
         }
+
+        // 6) limpiar form
+        setAlumno({
+            Nombre: "",
+            ApellidoPaterno: "",
+            ApellidoMaterno: "",
+            Grupo: "",
+            Grado: "",
+            letra: "",
+            Domicilio: "",
+            CURP: "",
+            NumeroControl: "",
+            Carrera: "",
+            Plantel: "",
+            Turno: "",
+            Generacion: "",
+            Ciclo: "",
+            TutorId: null,
+        });
+        setSelectedTutor(null);
+        setTutorOptions([]);
     };
+
     return (
         <div className="bootstrap-scope">
             <div className="agregar-alumno-container">
@@ -197,7 +201,6 @@ const AgregarAlumno = () => {
                                 required
                             />
                         </div>
-
                         {/* Apellido Paterno */}
                         <div className="agregar-alumno-group">
                             <label>👨🏻‍🎓 Apellido Paterno:</label>
@@ -210,7 +213,6 @@ const AgregarAlumno = () => {
                                 required
                             />
                         </div>
-
                         {/* Apellido Materno */}
                         <div className="agregar-alumno-group">
                             <label>👨🏻‍🎓 Apellido Materno:</label>
@@ -223,9 +225,7 @@ const AgregarAlumno = () => {
                                 required
                             />
                         </div>
-
-
-                        {/* Grado y Letra para armar Grupo */}
+                        {/* Grado + Letra */}
                         <div className="agregar-alumno-group-selects">
                             <div>
                                 <label>Grado:</label>
@@ -237,42 +237,45 @@ const AgregarAlumno = () => {
                                 >
                                     <option value="">Seleccione</option>
                                     {[1, 2, 3, 4, 5, 6].map((g) => (
-                                        <option key={g} value={g}>{g}</option>
+                                        <option key={g} value={g}>
+                                            {g}
+                                        </option>
                                     ))}
                                 </select>
                             </div>
                             <div>
                                 <label>Grupo:</label>
                                 <select
-                                    name="letra" // no se guarda en backend, solo ayuda a formar Grupo
+                                    name="letra"
                                     value={alumno.letra || ""}
                                     onChange={handleChangeLetra}
                                     required
                                 >
                                     <option value="">Seleccione</option>
                                     {["A", "B", "C", "D", "E", "F", "G"].map((l) => (
-                                        <option key={l} value={l}>{l}</option>
+                                        <option key={l} value={l}>
+                                            {l}
+                                        </option>
                                     ))}
                                 </select>
                             </div>
                         </div>
-
-                        {/* Grupo (campo final armado automáticamente) */}
                         <input type="hidden" name="Grupo" value={alumno.Grupo} />
 
-                        {/* Autocompletado para seleccionar padre/tutor */}
+                        {/* Tutor */}
                         <div className="agregar-alumno-group">
-                            <label> 👨🏻‍🦰 Seleccionar padre del alumno:</label>
+                            <label>👨🏻‍🦰 Seleccionar padre:</label>
                             <Select
                                 classNamePrefix="my-select"
                                 value={selectedTutor}
                                 onChange={handleTutorChangeSelect}
                                 onInputChange={handleTutorInputChange}
                                 options={tutorOptions}
-                                placeholder="Escriba el nombre del padre..."
-                                noOptionsMessage={() => "No se encontraron coincidencias"}
+                                placeholder="Escriba nombre del padre..."
+                                noOptionsMessage={() => "No hay coincidencias"}
                             />
                         </div>
+
                         {/* Domicilio */}
                         <div className="agregar-alumno-group">
                             <label>🏠 Domicilio:</label>
@@ -281,7 +284,7 @@ const AgregarAlumno = () => {
                                 name="Domicilio"
                                 value={alumno.Domicilio}
                                 onChange={handleChange}
-                                placeholder="Ingrese el domicilio"
+                                placeholder="Ingrese domicilio"
                                 required
                             />
                         </div>
@@ -306,7 +309,7 @@ const AgregarAlumno = () => {
                                 name="NumeroControl"
                                 value={alumno.NumeroControl}
                                 onChange={handleChange}
-                                placeholder="Número de control del alumno"
+                                placeholder="Número de control"
                             />
                         </div>
 
@@ -320,11 +323,17 @@ const AgregarAlumno = () => {
                                 required
                             >
                                 <option value="">Seleccione una carrera</option>
-                                <option value="CIENCIA DE DATOS E INFORMACIÓN">CIENCIA DE DATOS E INFORMACIÓN</option>
+                                <option value="CIENCIA DE DATOS E INFORMACIÓN">
+                                    CIENCIA DE DATOS E INFORMACIÓN
+                                </option>
                                 <option value="CONSTRUCCIÓN">CONSTRUCCIÓN</option>
                                 <option value="CONTABILIDAD">CONTABILIDAD</option>
-                                <option value="LABORATORISTA CLÍNICO">LABORATORISTA CLÍNICO</option>
-                                <option value="MANTENIMIENTO AUTOMOTRIZ">MANTENIMIENTO AUTOMOTRIZ</option>
+                                <option value="LABORATORISTA CLÍNICO">
+                                    LABORATORISTA CLÍNICO
+                                </option>
+                                <option value="MANTENIMIENTO AUTOMOTRIZ">
+                                    MANTENIMIENTO AUTOMOTRIZ
+                                </option>
                                 <option value="MECATRÓNICA">MECATRÓNICA</option>
                                 <option value="PUERICULTURA">PUERICULTURA</option>
                             </select>
@@ -350,7 +359,7 @@ const AgregarAlumno = () => {
                                 name="Turno"
                                 value={alumno.Turno}
                                 onChange={handleChange}
-                                placeholder="Turno (Matutino/Vespertino)"
+                                placeholder="Matutino / Vespertino"
                             />
                         </div>
 
@@ -362,23 +371,23 @@ const AgregarAlumno = () => {
                                 name="Generacion"
                                 value={alumno.Generacion}
                                 onChange={handleChange}
-                                placeholder="Generación del alumno"
+                                placeholder="Generación"
                             />
                         </div>
 
-                        {/* Perdiodo Escolar */}
+                        {/* Ciclo */}
                         <div className="agregar-alumno-group">
-                            <label>🔢 Perdiodo Escolar:</label>
+                            <label>🔢 Ciclo Escolar:</label>
                             <input
                                 type="text"
                                 name="Ciclo"
                                 value={alumno.Ciclo}
                                 onChange={handleChange}
-                                placeholder="(EJEMPLO) :SEMESTRAL 1 - 2024"
+                                placeholder="SEMESTRAL 1 - 2024"
                             />
                         </div>
 
-                        {/* Botones */}
+                        {/* Botón Agregar */}
                         <div className="button-container">
                             <button type="submit" className="agregar-alumno-btn">
                                 <img src={agregarIcon} alt="Agregar" className="back-icon" />
@@ -388,26 +397,32 @@ const AgregarAlumno = () => {
                     </form>
                 </div>
             </div>
+
             {/* Modal de QR */}
             {showQrModal && (
                 <div className="modal-qr">
                     <div className="modal-qr-content">
-                        <span className="close" onClick={() => setShowQrModal(false)}>×</span>
-                        <h3>Código QR del alumno registrado</h3>
-                        <img src={qrUrl} alt="Código QR" className="qr-image" />
+                        <span className="close" onClick={() => setShowQrModal(false)}>
+                            ×
+                        </span>
+                        <h3>Código QR de {nombreCompletoQR}</h3>
+                        <img
+                            src={qrCompositeUrl}
+                            alt="Código QR con nombre"
+                            className="qr-image"
+                        />
                         <a
-                            href={qrUrl}
+                            href={qrCompositeUrl}
                             download={`${nombreArchivoQR}.png`}
                             className="qr-download-btn"
                         >
                             Descargar QR
                         </a>
-
                     </div>
                 </div>
             )}
-
         </div>
     );
 };
+
 export default AgregarAlumno;

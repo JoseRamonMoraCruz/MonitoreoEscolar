@@ -250,8 +250,8 @@ const Padre = () => {
                                             asistenciasPorAlumno[hijo.alumnoId].map((a, idx) => (
                                                 <tr key={idx}>
                                                     <td>{a.fecha}</td>
-                                                    <td>{a.entrada}</td>
-                                                    <td>{a.salida}</td>
+                                                    <td>{a.horaEntrada}</td>
+                                                    <td>{a.horaSalida}</td>
                                                 </tr>
                                             ))
                                         ) : (

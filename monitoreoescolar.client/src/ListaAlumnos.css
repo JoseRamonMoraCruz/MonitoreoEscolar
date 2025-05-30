@@ -79,21 +79,21 @@
     position: relative;
     background: white;
     border-radius: 10px;
-    width: 90vw; /* Más ancho para la tabla */
-    max-width: 750px; */ /* Quita o comenta el límite si no lo necesitas */
-    min-height: unset; /* Alto mínimo mayor */
-    padding: 20px; /* Más espacio interior */
+    width: 90vw; 
+    max-width: 750px; 
+    min-height: unset; 
+    padding: 20px; 
     box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
     font-size: 18px;
-    font-weight: normal; /* El texto de la carta no tiene que ir en negrita */
-    color: #333; /* Texto más oscuro */
+    font-weight: normal; 
+    color: #333; 
     cursor: pointer;
     transition: transform 0.3s ease-in-out;
     display: flex;
     flex-direction: column;
-    align-items: stretch; /* Ocupa todo el ancho disponible */
+    align-items: stretch; 
     justify-content: flex-start;
-    margin: 6px auto; /* Separación arriba/abajo */
+    margin: 6px auto; 
 }
 
     .grupo-card:hover {
@@ -103,7 +103,7 @@
 
     .grupo-card .tabla-wrapper {
         width: 100%;
-        overflow-x: auto; /* deja scroll horizontal si la tabla es muy ancha */
+        overflow-x: auto; 
     }
 
 
@@ -243,7 +243,6 @@
         .tabla-alumnos tr:hover {
             background-color: #f0f8ff;
         }
-
 
 /* Contenedor para la sección expandida del grupo */
 .grupo-details {
@@ -522,10 +521,10 @@ input {
     height: 100%;
     background: rgba(0,0,0,0.6);
     display: flex;
-    align-items: flex-start; /* empuja el contenido hacia abajo */
+    align-items: flex-start; 
     justify-content: center;
-    padding-top: 40px; /* espacio superior */
-    overflow-y: auto; /* scroll vertical si el modal es muy alto */
+    padding-top: 40px; 
+    overflow-y: auto; 
     z-index: 2000;
     backdrop-filter: blur(3px);
 }
@@ -535,11 +534,11 @@ input {
     background: white;
     border-radius: 12px;
     width: 420px;
-    max-height: 80vh; /* hasta 80% de la altura de la ventana */
+    max-height: 80vh; 
     padding: 25px;
     box-shadow: 0 5px 20px rgba(0,0,0,0.3);
     position: relative;
-    overflow-y: auto; /* scroll interno si sobrepasa */
+    overflow-y: auto; 
     animation: fadeIn 0.3s ease-in-out;
 }
 
@@ -549,23 +548,19 @@ input {
         margin-bottom: 15px;
         text-align: center;
     }
-
-    /* Si quieres ajustar ligeramente los inputs para que no crezcan demasiado: */
     .modal-editar-content .input-container {
         margin-bottom: 12px;
     }
-
-
 /*Estilos del alumno con su QR*/
 .alumno-con-qr {
     display: flex;
-    align-items: center; /* Centra verticalmente el texto con el ícono */
+    align-items: center; 
     gap: 8px;
     white-space: nowrap;
     font-weight: 600;
     font-size: 16px;
     color: #000;
-    line-height: 1; /* Esto también ayuda a que no se despegue mucho hacia abajo */
+    line-height: 1; 
     vertical-align: middle;
     padding: 10px;
 }
@@ -609,7 +604,7 @@ input {
 
     .tabla-alumnos {
         font-size: 13px;
-        min-width: 900px; /* Forzar scroll lateral en tablas grandes */
+        min-width: 900px; 
     }
 
     .tabla-wrapper {
@@ -649,3 +644,45 @@ input {
     }
 
 }
+/* ======== QR COMPUESTO (QR + Nombre) ======== */
+.modal-qr-content h3 {
+    margin-bottom: 12px;
+    color: #333;
+    font-size: 18px;
+}
+
+/* Imagen QR dentro del modal */
+.modal-qr-content .qr-image {
+    width: 200px;
+    height: 200px;
+    object-fit: contain;
+    margin: 0 auto;
+}
+
+/* Botón descargar */
+.modal-qr-content .qr-download-btn {
+    display: inline-block;
+    background: #8800ff;
+    color: #fff;
+    padding: 10px 16px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: bold;
+    margin-top: 12px;
+    transition: background-color 0.3s ease-in-out;
+}
+
+    .modal-qr-content .qr-download-btn:hover {
+        background: #6a00cc;
+    }
+
+.modal-qr-content .qr-nombre {
+    margin-top: 12px;
+    font-size: 16px;
+    font-weight: 600;
+    color: #333;
+    word-wrap: break-word;
+    max-width: 100%;
+    text-align: center;
+}
+

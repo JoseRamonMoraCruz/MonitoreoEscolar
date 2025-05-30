@@ -1,8 +1,12 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using MailKit.Security;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using MimeKit;
 using MonitoreoEscolar.Server.Data;
 using MonitoreoEscolar.Server.Models;
 using OfficeOpenXml;
+using MailKit.Net.Smtp;
+
 
 namespace MonitoreoEscolar.Server.Controllers
 {
@@ -42,7 +46,9 @@ namespace MonitoreoEscolar.Server.Controllers
 
                 // Diccionarios con nombres normalizados en MAYÚSCULAS
                 var alumnosDict = await _context.Alumnos
-                    .ToDictionaryAsync(a => Normalizar(a.NombreCompletoNormalizado));
+                 .Include(a => a.TutorUsuario)
+                 .ToDictionaryAsync(a => Normalizar(a.NombreCompletoNormalizado));
+
 
                 var gruposDict = await _context.Grupos
                     .ToDictionaryAsync(g => $"{g.Grado}{g.Letra}".ToUpper());
@@ -51,7 +57,7 @@ namespace MonitoreoEscolar.Server.Controllers
 
                 for (int row = 2; row <= rowCount; row++)
                 {
-                    // 🟡 Leer datos desde el Excel
+                    //  Leer datos desde el Excel
                     string nombreOriginal = $"{worksheet.Cells[row, 9].Text.Trim()} {worksheet.Cells[row, 10].Text.Trim()} {worksheet.Cells[row, 11].Text.Trim()}";
                     string nombreNormalizado = Normalizar(nombreOriginal);
 
@@ -83,7 +89,7 @@ namespace MonitoreoEscolar.Server.Controllers
                         continue;
                     }
 
-                    string parcialUnidad = "Parcial 1"; 
+                    string parcialUnidad = "Parcial 1";
 
                     bool yaExiste = await _context.Calificaciones.AnyAsync(c =>
                         c.AlumnoId == alumno.Id &&
@@ -117,6 +123,18 @@ namespace MonitoreoEscolar.Server.Controllers
                     };
 
                     calificacionesGuardadas.Add(calificacion);
+
+                    if (alumno.TutorUsuario != null && !string.IsNullOrEmpty(alumno.TutorUsuario.Correo))
+                    {
+                        string nombreTutor = $"{alumno.TutorUsuario.Nombre} {alumno.TutorUsuario.ApellidoPaterno} {alumno.TutorUsuario.ApellidoMaterno}";
+                        string asunto = "📊 Nuevas calificaciones disponibles";
+                        string mensajeCorreo = $@"
+                            Se han registrado nuevas calificaciones para su hijo(a) <strong>{alumno.Nombre} {alumno.ApellidoPaterno} {alumno.ApellidoMaterno}</strong> 
+                            del grupo <strong>{grupo.Grado}{grupo.Letra}</strong>.<br/>
+                            Ingrese al sistema para ver los detalles.";
+
+                        await EnviarCorreoTutor(alumno.TutorUsuario.Correo, asunto, mensajeCorreo, nombreTutor);
+                    }
                 }
 
                 _context.Calificaciones.AddRange(calificacionesGuardadas);
@@ -246,5 +264,36 @@ namespace MonitoreoEscolar.Server.Controllers
 
             return System.Text.RegularExpressions.Regex.Replace(sb.ToString().ToUpper(), @"\s+", " ").Trim();
         }
+        private async Task EnviarCorreoTutor(string correoDestino, string asunto, string mensaje, string nombreTutor)
+        {
+            var email = new MimeMessage();
+            email.From.Add(new MailboxAddress("Monitoreo Escolar", "serviciosmonitoreoescolar@gmail.com"));
+            email.To.Add(MailboxAddress.Parse(correoDestino));
+            email.Subject = asunto;
+
+            var bodyBuilder = new BodyBuilder
+            {
+                HtmlBody = $@"
+                <div style='font-family: Segoe UI, sans-serif; padding: 20px; background-color: #eef2f7;'>
+                    <div style='max-width: 600px; margin: auto; background-color: white; border-radius: 12px; padding: 30px; box-shadow: 0 4px 12px rgba(0,0,0,0.15);'>
+                        <h2 style='color: #007bff;'>Nuevo registro de calificaciones</h2>
+                        <p style='font-size: 15px;'>Estimado/a <strong>{nombreTutor}</strong>,</p>
+                        <p style='font-size: 15px; color: #444;'>{mensaje}</p>
+                        <p><a href='https://localhost:55052' target='_blank'>Ver calificaciones</a></p>
+                        <p style='color: #888;'>Este mensaje ha sido generado automáticamente. Por favor, no responda este correo.</p>
+                        <p style='text-align: center; font-size: 13px; color: #aaa;'>© {DateTime.Now.Year} Monitoreo Escolar</p>
+                    </div>
+                </div>"
+            };
+
+            email.Body = bodyBuilder.ToMessageBody();
+
+            using var smtp = new SmtpClient();
+            await smtp.ConnectAsync("smtp.gmail.com", 587, SecureSocketOptions.StartTls);
+            await smtp.AuthenticateAsync("serviciosmonitoreoescolar@gmail.com", "dxzarzmqarilrlbz");
+            await smtp.SendAsync(email);
+            await smtp.DisconnectAsync(true);
+        }
+
     }
 }

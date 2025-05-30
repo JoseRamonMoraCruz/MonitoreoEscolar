@@ -19,7 +19,6 @@
     flex-direction: column;
 }
 
-
 /*  Formulario */
 .agregar-alumno-form {
     display: flex;
@@ -251,7 +250,6 @@ button {
     color: #000;
 }
 
-
 /* ======================= MODAL QR ======================= */
 .modal-qr {
     position: fixed;
@@ -288,6 +286,16 @@ button {
         object-fit: contain;
     }
 
+    /* ESTO: nombre bajo la imagen */
+    .modal-qr-content .qr-nombre {
+        margin-top: 12px;
+        font-size: 16px;
+        font-weight: bold;
+        color: #333;
+        word-wrap: break-word;
+        max-width: 100%;
+    }
+
     .modal-qr-content .close {
         position: absolute;
         top: 8px;
@@ -297,18 +305,19 @@ button {
         color: #888;
         cursor: pointer;
     }
-    .qr-download-btn {
-        margin-top: 15px;
-        display: inline-block;
-        background-color: #8800ff;
-        color: #fff;
-        padding: 10px 16px;
-        border-radius: 8px;
-        font-weight: bold;
-        text-decoration: none;
-        transition: background-color 0.3s ease-in-out;
-    }
 
-        .qr-download-btn:hover {
-            background-color: #6a00cc;
-        }
+.qr-download-btn {
+    margin-top: 15px;
+    display: inline-block;
+    background-color: #8800ff;
+    color: #fff;
+    padding: 10px 16px;
+    border-radius: 8px;
+    font-weight: bold;
+    text-decoration: none;
+    transition: background-color 0.3s ease-in-out;
+}
+
+    .qr-download-btn:hover {
+        background-color: #6a00cc;
+    }

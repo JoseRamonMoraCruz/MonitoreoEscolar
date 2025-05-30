@@ -47,6 +47,10 @@ const ListaAlumnos = () => {
     const [carreraOptions, setCarreraOptions] = useState([]);
     const [selectedCarreraEdit, setSelectedCarreraEdit] = useState(null);
 
+    // junto a tus useState existentes
+    const [qrCompositeUrl, setQrCompositeUrl] = useState(null);
+    const [nombreCompletoQR, setNombreCompletoQR] = useState("");
+
 
     useEffect(() => {
         obtenerGrupos();
@@ -62,8 +66,6 @@ const ListaAlumnos = () => {
             setGroupOptions(opciones);
         }
     }, [grupos]);
-
-    //carreras creo
     useEffect(() => {
         axios.get("/api/carreras")
             .then(resp => {
@@ -82,7 +84,6 @@ const ListaAlumnos = () => {
                 for (const grupo of grupos) {
                     const groupString = `${grupo.grado}${grupo.letra}`;
                     try {
-                        // Asegúrate de que este endpoint incluya TutorUsuario (usando Include en el backend)
                         const response = await axios.get(`/api/alumnos/grupo/${groupString}`);
                         newAlumnosPorGrupo[grupo.id] = response.data;
                     } catch (error) {
@@ -124,8 +125,6 @@ const ListaAlumnos = () => {
                 cerrarMenuGrupo();
             }
         };
-
-        // Si el menú está abierto, agrega el event listener
         if (menuGrupo) {
             document.addEventListener("mousedown", handleClickOutside);
         }
@@ -278,19 +277,14 @@ const ListaAlumnos = () => {
 
             const alumnoParaActualizar = {
                 ...alumnoSinTutor,
-                // Aquí ya no concatenas nada: grupo es directamente "1A", "2C", etc.
                 Grupo: alumno.grupo
             };
-
             // 4) Llamada al API
             const response = await axios.put(
                 `/api/alumnos/editar/${alumno.id}`,
                 alumnoParaActualizar
             );
-
             alert(response.data.mensaje);
-
-            // 5) Refrescar tu lista local de alumnos
             setAlumnosGrupo((prev) =>
                 prev.map((al) =>
                     al.id === alumno.id ? alumnoParaActualizar : al
@@ -453,7 +447,6 @@ const ListaAlumnos = () => {
 
     // Función para editar el grupo
     const actualizarGrupoDocente = async () => {
-        // Puedes agregar validaciones adicionales si es necesario
         if (!grupoDocenteEditado.grado || !grupoDocenteEditado.letra) {
             alert("❌ Por favor, seleccione el grado y el grupo.");
             return;
@@ -494,28 +487,69 @@ const ListaAlumnos = () => {
         }
     };
 
+    //PARA EL QR
     const [qrUrl, setQrUrl] = useState(null);
     const [showQrModal, setShowQrModal] = useState(false);
     const [nombreArchivoQR, setNombreArchivoQR] = useState("QR_Alumno");
 
     const mostrarModalQR = async (alumnoId, nombre, apellidoPaterno, apellidoMaterno) => {
         try {
-            setNombreArchivoQR(`QR_${(nombre + "_" + apellidoPaterno + "_" + apellidoMaterno).replace(/\s+/g, "_")}`);
+            // 1) Prepara el nombre completo y el nombre de archivo
+            const fullName = `${nombre} ${apellidoPaterno} ${apellidoMaterno}`.trim();
+            setNombreCompletoQR(fullName);
+            setNombreArchivoQR(`QR_${fullName.replace(/\s+/g, "_")}`);
 
+            // 2) Descarga el blob PNG original
             const response = await axios.get(`/api/alumnos/qr/${alumnoId}`, {
-                responseType: "blob"
+                responseType: "blob",
             });
+            const rawBlob = new Blob([response.data], { type: "image/png" });
+            const rawUrl = URL.createObjectURL(rawBlob);
 
-            const qrBlob = new Blob([response.data], { type: "image/png" });
-            const qrImageUrl = URL.createObjectURL(qrBlob);
-            setQrUrl(qrImageUrl);
-            setShowQrModal(true);
+            // 3) Carga la imagen en un elemento <img> para poder dibujarla en un canvas
+            const img = new Image();
+            img.onload = () => {
+                const padding = 20;
+                const textH = 30;
+                const cw = img.width + padding * 2;
+                const ch = img.height + padding * 2 + textH;
+                const canvas = document.createElement("canvas");
+                canvas.width = cw;
+                canvas.height = ch;
+                const ctx = canvas.getContext("2d");
+
+                // 4) Dibuja fondo blanco
+                ctx.fillStyle = "#fff";
+                ctx.fillRect(0, 0, cw, ch);
+
+                // 5) Dibuja el QR
+                ctx.drawImage(img, padding, padding);
+
+                // 6) Dibuja el nombre centrado debajo del QR
+                ctx.fillStyle = "#000";
+                ctx.font = "bold 18px sans-serif";
+                ctx.textAlign = "center";
+                ctx.fillText(fullName, cw / 2, img.height + padding + textH * 0.8);
+
+                // 7) Convierte el canvas a blob y genera la URL final
+                canvas.toBlob((blob) => {
+                    const compositeUrl = URL.createObjectURL(blob);
+                    setQrCompositeUrl(compositeUrl);
+                    setShowQrModal(true);
+                    setTimeout(() => {
+                        URL.revokeObjectURL(compositeUrl);
+                        setShowQrModal(false);
+                        setQrCompositeUrl(null);
+                    }, 10000);
+                }, "image/png");
+            };
+
+            img.src = rawUrl;
         } catch (error) {
-            console.error("Error al obtener el QR:", error);
-            alert("❌ No se pudo obtener el código QR.");
+            console.error("Error al generar QR compuesto:", error);
+            alert("❌ No se pudo generar el código QR con el nombre.");
         }
     };
-
 
     // Constante para la parte del whats
     const abrirWhatsApp = (telefono) => {
@@ -570,7 +604,6 @@ const ListaAlumnos = () => {
                                         </h3>
 
                                         <div className="acciones-grupo" style={{ display: "flex", gap: "10px" }}>
-                                            {/* Icono para mostrar el menú (puedes reemplazar el contenido por una imagen si la tienes) */}
                                             <span
                                                 style={{ cursor: "pointer", fontSize: "24px" }}
                                                 onClick={(e) => abrirMenuGrupo(grupo, e)}
@@ -644,9 +677,6 @@ const ListaAlumnos = () => {
                                                                             {alumno.nombre} {alumno.apellidoPaterno} {alumno.apellidoMaterno}
                                                                         </span>
                                                                     </td>
-
-
-
                                                                     <td className="padre-whatsapp">
                                                                         {alumno.tutorUsuario?.telefono && (
                                                                             <img
@@ -822,7 +852,7 @@ const ListaAlumnos = () => {
                                     <label>Grupo:</label>
                                     <select name="letra" value={nuevoGrupo.letra} onChange={handleChange}>
                                         <option value="">Seleccione</option>
-                                        {["A", "B", "C", "D", "E", "F"].map((letra) => (
+                                        {["A", "B", "C", "D", "E", "F", "G"].map((letra) => (
                                             <option key={letra} value={letra}>
                                                 {letra}
                                             </option>
@@ -1131,14 +1161,14 @@ const ListaAlumnos = () => {
                     </div>
                 </div>
             )}
-            {showQrModal && (
+            {showQrModal && qrCompositeUrl && (
                 <div className="modal-qr">
                     <div className="modal-qr-content">
                         <span className="close" onClick={() => setShowQrModal(false)}>×</span>
-                        <h3>Código QR del alumno</h3>
-                        <img src={qrUrl} alt="Código QR" className="qr-image" />
+                        <h3>Código QR de {nombreCompletoQR}</h3>
+                        <img src={qrCompositeUrl} alt="QR con nombre" className="qr-image" />
                         <a
-                            href={qrUrl}
+                            href={qrCompositeUrl}
                             download={`${nombreArchivoQR}.png`}
                             className="qr-download-btn"
                         >

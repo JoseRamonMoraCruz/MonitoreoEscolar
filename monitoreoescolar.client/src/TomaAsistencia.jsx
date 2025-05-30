@@ -11,7 +11,6 @@ const TomaAsistencia = () => {
     const [alumnos, setAlumnos] = useState([]);
     const [mensajeToast, setMensajeToast] = useState(null);
 
-
     useEffect(() => {
         obtenerAsistenciasDelDia();
     }, []);
@@ -33,7 +32,6 @@ const TomaAsistencia = () => {
     const cerrarModalQR = () => {
         setMostrarQR(false);
     };
-
 
     const manejarEscaneo = async (codigo) => {
         console.log(" Código recibido del QR:", codigo);
@@ -62,7 +60,6 @@ const TomaAsistencia = () => {
         }
     };
 
-
     const mostrarToast = (texto, tipo = "success") => {
         setMensajeToast({ texto, tipo });
         setTimeout(() => setMensajeToast(null), 2500);
@@ -82,8 +79,8 @@ const TomaAsistencia = () => {
                             <th>Grupo</th>
                             <th>Carrera</th>
                             <th>Turno</th>
-                            <th>Fecha de Entrada</th>
-                            <th>Fecha de Salida</th>
+                            <th>Hora de Entrada</th>
+                            <th>Hora de Salida</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -145,6 +142,5 @@ const TomaAsistencia = () => {
         </div>
     );
 };
-
 
 export default TomaAsistencia;

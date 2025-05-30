@@ -163,15 +163,17 @@ namespace MonitoreoEscolar.Server.Controllers
             await smtp.DisconnectAsync(true);
         }
 
-
         [HttpGet("hoy")]
-        public async Task<IActionResult> ObtenerAsistenciasDeHoy()
+        public async Task<IActionResult> ObtenerAsistenciasRecientes()
         {
             var hoy = DateOnly.FromDateTime(DateTime.Now);
+            var ahora = DateTime.Now;
 
             var asistencias = await _context.Asistencias
                 .Include(a => a.Alumno)
-                .Where(a => a.Fecha == hoy)
+                .Where(a => a.Fecha == hoy &&
+                            a.HoraEntrada != null &&
+                            EF.Functions.DateDiffMinute(a.HoraEntrada.Value, ahora) < 60)
                 .ToListAsync();
 
             var resultado = asistencias.Select(a => new

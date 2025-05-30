@@ -14,47 +14,44 @@ import 'primeicons/primeicons.css';
 
 
 const AgregarAlumno = () => {
-    // Estado para almacenar los datos del alumno
+    // 1) Datos del alumno
     const [alumno, setAlumno] = useState({
         Nombre: "",
         ApellidoPaterno: "",
         ApellidoMaterno: "",
-        Grupo: "",       
-        Grado: "",       
-        letra: "",       
-        Domicilio: "",   
-        CURP: "", 
+        Grupo: "",
+        Grado: "",
+        letra: "",
+        Domicilio: "",
+        CURP: "",
         NumeroControl: "",
         Carrera: "",
         Plantel: "",
         Turno: "",
         Generacion: "",
         Ciclo: "",
-        TutorId: null
+        TutorId: null,
     });
 
-    const [loading, setLoading] = useState(false);
-
-    //Variable para el nombre de la imagen del qr
-    const [nombreArchivoQR, setNombreArchivoQR] = useState("QR_alumno");
-
-
+    // 2) Autocomplete de tutores
     const [tutorOptions, setTutorOptions] = useState([]);
     const [selectedTutor, setSelectedTutor] = useState(null);
 
+    // 3) Estados para QR
+    const [qrCompositeUrl, setQrCompositeUrl] = useState(null);
+    const [nombreArchivoQR, setNombreArchivoQR] = useState("QR_alumno");
+    const [nombreCompletoQR, setNombreCompletoQR] = useState("");
 
+    // Manejadores de inputs
     const handleChange = (e) => {
         const { name, value } = e.target;
-
-        // Convertir CURP a mayúsculas automáticamente
-        const valorFinal = name === "CURP" ? value.toUpperCase() : value;
-
-        setAlumno({
-            ...alumno,
-            [name]: valorFinal
-        });
+        setAlumno((a) => ({
+            ...a,
+            [name]: name === "CURP" ? value.toUpperCase() : value,
+        }));
     };
 
+    // Grado / letra -> arma Grupo
     const handleChangeGrado = (e) => {
         const newGrado = e.target.value;
         setAlumno((prev) => ({
@@ -63,24 +60,19 @@ const AgregarAlumno = () => {
             Grupo: newGrado && prev.letra ? `${newGrado}${prev.letra}` : ""
         }));
     };
-
-    // Maneja el cambio de Letra 
     const handleChangeLetra = (e) => {
-        const newLetra = e.target.value;
-        setAlumno({
-            ...alumno,
-            letra: newLetra,
-            Grupo: alumno.Grado && newLetra ? `${alumno.Grado}${newLetra}` : ""
-        });
+        const l = e.target.value;
+        setAlumno((a) => ({
+            ...a,
+            letra: l,
+            Grupo: a.Grado && l ? `${a.Grado}${l}` : "",
+        }));
     };
     console.log("Grupo generado:", alumno.Grupo);
 
-    // Función para buscar padres en base al término ingresado (autocompletado)
-    const fetchTutorOptions = async (inputValue) => {
-        if (!inputValue || inputValue.length < 2) {
-            setTutorOptions([]);
-            return;
-        }
+    // Autocomplete padres
+    const fetchTutorOptions = async (input) => {
+        if (!input || input.length < 2) return setTutorOptions([]);
         try {
             const response = await axios.get(`http://localhost:5099/api/usuarios/autocompletePadres?termino=${inputValue}`);
             const optionsData = response.data.map((padre) => ({
@@ -92,22 +84,14 @@ const AgregarAlumno = () => {
             console.error("Error al buscar padres:", error);
         }
     };
-
-    // Maneja el cambio de texto en el autocompletado
-    const handleTutorInputChange = (inputValue, { action }) => {
-        if (action === "input-change") {
-            fetchTutorOptions(inputValue);
-            return inputValue;
-        }
-        return inputValue;
+    const handleTutorInputChange = (input, { action }) => {
+        if (action === "input-change") fetchTutorOptions(input);
+        return input;
     };
-
-    // Maneja la selección del tutor en el autocompletado
-    const handleTutorChangeSelect = (selectedOption) => {
-        setSelectedTutor(selectedOption);
-        setAlumno({ ...alumno, TutorId: selectedOption ? selectedOption.value : null });
+    const handleTutorChangeSelect = (opt) => {
+        setSelectedTutor(opt);
+        setAlumno((a) => ({ ...a, TutorId: opt ? opt.value : null }));
     };
-
 
     // Lista de carreras (puedes modificarla según tus necesidades)
     const carreras = [
@@ -131,7 +115,7 @@ const AgregarAlumno = () => {
         e.preventDefault();
         setLoading(true);
 
-        // Verificar que el grupo seleccionado exista
+        // 1) validar grupo existe
         try {
             const gruposResponse = await axios.get("http://localhost:5099/api/grupos");
             const gruposExistentes = gruposResponse.data;
@@ -161,12 +145,12 @@ const AgregarAlumno = () => {
             setLoading(false); // 👈 Desactiva loading al final, siempre
         }
 
-        setNombreArchivoQR(
-            `QR_${(alumno.Nombre + "_" + alumno.ApellidoPaterno + "_" + alumno.ApellidoMaterno).replace(/\s+/g, "_")}`
-        );
+        // 2) arma nombre completo
+        const nombreFull = `${alumno.Nombre} ${alumno.ApellidoPaterno} ${alumno.ApellidoMaterno}`;
+        setNombreCompletoQR(nombreFull);
+        setNombreArchivoQR(`QR_${nombreFull.replace(/\s+/g, "_")}`);
 
-
-        // Registrar al alumno
+        // 3) registrar alumno
         try {
             const response = await axios.post("http://localhost:5099/api/alumnos/registro", alumno);
             toast.current.show({
@@ -183,10 +167,9 @@ const AgregarAlumno = () => {
             const qrResponse = await axios.get(`http://localhost:5099/api/alumnos/qr/${alumnoId}`, {
                 responseType: "blob"
             });
-            const qrBlob = new Blob([qrResponse.data], { type: "image/png" });
-            const qrImageUrl = URL.createObjectURL(qrBlob);
-            setQrUrl(qrImageUrl);
-            setShowQrModal(true);
+            const blobUrl = URL.createObjectURL(
+                new Blob([qrResp.data], { type: "image/png" })
+            );
 
             // Ocultar automáticamente el modal tras 10 segundos
             setTimeout(() => {
@@ -238,6 +221,7 @@ const AgregarAlumno = () => {
         }
 
     };
+
     return (
         <div className="bootstrap-scope">
             <Toast ref={toast} />
@@ -324,10 +308,11 @@ const AgregarAlumno = () => {
                                 onChange={handleTutorChangeSelect}
                                 onInputChange={handleTutorInputChange}
                                 options={tutorOptions}
-                                placeholder="Escriba el nombre del padre..."
-                                noOptionsMessage={() => "No se encontraron coincidencias"}
+                                placeholder="Escriba nombre del padre..."
+                                noOptionsMessage={() => "No hay coincidencias"}
                             />
                         </div>
+
                         {/* Domicilio */}
                         <div className="agregar-alumno-group">
                             <label>Domicilio:</label>
@@ -401,7 +386,7 @@ const AgregarAlumno = () => {
                             </FloatLabel>
                         </div>
 
-                        {/* Perdiodo Escolar */}
+                        {/* Ciclo */}
                         <div className="agregar-alumno-group">
                             <label>Periodo Escolar:</label>
                             <FloatLabel>
@@ -414,7 +399,7 @@ const AgregarAlumno = () => {
                             </FloatLabel>
                         </div>
 
-                        {/* Botones */}
+                        {/* Botón Agregar */}
                         <div className="button-container">
                             <Button
                                 type="submit"
@@ -428,46 +413,46 @@ const AgregarAlumno = () => {
                     </form>
                 </div>
             </div>
-            {/* Modal de QR */}
-            <Dialog
-                header="Código QR del alumno registrado"
-                visible={showQrModal}
-                onHide={() => setShowQrModal(false)}
-                style={{ width: '400px' }}
-                closable={true}
-                draggable={false}
-                resizable={false}
-                position="center"
-                footer={
-                    <div className="flex justify-content-end gap-2">
-                        <a
-                            href={qrUrl}
-                            download={`${nombreArchivoQR}.png`}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                        >
-                            <Button
-                                label="Atrás"
-                                icon="pi pi-times"
-                                severity="secondary"
-                                outlined
-                                onClick={() => setShowQrModal(false)}
-                            />
 
-                            <Button
-                                label="Descargar QR"
-                                icon="pi pi-download"
-                                severity="primary"
-                            />
-                        </a>
-                    </div>
-                }
-            >
-                <div className="flex justify-content-center">
+            {/* Modal de QR */}
+                    <Dialog
+                        header={`Código QR de ${nombreCompletoQR}`}
+                        visible={showQrModal}
+                        style={{ width: '400px' }}
+                        onHide={() => setShowQrModal(false)}
+                        closable
+                        draggable={false}
+                        resizable={false}
+                        footer={
+                            <div className="flex justify-content-end gap-2">
+                                <Button
+                                    label="Atrás"
+                                    icon="pi pi-times"
+                                    severity="secondary"
+                                    outlined
+                                    onClick={() => setShowQrModal(false)}
+                                />
+                                <a
+                                    href={qrCompositeUrl}
+                                    download={`${nombreArchivoQR}.png`}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                >
+                                    <Button
+                                        label="Descargar QR"
+                                        icon="pi pi-download"
+                                        severity="primary"
+                                    />
+                                </a>
+                            </div>
+                        }
+                    >
+                         <div className="flex justify-content-center">
                     <img src={qrUrl} alt="Código QR" style={{ width: "100%", maxWidth: "250px", borderRadius: "8px" }} />
                 </div>
-            </Dialog>
+                    </Dialog>
         </div>
     );
 };
+
 export default AgregarAlumno;

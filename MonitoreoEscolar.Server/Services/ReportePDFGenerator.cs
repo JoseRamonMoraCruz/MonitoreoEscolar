@@ -40,7 +40,7 @@ namespace MonitoreoEscolar.Server.Services
                 .Where(r => r.AlumnoId == alumnoId)
                 .ToList();
 
-            // 3) Mapear todo a tu DTO
+            // 3) Mapear todo a DTO
             var dto = new ReporteAlumnoDTO
             {
                 AlumnoId = alumno.Id,
@@ -61,7 +61,6 @@ namespace MonitoreoEscolar.Server.Services
                                       ? a.HoraEntrada.Value.ToString("hh:mm tt") : "--",
                     Salida = a.HoraSalida.HasValue
                                       ? a.HoraSalida.Value.ToString("hh:mm tt") : "--",
-                    // si quieres nombre o grupo, agrégalos aquí
                 }).ToList(),
 
                 Reportes = reportes.Select(r => new ReporteDto

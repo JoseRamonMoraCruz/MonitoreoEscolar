@@ -164,7 +164,6 @@ namespace MonitoreoEscolar.Server.Controllers
             await smtp.DisconnectAsync(true);
         }
 
-
         [HttpGet("hoy")]
         public async Task<IActionResult> ObtenerAsistenciasRecientes()
         {

@@ -13,7 +13,6 @@ const TomaAsistencia = () => {
     const toast = useRef(null);
 
 
-
     useEffect(() => {
         obtenerAsistenciasDelDia();
     }, []);
@@ -35,7 +34,6 @@ const TomaAsistencia = () => {
     const cerrarModalQR = () => {
         setMostrarQR(false);
     };
-
 
     const manejarEscaneo = async (codigo) => {
         console.log(" Código recibido del QR:", codigo);
@@ -137,6 +135,5 @@ const TomaAsistencia = () => {
         </div>
     );
 };
-
 
 export default TomaAsistencia;

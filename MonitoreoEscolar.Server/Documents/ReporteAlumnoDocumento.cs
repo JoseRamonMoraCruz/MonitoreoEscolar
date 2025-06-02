@@ -19,95 +19,175 @@ namespace MonitoreoEscolar.Server.Documents
                 page.Margin(40);
 
                 // Encabezado
-                page.Header().Column(col =>
+                page.Header().Element(header =>
                 {
-                    col.Spacing(5);
-                    col.Item().Text($"Nombre del hijo: {_data.NombreAlumno}")
-                              .FontSize(14).Bold();
-                    col.Item().Text($"Grupo: {_data.Grupo}")
-                              .FontSize(12);
-                    col.Item().Text($"Fecha: {_data.FechaGeneracion:yyyy/MM/dd}")
-                              .FontSize(12);
-                    col.Item().LineHorizontal(1)
-                              .LineColor(Colors.Grey.Lighten2);
+                    header.Column(col =>
+                    {
+                        col.Spacing(4);
+
+                        col.Item().Text("📘 Reporte Escolar")
+                            .FontSize(20).Bold().FontColor(Colors.Blue.Medium);
+
+                        col.Item().Text($"Nombre del alumno: {_data.NombreAlumno}")
+                            .FontSize(12);
+
+                        col.Item().Text($"Grupo: {_data.Grupo}")
+                            .FontSize(12);
+
+                        col.Item().Text($"Fecha de generación: {_data.FechaGeneracion:dd/MM/yyyy hh:mm tt}")
+                            .FontSize(10).FontColor(Colors.Grey.Darken1);
+
+                        col.Item().LineHorizontal(1).LineColor(Colors.Grey.Lighten2);
+                    });
                 });
+
 
                 // Contenido
                 page.Content().Column(col =>
                 {
-                    col.Spacing(15);
+                    col.Spacing(20);
 
                     // Calificaciones
-                    col.Item().Text("Calificaciones")
-                              .FontSize(12).Bold();
-                    col.Item().Table(table =>
+                    col.Item().Border(1).BorderColor(Colors.Grey.Lighten2).Padding(10).Background(Colors.Grey.Lighten4).Column(inner =>
                     {
-                        table.ColumnsDefinition(c =>
+                        inner.Spacing(5);
+                        inner.Item().Text("📚 Calificaciones").FontSize(13).Bold().FontColor(Colors.Blue.Medium);
+
+                        inner.Item().Table(table =>
                         {
-                            c.ConstantColumn(200);
-                            c.ConstantColumn(100);
-                            c.ConstantColumn(100);
+                            table.ColumnsDefinition(c =>
+                            {
+                                c.ConstantColumn(200);
+                                c.ConstantColumn(100);
+                                c.ConstantColumn(100);
+                            });
+
+                            table.Header(h =>
+                            {
+                                h.Cell().Element(e => e
+                               .Background(Colors.Blue.Medium)
+                               .Padding(5)
+                               .AlignMiddle()
+                               .Text("Materia").FontColor(Colors.White).Bold()
+                           );
+
+                                h.Cell().Element(e => e
+                              .Background(Colors.Blue.Medium)
+                              .Padding(5)
+                              .AlignMiddle()
+                              .Text("Calificación").FontColor(Colors.White).Bold()
+                          );
+
+                                h.Cell().Element(e => e
+                              .Background(Colors.Blue.Medium)
+                              .Padding(5)
+                              .AlignMiddle()
+                              .Text("Parcial").FontColor(Colors.White).Bold()
+                          );
+
+                            });
+
+                            foreach (var cal in _data.Calificaciones)
+                            {
+                                table.Cell().Element(e => e.Padding(5).Text(cal.Materia));
+                                table.Cell().Element(e => e.Padding(5).Text(cal.Calificacion.ToString()));
+                                table.Cell().Element(e => e.Padding(5).Text(cal.Parcial));
+                            }
                         });
-                        table.Header(h =>
-                        {
-                            h.Cell().Text("Materia").Bold();
-                            h.Cell().Text("Calificación").Bold();
-                            h.Cell().Text("Parcial").Bold();
-                        });
-                        foreach (var cal in _data.Calificaciones)
-                        {
-                            table.Cell().Text(cal.Materia);
-                            table.Cell().Text(cal.Calificacion.ToString());
-                            table.Cell().Text(cal.Parcial);
-                        }
                     });
 
                     // Asistencias
-                    // Asistencias (solo hora de entrada y salida)
-                    col.Item().Text("Asistencias")
-                              .FontSize(12).Bold();
-                    col.Item().Table(table =>
+                    col.Item().Border(1).BorderColor(Colors.Grey.Lighten2).Padding(10).Background(Colors.Grey.Lighten4).Column(inner =>
                     {
-                        table.ColumnsDefinition(c =>
-                        {
-                            c.ConstantColumn(150);   // Hora Entrada
-                            c.ConstantColumn(150);   // Hora Salida
-                        });
-                        table.Header(h =>
-                        {
-                            h.Cell().Text("Hora Entrada").Bold();
-                            h.Cell().Text("Hora Salida").Bold();
-                        });
-                        foreach (var a in _data.Asistencias)
-                        {
-                            table.Cell().Text(a.Entrada);
-                            table.Cell().Text(a.Salida);
-                        }
-                    });
+                        inner.Spacing(5);
+                        inner.Item().Text("🕓 Asistencias").FontSize(13).Bold().FontColor(Colors.Blue.Medium);
 
-                    // Reporte de Mala Conducta
-                    col.Item().Text("Reporte de Mala Conducta")
-                              .FontSize(12).Bold();
-                    col.Item().Table(table =>
+                        inner.Item().Table(table =>
+                        {
+                            table.ColumnsDefinition(c =>
+                            {
+                                c.ConstantColumn(130); // Entrada
+                                c.ConstantColumn(130); // Salida
+                                c.ConstantColumn(120); // Fecha
+                            });
+
+                            table.Header(h =>
+                            {
+                                h.Cell().Element(e => e
+                                    .Background(Colors.Blue.Medium)
+                                    .Padding(5)
+                                    .AlignMiddle()
+                                    .Text("Hora Entrada").FontColor(Colors.White).Bold()
+                                );
+                                h.Cell().Element(e => e
+                                    .Background(Colors.Blue.Medium)
+                                    .Padding(5)
+                                    .AlignMiddle()
+                                    .Text("Hora Salida").FontColor(Colors.White).Bold()
+                                );
+                                h.Cell().Element(e => e
+                                    .Background(Colors.Blue.Medium)
+                                    .Padding(5)
+                                    .AlignMiddle()
+                                    .Text("Fecha").FontColor(Colors.White).Bold()
+                                );
+                            });
+
+                            foreach (var a in _data.Asistencias)
+                            {
+                                table.Cell().Element(e => e.Padding(5).Text(a.Entrada));
+                                table.Cell().Element(e => e.Padding(5).Text(a.Salida));
+                                table.Cell().Element(e => e.Padding(5).Text(a.Fecha));
+                            }
+                        }); // Cierra tabla de asistencias
+                    }); // Cierra columna de asistencias
+
+
+                    // Reportes
+                    // Reportes
+                    col.Item().Border(1).BorderColor(Colors.Grey.Lighten2).Padding(10).Background(Colors.Grey.Lighten4).Column(inner =>
                     {
-                        table.ColumnsDefinition(c =>
+                        inner.Spacing(5);
+                        inner.Item().Text("⚠️ Reportes de Conducta").FontSize(13).Bold().FontColor(Colors.Blue.Medium);
+
+                        inner.Item().Table(table =>
                         {
-                            c.ConstantColumn(200);
-                            c.ConstantColumn(120);
-                            c.ConstantColumn(150);
+                            table.ColumnsDefinition(c =>
+                            {
+                                c.ConstantColumn(200);
+                                c.ConstantColumn(120);
+                                c.ConstantColumn(150);
+                            });
+
+                            table.Header(h =>
+                            {
+                                h.Cell().Element(e => e
+                                    .Background(Colors.Blue.Medium)
+                                    .Padding(5)
+                                    .AlignMiddle()
+                                    .Text("Motivo").FontColor(Colors.White).Bold()
+                                );
+                                h.Cell().Element(e => e
+                                    .Background(Colors.Blue.Medium)
+                                    .Padding(5)
+                                    .AlignMiddle()
+                                    .Text("Fecha").FontColor(Colors.White).Bold()
+                                );
+                                h.Cell().Element(e => e
+                                    .Background(Colors.Blue.Medium)
+                                    .Padding(5)
+                                    .AlignMiddle()
+                                    .Text("Responsable").FontColor(Colors.White).Bold()
+                                );
+                            });
+
+                            foreach (var r in _data.Reportes)
+                            {
+                                table.Cell().Element(e => e.Padding(5).Text(r.Motivo));
+                                table.Cell().Element(e => e.Padding(5).Text(r.Fecha));
+                                table.Cell().Element(e => e.Padding(5).Text(r.Responsable));
+                            }
                         });
-                        table.Header(h =>
-                        {
-                            h.Cell().Text("Situación").Bold();
-                            h.Cell().Text("Fecha").Bold();
-                            h.Cell().Text("Responsable").Bold();
-                        });
-                        foreach (var r in _data.Reportes)
-                        {
-                            table.Cell().Text(r.Motivo);
-                            table.Cell().Text(r.Fecha.ToString("yyyy/MM/dd"));
-                            table.Cell().Text(r.Responsable);
-                        }
                     });
                 });
 
@@ -117,7 +197,7 @@ namespace MonitoreoEscolar.Server.Documents
                     text.Span("Página ");
                     text.CurrentPageNumber();
                 });
-            });
-        }
-    }
-}
+            }); 
+        } 
+    } 
+} 

@@ -1,20 +1,30 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import './ActualizarPassword.css';
 import { useNavigate } from 'react-router-dom';
 import AtrasIcon from './assets/flecha-hacia-atras.png';
+import { Stepper } from 'primereact/stepper';
+import { StepperPanel } from 'primereact/stepperpanel';
+import { Button } from 'primereact/button';
+import { InputText } from 'primereact/inputtext';
+import { Password } from 'primereact/password';
+import { Divider } from 'primereact/divider';
+import { Toast } from 'primereact/toast';
 
 function ActualizarPassword() {
     const [correo, setCorreo] = useState('');
     const [codigo, setCodigo] = useState('');
     const [newPassword, setNewPassword] = useState('');
-    const [paso, setPaso] = useState(1); 
-    const [message, setMessage] = useState('');
-    const [error, setError] = useState('');
     const [contador, setContador] = useState(0);
-    const navigate = useNavigate();
     const [confirmarPassword, setConfirmarPassword] = useState('');
+    const navigate = useNavigate();
+    const stepperRef = useRef(null);
+    const toast = useRef(null);
 
+    const [loadingEnviar, setLoadingEnviar] = useState(false);
+    const [loadingConfirmar, setLoadingConfirmar] = useState(false);
+    const [loadingActualizar, setLoadingActualizar] = useState(false);
+    const [segundosRestantes, setSegundosRestantes] = useState(3);
 
     useEffect(() => {
         if (contador > 0) {
@@ -23,57 +33,59 @@ function ActualizarPassword() {
         }
     }, [contador]);
 
-    const enviarCodigo = async () => {
-        try {
-            await axios.post('/api/usuarios/enviar-codigo', { correo });
-            setMessage('Código enviado. Revisa tu correo.');
-            setError('');
-            setPaso(2);
-            setContador(15); 
-        } catch (err) {
-            setError(err.response?.data?.mensaje || "Error al enviar código.");
-            setMessage('');
-        }
+    const mostrarError = (mensaje) => {
+        toast.current.show({
+            severity: 'error',
+            summary: 'Error',
+            detail: mensaje,
+            life: 3000
+        });
     };
 
-    const validarCodigo = async () => {
-        try {
-            await axios.post('/api/usuarios/validar-codigo', { correo, codigo });
-            setMessage('Código válido. Ahora escribe tu nueva contraseña.');
-            setError('');
-            setPaso(3);
-        } catch (err) {
-            setError(err.response?.data?.mensaje || "Error al validar código.");
-            setMessage('');
-        }
-    };
+    const mostrarRedireccion = () => {
+        setSegundosRestantes(3); // reinicia a 3 cada vez que se llama
 
-    const actualizarPassword = async () => {
-        if (newPassword !== confirmarPassword) {
-            setError("❌ Las contraseñas no coinciden.");
-            setMessage('');
-            return;
-        }
+        toast.current.show({
+            sticky: true,
+            content: (
+                <div
+                    className="flex flex-column align-items-start text-white"
+                    style={{
+                        flex: 1,
+                        backgroundColor: 'green',
+                        borderRadius: '10px',
+                        padding: '1rem',
+                        boxShadow: '0 4px 12px darkgreen',
+                        width: '100%',
+                    }}
+                >
+                    <div className="flex align-items-center gap-2 mb-2">
+                        <span className="font-bold text-white">Sistema Escolar</span>
+                    </div>
+                    <div className="font-medium text-lg mb-3 text-white">
+                        Contraseña actualizada exitosamente. Redirigiendo en {segundosRestantes} segundos...
+                    </div>
+                   
+                </div>
+            )
+        });
 
-        try {
-            await axios.post('/api/usuarios/actualizar-password', {
-                correo,
-                newPassword
+        const interval = setInterval(() => {
+            setSegundosRestantes(prev => {
+                if (prev === 1) {
+                    clearInterval(interval);
+                    toast.current.clear();
+                    navigate('/');
+                    return 0;
+                }
+                return prev - 1;
             });
-            setMessage('Contraseña actualizada exitosamente. Redirigiendo...');
-            setError('');
-            setTimeout(() => {
-                navigate('/'); 
-            }, 3000);
-        } catch (err) {
-            setError(err.response?.data?.mensaje || "Error al actualizar contraseña.");
-            setMessage('');
-        }
+        }, 1000);
     };
-
 
     return (
         <div className="update-container-wrapper">
+            <Toast ref={toast} position="top-center" />
             <div className="update-box">
                 <button className="back-button" onClick={() => navigate("/")}>
                     <img src={AtrasIcon} alt="Volver" className="back-icon" />
@@ -81,113 +93,155 @@ function ActualizarPassword() {
 
                 <h2 className="register-title">Actualizar Contraseña</h2>
 
-
-                {message && <p className="success-message">{message}</p>}
-                {error && <p className="error-message">{error}</p>}
-
-                {/* Paso 1: Ingresar correo */}
-                {paso === 1 && (
-                    <>
+                <Stepper ref={stepperRef} linear style={{ marginTop: '30px' }}>
+                    {/* PASO 1 */}
+                    <StepperPanel header="Correo">
                         <label>Ingresa el Correo Electrónico:</label>
-                        <input
+                        <InputText
                             type="email"
-                            className="update-input"
+                            className="update-input w-full"
                             value={correo}
                             onChange={(e) => setCorreo(e.target.value)}
                             required
                         />
-                        <button className="update-button" onClick={enviarCodigo}>
-                            Enviar
-                        </button>
-                    </>
-                )}
-
-                {/* Paso 2: Ingresar código */}
-                {paso === 2 && (
-                    <>
-                        <label>Ingresa el Correo Electrónico:</label>
-                        <input
-                            type="email"
-                            className="update-input"
-                            value={correo}
-                            disabled
+                        <Button
+                            label="Enviar"
+                            icon="pi pi-arrow-right"
+                            className="update-button"
+                            loading={loadingEnviar}
+                            onClick={async () => {
+                                try {
+                                    setLoadingEnviar(true);
+                                    await axios.post('http://localhost:5099/api/usuarios/enviar-codigo', { correo });
+                                    setContador(15);
+                                    stepperRef.current.nextCallback();
+                                } catch (err) {
+                                    mostrarError(err.response?.data?.mensaje || "Error al enviar código.");
+                                } finally {
+                                    setLoadingEnviar(false);
+                                }
+                            }}
                         />
+                    </StepperPanel>
 
+                    {/* PASO 2 */}
+                    <StepperPanel header="Código">
                         <label>Ingresa código de verificación:</label>
-                        <input
-                            type="text"
-                            className="update-input"
+                        <InputText
                             value={codigo}
-                            onChange={(e) => setCodigo(e.target.value)}
-                            required
+                            onChange={(e) => {
+                                const val = e.target.value;
+                                if (/^\d{0,6}$/.test(val)) setCodigo(val);
+                            }}
+                            maxLength={6}
+                            className="update-input"
+                            placeholder="######"
                         />
 
-                        {contador > 0 ? (
-                            <p>Volver a enviar código de verificación en: <span style={{ color: 'red' }}>{contador}s</span></p>
-                        ) : (
-                            <button className="update-button" onClick={enviarCodigo}>
-                                Reenviar Código
-                            </button>
+                        {codigo && codigo.length < 6 && (
+                            <p className="error-message">El código debe tener 6 dígitos.</p>
                         )}
 
-                        <button className="update-button" onClick={validarCodigo}>
-                            Confirmar Código
-                        </button>
-                    </>
-                )}
+                        {contador > 0 ? (
+                            <p>Reenviar código en: <span style={{ color: 'red' }}>{contador}s</span></p>
+                        ) : (
+                            <Button
+                                label="Reenviar Código"
+                                className="update-button"
+                                onClick={async () => {
+                                    await axios.post('http://localhost:5099/api/usuarios/enviar-codigo', { correo });
+                                    setContador(15);
+                                }}
+                            />
+                        )}
 
-                {/* Paso 3: Ingresar nueva contraseña */}
-                {paso === 3 && (
-                    <>
-                        <label>Ingresa el Correo Electrónico:</label>
-                        <input
-                            type="email"
-                            className="update-input"
-                            value={correo}
-                            disabled
-                        />
+                        <div className="flex pt-3 justify-content-between">
+                            <Button label="Atrás" icon="pi pi-arrow-left" onClick={() => stepperRef.current.prevCallback()} />
+                            <Button
+                                label="Confirmar Código"
+                                icon="pi pi-check"
+                                loading={loadingConfirmar}
+                                disabled={codigo.length !== 6}
+                                onClick={async () => {
+                                    try {
+                                        setLoadingConfirmar(true);
+                                        await axios.post('http://localhost:5099/api/usuarios/validar-codigo', {
+                                            correo,
+                                            codigo: codigo.replace(/\s/g, '')
+                                        });
+                                        stepperRef.current.nextCallback();
+                                    } catch (err) {
+                                        mostrarError(err.response?.data?.mensaje || "Error al validar código.");
+                                    } finally {
+                                        setLoadingConfirmar(false);
+                                    }
+                                }}
+                            />
+                        </div>
+                    </StepperPanel>
 
-                        <label>Ingresa código de verificación:</label>
-                        <input
-                            type="text"
-                            className="update-input"
-                            value={codigo}
-                            disabled
-                        />
+                    {/* PASO 3 */}
+                    <StepperPanel header="Nueva Contraseña">
+                        <label>Nueva contraseña:</label>
 
-                        <label>Ingresa tu nueva contraseña:</label>
-                        <input
-                            type="password"
-                            className="update-input"
+                        <Password
                             value={newPassword}
                             onChange={(e) => setNewPassword(e.target.value)}
-                            required
+                            toggleMask
+                            feedback
+                            className="update-input full-width-password"
+                            header={<div className="font-bold mb-3">Elige una contraseña segura</div>}
+                            footer={
+                                <>
+                                    <Divider />
+                                    <p className="mt-2">Sugerencias</p>
+                                    <ul className="pl-2 ml-2 mt-0 line-height-3">
+                                        <li>Al menos una minúscula</li>
+                                        <li>Al menos una mayúscula</li>
+                                        <li>Al menos un número</li>
+                                        <li>Mínimo 8 caracteres</li>
+                                    </ul>
+                                </>
+                            }
                         />
 
-                        <label>Confirma tu nueva contraseña:</label>
-                        <input
-                            type="password"
-                            className="update-input"
+                        <label>Confirmar contraseña:</label>
+                        <Password
                             value={confirmarPassword}
                             onChange={(e) => setConfirmarPassword(e.target.value)}
-                            required
+                            toggleMask
+                            className="update-input full-width-password"
                         />
 
-                        {/* Mensaje si no coinciden */}
                         {confirmarPassword && newPassword !== confirmarPassword && (
                             <p className="error-message">❌ Las contraseñas no coinciden.</p>
                         )}
 
-                        <button
-                            className="update-button"
-                            onClick={actualizarPassword}
-                            disabled={!newPassword || newPassword !== confirmarPassword}
-                        >
-                            Actualizar Contraseña
-                        </button>
-                    </>
-                )}
-
+                        <div className="flex pt-3 justify-content-between">
+                            <Button label="Atrás" icon="pi pi-arrow-left" onClick={() => stepperRef.current.prevCallback()} />
+                            <Button
+                                label="Actualizar Contraseña"
+                                icon="pi pi-check"
+                                loading={loadingActualizar}
+                                disabled={!newPassword || newPassword !== confirmarPassword}
+                                onClick={async () => {
+                                    try {
+                                        setLoadingActualizar(true);
+                                        await axios.post('http://localhost:5099/api/usuarios/actualizar-password', {
+                                            correo,
+                                            newPassword
+                                        });
+                                        mostrarRedireccion();
+                                    } catch (err) {
+                                        mostrarError(err.response?.data?.mensaje || "Error al actualizar contraseña.");
+                                    } finally {
+                                        setLoadingActualizar(false);
+                                    }
+                                }}
+                            />
+                        </div>
+                    </StepperPanel>
+                </Stepper>
             </div>
         </div>
     );

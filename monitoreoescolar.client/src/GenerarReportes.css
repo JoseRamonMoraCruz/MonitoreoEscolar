@@ -204,14 +204,6 @@
         background: #e0e0e0;
     }
 
-    .reportes-table button {
-        background: none;
-        border: none;
-        cursor: pointer;
-        margin-right: 8px;
-        font-size: 1rem;
-    }
-
 /* Inputs y textarea dentro del modal de edición */
 .reportes-modal-content input,
 .reportes-modal-content textarea {
@@ -234,18 +226,7 @@
         padding: 8px;
         white-space: nowrap;
     }
-        .reportes-table td:last-child button {
-            background: #eeeeee;
-            border: 1px solid #ccc;
-            padding: 6px 10px;
-            font-size: 18px;
-            border-radius: 6px;
-            margin-right: 6px;
-            transition: background-color 0.2s ease-in-out;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-        }
+       
 /* Tablet / pantallas medianas (<= 992px) */
 @media (max-width: 992px) {
     .generar-reportes-content {
@@ -359,3 +340,116 @@
     }
 }
 
+/* ================= CUSTOM PRIME CALENDAR FIX ================= */
+.calendar-wrapper .custom-calendar {
+    width: 100%;
+}
+
+/* Quita estilos rotos en el icono */
+.calendar-wrapper .p-button {
+    background-color: transparent;
+    border: none;
+    padding: 0 8px;
+    border-radius: 0 8px 8px 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+    .calendar-wrapper .p-button .p-button-icon {
+        font-size: 1.2rem;
+        color: #8800ff;
+    }
+
+/* Ajuste del input */
+.calendar-wrapper .p-inputtext {
+    padding: 10px;
+    border-radius: 8px;
+    font-size: 16px;
+    width: 100%;
+    border: 1px solid #ccc;
+    background-color: white;
+    color: #000;
+}
+
+/* El popup de calendario */
+.calendar-wrapper .p-datepicker {
+    border-radius: 10px;
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+    padding: 1rem;
+    font-size: 14px;
+    background-color: #fff;
+    color: #000;
+}
+
+    /* Restaurar botones del header y hora */
+    .calendar-wrapper .p-datepicker .p-datepicker-header .p-button,
+    .calendar-wrapper .p-timepicker .p-button {
+        all: unset;
+        background-color: #e0e0e0;
+        color: #000;
+        font-weight: bold;
+        padding: 6px 10px;
+        margin: 2px;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: background-color 0.2s;
+    }
+
+        .calendar-wrapper .p-datepicker .p-datepicker-header .p-button:hover,
+        .calendar-wrapper .p-timepicker .p-button:hover {
+            background-color: #ccc;
+        }
+/*TABLA ESTILOS SIMPLES*/
+.p-datatable .p-datatable-thead > tr > th {
+    background-color: #e3e8f7;
+    font-weight: 600;
+    color: #333;
+    border-radius: 6px 6px 0 0;
+}
+
+.p-datatable .p-datatable-tbody > tr > td {
+    background-color: #f9f9f9;
+}
+
+/* Estilos para que el textarea con FloatLabel se vea más grande y moderno */
+.p-float-label textarea {
+    padding: 16px;
+    font-size: 16px;
+    border-radius: 10px;
+    min-height: 120px;
+    resize: none;
+    width: 100%;
+    box-shadow: 0 0 0 2px transparent;
+    transition: box-shadow 0.2s ease;
+}
+
+    /* Efecto al hacer focus */
+    .p-float-label textarea:focus {
+        box-shadow: 0 0 0 2px #66a6ff;
+        border-color: #66a6ff;
+    }
+
+/* Color del label */
+.p-float-label label {
+    color: gray;
+    font-weight: 500;
+    font-size: 15px;
+    transition: all 0.2s ease;
+}
+
+/* Ajuste más fino para el botón del calendario */
+.calendar-wrapper .p-calendar .p-button {
+    height: 100%;
+    padding: 0 10px;
+    border-radius: 0 8px 8px 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+    .calendar-wrapper .p-calendar .p-button .p-button-icon {
+        font-size: 1.1rem;
+        color: white;
+    }

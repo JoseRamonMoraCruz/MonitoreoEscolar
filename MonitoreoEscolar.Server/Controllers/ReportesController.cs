@@ -27,6 +27,9 @@ namespace MonitoreoEscolar.Server.Controllers
             if (reporte == null)
                 return BadRequest(new { mensaje = "Los datos enviados son nulos." });
 
+            // Validar que la fecha sea válida y esté en el formato correcto
+            reporte.Fecha = DateTime.SpecifyKind(reporte.Fecha, DateTimeKind.Local);
+
             var alumno = await _context.Alumnos
                 .Include(a => a.TutorUsuario)
                 .FirstOrDefaultAsync(a => a.Id == reporte.AlumnoId);
@@ -46,10 +49,13 @@ namespace MonitoreoEscolar.Server.Controllers
             Estimado/a <strong>{nombreTutor}</strong>,<br/><br/>
             El alumno <strong>{nombreAlumno}</strong> ha recibido un reporte disciplinario.<br/>
             Por favor, ingrese al siguiente enlace para revisar los detalles:<br/><br/>
-            <a href='https://tu-sitio.com/padre/reportes' target='_blank'>
+            <a href='https://localhost:55052' target='_blank'>
                 Ver reportes de su hijo(a)
             </a><br/><br/>
-            <small>Este mensaje ha sido generado automáticamente. Por favor, no responda este correo.</small>";
+            <small><p style='font-size: 14px; color: #888; margin-top: 30px;'>
+                        Este correo ha sido enviado automáticamente por el sistema de monitoreo escolar.<br/>
+                        Si tiene dudas, comuníquese con la escuela.
+                    </p>.</small>";
 
                 string asuntoCorreo = "📢 Nuevo Reporte para su hijo(a)";
 
@@ -105,7 +111,20 @@ namespace MonitoreoEscolar.Server.Controllers
 
             await _context.SaveChangesAsync();
 
-            return Ok(new { mensaje = "Reporte actualizado exitosamente.", reporte = rep });
+            var alumno = await _context.Alumnos.FindAsync(rep.AlumnoId);
+
+            var reporteEditado = new
+            {
+                id = rep.Id,
+                alumnoId = rep.AlumnoId,
+                nombreCompleto = alumno != null ? alumno.Nombre + " " + alumno.ApellidoPaterno + " " + alumno.ApellidoMaterno : "",
+                fecha = rep.Fecha,
+                motivo = rep.Motivo,
+                responsable = rep.ResponsableDelReporte
+            };
+
+            return Ok(new { mensaje = "Reporte actualizado exitosamente.", reporte = reporteEditado });
+
         }
         private async Task EnviarCorreoTutor(string correoDestino, string asunto, string mensaje, string nombreTutor)
         {
@@ -125,12 +144,6 @@ namespace MonitoreoEscolar.Server.Controllers
                     </div>
                     <hr style='margin: 20px 0; border: none; height: 1px; background-color: #ddd;' />
                     <p style='font-size: 15px; color: #444;'>{mensaje}</p>
-
-                    <p style='font-size: 14px; color: #888; margin-top: 30px;'>
-                        Este correo ha sido enviado automáticamente por el sistema de monitoreo escolar.<br/>
-                        Si tiene dudas, comuníquese con la escuela.
-                    </p>
-
                     <p style='text-align: center; font-size: 13px; color: #aaa;'>© {DateTime.Now.Year} Monitoreo Escolar</p>
                 </div>
             </div>"
@@ -140,7 +153,7 @@ namespace MonitoreoEscolar.Server.Controllers
 
             using var smtp = new SmtpClient();
             await smtp.ConnectAsync("smtp.gmail.com", 587, SecureSocketOptions.StartTls);
-            await smtp.AuthenticateAsync("serviciosmonitoreoescolar@gmail.com", "dxzarzmqarilrlbz"); // Usa tu contraseña de app
+            await smtp.AuthenticateAsync("serviciosmonitoreoescolar@gmail.com", "dxzarzmqarilrlbz");  
             await smtp.SendAsync(email);
             await smtp.DisconnectAsync(true);
         }

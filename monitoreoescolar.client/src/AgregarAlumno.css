@@ -3,67 +3,156 @@
     justify-content: center;
     align-items: center;
     padding: 20px;
-    background: linear-gradient(135deg, #89f7fe, #66a6ff); 
+    background: linear-gradient(135deg, #89f7fe, #66a6ff);
 }
 
-/* Mantener tamaño fijo y permitir scroll si es necesario */
 .agregar-alumno-content {
-    background-color: #2d3e50;
+    background-color: white;
     padding: 30px;
     border-radius: 15px;
     box-shadow: 10px 10px 20px rgba(0, 0, 0, 1);
-    color: white;
-    width: 550px;
-    text-align: left;
+    color: black;
+    max-width: 900px;
+    width: 100%;
     display: flex;
     flex-direction: column;
+    box-sizing: border-box;
 }
 
-/*  Formulario */
-.agregar-alumno-form {
-    display: flex;
-    flex-direction: column;
-    gap: 8px; 
-    max-height: 100%; 
+.agregar-alumno-title {
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 1.2rem;
+    color: black;
 }
 
-/*  Contenedor de cada input alineado */
+/* === Grupos individuales === */
 .agregar-alumno-group {
     display: flex;
     flex-direction: column;
-    text-align: left;
-    margin-bottom: 8px; 
+    margin-bottom: 0.8rem;
 }
 
-    /*  Inputs */
-    .agregar-alumno-group input {
-        width: 100%;
-        padding: 10px;
-        border-radius: 8px;
-        border: none;
-        background-color: #D9D9D9;
-        font-size: 16px;
+/* === Grupos dobles === */
+.agregar-alumno-double {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 0.8rem;
+}
+.agregar-alumno-double .agregar-alumno-group {
+    flex: 1;
+}
+
+/* === Grado y Grupo === */
+.agregar-alumno-group-selects {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 0.8rem;
+}
+.agregar-alumno-group-selects > div {
+    flex: 1;
+}
+    .agregar-alumno-group label,
+    .agregar-alumno-group-selects label {
+        font-size: 13.5px;
+        font-weight: 600;
+        margin-bottom: 2px;
+        color: black;
     }
 
-    .agregar-alumno-group select {
-        background-color: #D9D9D9;
-        border-radius: 8px;
-        padding: 10px;
-        border: none;
-        font-size: 16px;
-        color: #000;
-        width: 100%;
+.agregar-alumno-group select:focus,
+.agregar-alumno-group-selects select:focus {
+        border: 2px solid #00bfff;
+        outline: none;
     }
 
-/*  Contenedor de botones alineados */
+/* === Inputs estilo FloatLabel (PrimeReact) === */
+.p-float-label {
+    position: relative;
+    display: inline-block;
+    width: 100%;
+}
+    .p-float-label input {
+        padding: 0.75rem;
+        border: 1px solid #ced4da;
+        border-radius: 8px;
+        font-size: 1rem;
+        width: 100%;
+        transition: border-color 0.2s;
+        height: 45px;
+        background-color: white; 
+        color: #000; 
+    }
+
+    .p-float-label input:focus {
+        border: 2px solid #00bfff;
+        outline: none;
+    }
+
+
+/* === Selects === */
+select,
+.agregar-alumno-group select,
+.agregar-alumno-group-selects select {
+    height: 45px;
+    border-radius: 8px;
+    padding: 0 12px;
+    font-size: 16px;
+    background-color: white;
+    color: #000;
+    border: 1px solid #ced4da;
+    transition: border-color 0.2s;
+}
+
+
+
+/* === React Select === */
+.my-select__control {
+    background-color: #ffffff !important;
+    border-radius: 8px !important;
+    height: 45px !important;
+    border: 1px solid rgba(0, 0, 0, 1) !important; /* ← igual que los InputText */
+    box-shadow: none !important;
+    font-size: 16px;
+    transition: border-color 0.2s ease-in-out;
+}
+
+.my-select__control--is-focused {
+    border: 2px solid #8800ff !important;
+}
+.my-select__value-container {
+    padding: 0 10px;
+}
+.my-select__placeholder {
+    color: #666 !important;
+}
+.my-select__single-value {
+    color: #333 !important;
+    font-size: 16px !important;
+}
+.my-select__menu {
+    background-color: #fff !important;
+    border-radius: 8px !important;
+    margin-top: 2px !important;
+    z-index: 9999 !important;
+}
+.my-select__option {
+    padding: 10px !important;
+    cursor: pointer;
+}
+.my-select__option--is-focused {
+    background-color: #f0f0f0 !important;
+}
+.my-select__option--is-selected {
+    background-color: #ddd !important;
+}
+
+/* === Botón === */
 .button-container {
     display: flex;
-    justify-content: space-between; 
-    width: 100%;
-    margin-top: 10px;
+    justify-content: center;
+    margin-top: 1.5rem;
 }
-
-/*  Botón de "Agregar Alumno" alineado a la izquierda */
 .agregar-alumno-btn {
     padding: 12px 16px;
     font-size: 14px;
@@ -74,216 +163,53 @@
     background-color: #8800ff;
     color: white;
     transition: background-color 0.3s ease-in-out;
-    width: 110px;
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 6px;
 }
-
-    .agregar-alumno-btn:hover {
-        background-color: #6a00cc;
-    }
-
-/*  Botón de "Capturar Huella" alineado a la derecha */
-.capturar-huella-btn {
-    padding: 10px 16px;
-    font-size: 14px;
-    font-weight: bold;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    background-color: red;
-    color: white;
-    transition: background-color 0.3s ease-in-out;
-    width: 110px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 6px;
+.agregar-alumno-btn:hover {
+    background-color: #6a00cc;
 }
 
-    .capturar-huella-btn:hover {
-        background-color: #cc5200;
-    }
+/* --- MODAL DE QR AISLADO PARA EVITAR CONFLICTOS --- */
 
-/* Contenedor para Grado y Letra en la misma línea */
-.agregar-alumno-group-selects {
-    display: flex;
-    gap: 20px; 
-    margin-bottom: 8px; 
-    text-align: left; 
-}
-
-    .agregar-alumno-group-selects div {
-        width: 50%; 
-    }
-
-    /* Etiquetas dentro de este contenedor */
-    .agregar-alumno-group-selects label {
-        display: block;
-        margin-bottom: 5px;
-        font-weight: bold;
-    }
-
-    /* Estilo de los selects para que luzcan como tus inputs */
-    .agregar-alumno-group-selects select {
-        width: 100%;
-        padding: 10px;
-        border-radius: 8px;
-        border: none;
-        background-color: #D9D9D9;
-        font-size: 16px;
-        color: #000; 
-    }
-
-/* ==================== REACT-SELECT (my-select) ==================== */
-.my-select__control {
-    background-color: #D9D9D9 !important;
-    border-radius: 8px !important;
-    min-height: 45px !important;
-    border: none !important;
-    box-shadow: none !important;
-    font-size: 16px;
-}
-
-.my-select__control--is-focused {
-    outline: none !important;
-    border: 2px solid #8800ff !important;
-}
-
-.my-select__value-container {
-    padding: 0 10px;
-}
-
-.my-select__placeholder {
-    color: #666 !important;
-}
-
-.my-select__single-value {
-    color: #333 !important;
-    font-size: 16px !important;
-}
-
-.my-select__menu {
-    background-color: #fff !important;
-    border-radius: 8px !important;
-    margin-top: 2px !important;
-    z-index: 9999 !important;
-}
-
-.my-select__option {
-    color: #333 !important;
-    font-size: 16px !important;
-    background-color: #fff !important;
-    padding: 10px !important;
-    cursor: pointer;
-}
-
-.my-select__option--is-focused {
-    background-color: #f0f0f0 !important;
-    color: #333 !important;
-}
-
-.my-select__option--is-selected {
-    background-color: #ddd !important;
-    color: #333 !important;
-}
-
-/* Estilo del modal de huella */
-.modal-huella {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.5);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 1001;
-}
-
-.modal-content {
-    background: #fff;
-    padding: 20px;
-    border-radius: 10px;
-    width: 300px;
-    text-align: center;
-}
-
-.close {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    font-size: 20px;
-    cursor: pointer;
-}
-
-.huella-info img {
-    width: 80px;
-    height: 80px;
-}
-
-button {
-    background-color: #4CAF50;
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    cursor: pointer;
-    border-radius: 5px;
-}
-
-/* Mejora visual de secciones largas como CURP, Carrera, etc. */
-.agregar-alumno-group label {
-    font-weight: bold;
-    margin-bottom: 4px;
-    color: #ffffff;
-}
-
-.agregar-alumno-group input {
-    background-color: #D9D9D9;
-    border-radius: 8px;
-    padding: 10px;
-    border: none;
-    font-size: 16px;
-    color: #000;
-}
-
-/* ======================= MODAL QR ======================= */
-.modal-qr {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    background-color: rgba(0, 0, 0, 0.6);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 1002;
+.modal-qr *,
+.modal-qr *::before,
+.modal-qr *::after {
+    all: revert !important;
+    box-sizing: border-box;
+    font-family: inherit;
+    z-index: 99999; /* más alto que PrimeReact */
 }
 
 .modal-qr-content {
-    background-color: #ffffff;
+    all: unset;
+    box-sizing: border-box;
+    background-color: #fff;
     padding: 30px;
     border-radius: 12px;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
     text-align: center;
     width: 320px;
     position: relative;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+    font-family: 'Segoe UI', sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
     .modal-qr-content h3 {
-        margin-bottom: 15px;
-        color: #333;
-        font-size: 18px;
+        font-size: 1.2rem;
+        margin-bottom: 16px;
+        color: #222;
     }
 
     .modal-qr-content .qr-image {
         width: 200px;
         height: 200px;
         object-fit: contain;
+        margin-bottom: 20px;
     }
 
     /* ESTO: nombre bajo la imagen */
@@ -298,26 +224,94 @@ button {
 
     .modal-qr-content .close {
         position: absolute;
-        top: 8px;
-        right: 12px;
+        top: 10px;
+        right: 15px;
         font-size: 22px;
         font-weight: bold;
-        color: #888;
+        color: #777;
         cursor: pointer;
     }
 
 .qr-download-btn {
-    margin-top: 15px;
-    display: inline-block;
     background-color: #8800ff;
-    color: #fff;
-    padding: 10px 16px;
-    border-radius: 8px;
-    font-weight: bold;
+    color: white;
+    padding: 10px 18px;
+    border-radius: 6px;
+    font-weight: 600;
     text-decoration: none;
-    transition: background-color 0.3s ease-in-out;
+    transition: background-color 0.2s ease;
 }
 
     .qr-download-btn:hover {
         background-color: #6a00cc;
     }
+
+
+/* Asegura que el Dropdown de PrimeReact tenga ancho completo */
+.p-dropdown.w-100 {
+    width: 100% !important;
+}
+
+/* Uniforme en todos los campos */
+.p-inputtext,
+.p-dropdown {
+    height: 45px !important;
+    font-size: 1rem;
+    border-radius: 8px !important;
+    border: 1px solid rgba(0, 0, 0, 1) !important; /* Negro sólido */
+    background-color: white !important;
+    color: #000 !important;
+    box-shadow: none !important;
+    width: 100% !important;
+}
+
+/* Para FloatLabel funcione igual que en la demo */
+.p-float-label > * {
+    width: 100%;
+}
+
+/* Estilo al enfocar */
+.p-inputtext:focus,
+.p-dropdown.p-focus {
+    border: 2px solid #00bfff !important;
+    outline: none !important;
+}
+
+@media (max-width: 400px) {
+    .modal-qr-content {
+        width: 90vw;
+        padding: 20px;
+    }
+
+        .modal-qr-content .qr-image {
+            width: 160px;
+            height: 160px;
+        }
+
+    .qr-download-btn {
+        width: 100%;
+        text-align: center;
+    }
+}
+/* === ENFOQUE UNIFICADO PARA INPUTS, DROPDOWNS, TEXTOS === */
+.p-inputtext:focus,
+.p-dropdown.p-focus,
+.my-select__control--is-focused {
+    border: 2px solid #8800ff !important;
+    box-shadow: none !important;
+    outline: none !important;
+}
+
+/* También aplica cuando haces clic sobre FloatLabel */
+.p-float-label input:focus {
+    border: 2px solid #8800ff !important;
+    outline: none !important;
+}
+.p-float-label input::placeholder {
+    opacity: 1 !important;
+    color: #777 !important;
+}
+::placeholder {
+    color: #777 !important;
+    opacity: 1 !important;
+}

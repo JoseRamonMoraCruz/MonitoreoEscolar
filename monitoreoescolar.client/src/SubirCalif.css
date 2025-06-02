@@ -251,3 +251,93 @@
         font-size: 12px;
     }
 }
+
+
+/* Botón PrimeReact personalizado para elegir archivo */
+.boton-elegir-prime {
+    font-weight: bold;
+    color: #0288d1 !important;
+    border: 2px solid #0288d1 !important;
+    border-radius: 8px !important;
+    padding: 8px 16px !important;
+    background: transparent !important;
+    transition: all 0.3s ease-in-out;
+}
+
+    .boton-elegir-prime:hover {
+        background-color: #0288d1 !important;
+        color: white !important;
+    }
+
+    /*Estilo del boton subir calificaciones*/
+.boton-subir-prime {
+    font-weight: bold;
+    border-radius: 10px;
+    padding: 8px 16px;
+    box-shadow: 0px 0px 12px rgba(2, 136, 209, 0.9);
+    transition: transform 0.2s;
+}
+
+    .boton-subir-prime:hover {
+        transform: scale(1.05);
+    }
+
+    .boton-subir-prime:disabled {
+        background-color: gray !important;
+        border-color: gray !important;
+        color: white !important;
+        box-shadow: none !important;
+    }
+/*TOAST de mensajes*/
+.toast-mensaje {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    color: white;
+    padding: 12px 24px;
+    border-radius: 30px;
+    font-size: 16px;
+    font-weight: 500;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    z-index: 9999;
+    opacity: 0;
+    animation: fadeInOut 2.5s ease-in-out forwards;
+}
+
+    .toast-mensaje.success {
+        background-color: #4CAF50;
+    }
+
+    .toast-mensaje.error {
+        background-color: #f44336;
+    }
+
+    .toast-mensaje::before {
+        content: attr(data-icon);
+        font-weight: bold;
+        margin-right: 10px;
+        font-size: 18px;
+    }
+
+@keyframes fadeInOut {
+    0% {
+        opacity: 0;
+        transform: translateX(-50%) translateY(-10px);
+    }
+
+    10% {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+    }
+
+    80% {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+    }
+
+    100% {
+        opacity: 0;
+        transform: translateX(-50%) translateY(-10px);
+    }
+}

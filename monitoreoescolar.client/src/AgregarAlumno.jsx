@@ -1,8 +1,17 @@
-﻿import { useState } from "react";
+﻿import { useState, useRef } from "react";
 import axios from "axios";
 import Select from "react-select";
 import "./AgregarAlumno.css";
-import agregarIcon from "./assets/agregar-alumno.png";
+import { InputText } from "primereact/inputtext";
+import { FloatLabel } from "primereact/floatlabel";
+import { Dialog } from 'primereact/dialog';
+import { Button } from "primereact/button";
+import { Dropdown } from "primereact/dropdown"; 
+import { Toast } from "primereact/toast";
+import 'primereact/resources/themes/lara-light-blue/theme.css';
+import 'primereact/resources/primereact.min.css';
+import 'primeicons/primeicons.css';
+
 
 const AgregarAlumno = () => {
     // 1) Datos del alumno
@@ -24,15 +33,17 @@ const AgregarAlumno = () => {
         TutorId: null,
     });
 
+    const [loading, setLoading] = useState(false);
+
     // 2) Autocomplete de tutores
     const [tutorOptions, setTutorOptions] = useState([]);
     const [selectedTutor, setSelectedTutor] = useState(null);
 
     // 3) Estados para QR
-    const [qrCompositeUrl, setQrCompositeUrl] = useState(null);
-    const [showQrModal, setShowQrModal] = useState(false);
     const [nombreArchivoQR, setNombreArchivoQR] = useState("QR_alumno");
     const [nombreCompletoQR, setNombreCompletoQR] = useState("");
+    const [qrCompositeUrl, setQrCompositeUrl] = useState(null);
+
 
     // Manejadores de inputs
     const handleChange = (e) => {
@@ -45,11 +56,11 @@ const AgregarAlumno = () => {
 
     // Grado / letra -> arma Grupo
     const handleChangeGrado = (e) => {
-        const g = e.target.value;
-        setAlumno((a) => ({
-            ...a,
-            Grado: g,
-            Grupo: g && a.letra ? `${g}${a.letra}` : "",
+        const newGrado = e.target.value;
+        setAlumno((prev) => ({
+            ...prev,
+            Grado: newGrado,
+            Grupo: newGrado && prev.letra ? `${newGrado}${prev.letra}` : ""
         }));
     };
     const handleChangeLetra = (e) => {
@@ -60,22 +71,20 @@ const AgregarAlumno = () => {
             Grupo: a.Grado && l ? `${a.Grado}${l}` : "",
         }));
     };
+    console.log("Grupo generado:", alumno.Grupo);
 
     // Autocomplete padres
     const fetchTutorOptions = async (input) => {
         if (!input || input.length < 2) return setTutorOptions([]);
         try {
-            const { data } = await axios.get(
-                `/api/usuarios/autocompletePadres?termino=${input}`
-            );
-            setTutorOptions(
-                data.map((p) => ({
-                    value: p.id_Usuario,
-                    label: `${p.nombre} ${p.apellidoPaterno} ${p.apellidoMaterno} – ${p.correo}`,
-                }))
-            );
-        } catch (err) {
-            console.error(err);
+            const response = await axios.get(`http://localhost:5099/api/usuarios/autocompletePadres?termino=${input}`);
+            const optionsData = response.data.map((padre) => ({
+                value: padre.id_Usuario,
+                label: `${padre.nombre} ${padre.apellidoPaterno} ${padre.apellidoMaterno}`
+            }));
+            setTutorOptions(optionsData);
+        } catch (error) {
+            console.error("Error al buscar padres:", error);
         }
     };
     const handleTutorInputChange = (input, { action }) => {
@@ -87,184 +96,248 @@ const AgregarAlumno = () => {
         setAlumno((a) => ({ ...a, TutorId: opt ? opt.value : null }));
     };
 
-    // Envío del formulario, registro + QR + canvas
+    // Lista de carreras (puedes modificarla según tus necesidades)
+    const carreras = [
+        "CIENCIA DE DATOS E INFORMACIÓN",
+        "CONSTRUCCIÓN",
+        "CONTABILIDAD",
+        "LABORATORISTA CLÍNICO",
+        "MANTENIMIENTO AUTOMOTRIZ",
+        "MECATRÓNICA",
+        "PUERICULTURA"
+    ];
+
+    // Estado para almacenar la URL del código QR
+    const [showQrModal, setShowQrModal] = useState(false);
+
+    const toast = useRef(null);
+
+    // Función para enviar los datos del alumno al backend
     const handleSubmit = async (e) => {
         e.preventDefault();
+        setLoading(true);
 
-        // 1) validar grupo existe
         try {
-            const { data: grupos } = await axios.get("/api/grupos");
-            const ok = grupos.find(
-                (g) =>
-                    g.grado.toString() === alumno.Grado &&
-                    g.letra.toUpperCase() === alumno.letra.toUpperCase()
+            const gruposResponse = await axios.get("http://localhost:5099/api/grupos");
+            const gruposExistentes = gruposResponse.data;
+            const grupoEncontrado = gruposExistentes.find(
+                (g) => `${g.grado}${g.letra}`.toUpperCase() === alumno.Grupo.toUpperCase()
             );
-            if (!ok) {
-                alert("Crea el grupo antes de registrar.");
+
+            if (!grupoEncontrado) {
+                toast.current.show({
+                    severity: 'warn',
+                    summary: 'Grupo no encontrado',
+                    detail: 'Debes crear el grupo antes de registrar al alumno.',
+                    life: 3000
+                });
                 return;
             }
-        } catch {
-            alert("Error verificando grupos.");
+        } catch (error) {
+            console.error("Error al verificar grupos:", error);
+            toast.current.show({
+                severity: 'error',
+                summary: 'Error al verificar grupo',
+                detail: 'No se pudo verificar la existencia del grupo.',
+                life: 3000
+            });
             return;
+        } finally {
+            setLoading(false);
         }
 
-        // 2) arma nombre completo
         const nombreFull = `${alumno.Nombre} ${alumno.ApellidoPaterno} ${alumno.ApellidoMaterno}`;
         setNombreCompletoQR(nombreFull);
         setNombreArchivoQR(`QR_${nombreFull.replace(/\s+/g, "_")}`);
 
-        // 3) registrar alumno
         try {
-            const reg = await axios.post("/api/alumnos/registro", alumno);
-            alert(reg.data.mensaje);
-            const id = reg.data.alumno.id;
-
-            // 4) obtener blob QR
-            const qrResp = await axios.get(`/api/alumnos/qr/${id}`, {
-                responseType: "blob",
+            const response = await axios.post("http://localhost:5099/api/alumnos/registro", alumno);
+            toast.current.show({
+                severity: 'success',
+                summary: 'Alumno registrado',
+                detail: response.data.mensaje,
+                life: 3000
             });
-            const blobUrl = URL.createObjectURL(
-                new Blob([qrResp.data], { type: "image/png" })
-            );
 
-            // 5) componer canvas
+            const alumnoId = response.data.alumno.id;
+            const qrResponse = await axios.get(`http://localhost:5099/api/alumnos/qr/${alumnoId}`, {
+                responseType: "blob"
+            });
+
+            const qrBlob = new Blob([qrResponse.data], { type: "image/png" });
+            const qrImageUrl = URL.createObjectURL(qrBlob);
             const img = new Image();
             img.onload = () => {
-                const pad = 20,
-                    th = 30;
-                const w = img.width + pad * 2,
-                    h = img.height + pad * 2 + th;
-                const c = document.createElement("canvas");
-                c.width = w;
-                c.height = h;
-                const ctx = c.getContext("2d");
+                const padding = 20;
+                const textHeight = 30;
+                const canvasWidth = img.width + padding * 2;
+                const canvasHeight = img.height + padding * 2 + textHeight;
+
+                const canvas = document.createElement("canvas");
+                canvas.width = canvasWidth;
+                canvas.height = canvasHeight;
+
+                const ctx = canvas.getContext("2d");
+
+                // Fondo blanco
                 ctx.fillStyle = "#fff";
-                ctx.fillRect(0, 0, w, h);
-                ctx.drawImage(img, pad, pad);
+                ctx.fillRect(0, 0, canvasWidth, canvasHeight);
+
+                // Imagen QR
+                ctx.drawImage(img, padding, padding);
+
+                // Texto centrado debajo
                 ctx.fillStyle = "#000";
                 ctx.font = "bold 18px sans-serif";
                 ctx.textAlign = "center";
-                ctx.fillText(nombreFull, w / 2, img.height + pad + th * 0.8);
-                c.toBlob((b) => {
-                    const url2 = URL.createObjectURL(b);
-                    setQrCompositeUrl(url2);
+                ctx.fillText(nombreFull, canvasWidth / 2, img.height + padding + textHeight * 0.8);
+
+                // Convertir canvas a blob y mostrar
+                canvas.toBlob((blob) => {
+                    const finalUrl = URL.createObjectURL(blob);
+                    setQrCompositeUrl(finalUrl);
                     setShowQrModal(true);
+
+                    // Limpiar después de unos segundos
                     setTimeout(() => {
                         setShowQrModal(false);
                         setQrCompositeUrl(null);
                     }, 10000);
                 }, "image/png");
             };
-            img.src = blobUrl;
-        } catch (err) {
-            console.error(err);
-            alert("Error al registrar.");
-        }
+            img.src = qrImageUrl;
 
-        // 6) limpiar form
-        setAlumno({
-            Nombre: "",
-            ApellidoPaterno: "",
-            ApellidoMaterno: "",
-            Grupo: "",
-            Grado: "",
-            letra: "",
-            Domicilio: "",
-            CURP: "",
-            NumeroControl: "",
-            Carrera: "",
-            Plantel: "",
-            Turno: "",
-            Generacion: "",
-            Ciclo: "",
-            TutorId: null,
-        });
-        setSelectedTutor(null);
-        setTutorOptions([]);
+
+            setShowQrModal(true);
+            setTimeout(() => {
+                setShowQrModal(false);
+            }, 10000);
+
+
+            setAlumno({
+                Nombre: "",
+                ApellidoPaterno: "",
+                ApellidoMaterno: "",
+                Grupo: "",
+                Grado: "",
+                letra: "",
+                tutor: "",
+                Domicilio: "",
+                TutorId: null,
+                CURP: "",
+                NumeroControl: "",
+                Carrera: "",
+                Plantel: "",
+                Turno: "",
+                Generacion: "",
+                Ciclo: ""
+            });
+            setSelectedTutor(null);
+            setTutorOptions([]);
+        } catch (error) {
+            console.error("Error al registrar:", error);
+
+            if (error.response?.data?.mensaje) {
+                toast.current.show({
+                    severity: 'error',
+                    summary: 'Registro fallido',
+                    detail: error.response.data.mensaje,
+                    life: 3000
+                });
+            } else {
+                toast.current.show({
+                    severity: 'error',
+                    summary: 'Error interno',
+                    detail: 'Ocurrió un problema al registrar al alumno.',
+                    life: 3000
+                });
+            }
+        }
     };
 
     return (
         <div className="bootstrap-scope">
+            <Toast ref={toast} />
             <div className="agregar-alumno-container">
                 <div className="agregar-alumno-content">
                     <h2 className="agregar-alumno-title">📑 Registra un Alumno</h2>
                     <form onSubmit={handleSubmit}>
                         {/* Nombre */}
                         <div className="agregar-alumno-group">
-                            <label>👨🏻‍🎓 Nombre:</label>
-                            <input
-                                type="text"
-                                name="Nombre"
-                                value={alumno.Nombre}
-                                onChange={handleChange}
-                                placeholder="Ingrese el primer nombre"
-                                required
-                            />
-                        </div>
-                        {/* Apellido Paterno */}
-                        <div className="agregar-alumno-group">
-                            <label>👨🏻‍🎓 Apellido Paterno:</label>
-                            <input
-                                type="text"
-                                name="ApellidoPaterno"
-                                value={alumno.ApellidoPaterno}
-                                onChange={handleChange}
-                                placeholder="Ingrese el apellido paterno"
-                                required
-                            />
-                        </div>
-                        {/* Apellido Materno */}
-                        <div className="agregar-alumno-group">
-                            <label>👨🏻‍🎓 Apellido Materno:</label>
-                            <input
-                                type="text"
-                                name="ApellidoMaterno"
-                                value={alumno.ApellidoMaterno}
-                                onChange={handleChange}
-                                placeholder="Ingrese el apellido materno"
-                                required
-                            />
-                        </div>
-                        {/* Grado + Letra */}
-                        <div className="agregar-alumno-group-selects">
-                            <div>
-                                <label>Grado:</label>
-                                <select
-                                    name="Grado"
-                                    value={alumno.Grado}
-                                    onChange={handleChangeGrado}
+                            <label>Nombre del Alumno:</label>
+                            <FloatLabel>
+                                <InputText
+                                    id="nombre"
+                                    name="Nombre"
+                                    value={alumno.Nombre}
+                                    onChange={handleChange}
+                                    placeholder="Escribe el nombre del alumno..."
                                     required
-                                >
-                                    <option value="">Seleccione</option>
-                                    {[1, 2, 3, 4, 5, 6].map((g) => (
-                                        <option key={g} value={g}>
-                                            {g}
-                                        </option>
-                                    ))}
-                                </select>
-                            </div>
-                            <div>
-                                <label>Grupo:</label>
-                                <select
-                                    name="letra"
-                                    value={alumno.letra || ""}
-                                    onChange={handleChangeLetra}
-                                    required
-                                >
-                                    <option value="">Seleccione</option>
-                                    {["A", "B", "C", "D", "E", "F", "G"].map((l) => (
-                                        <option key={l} value={l}>
-                                            {l}
-                                        </option>
-                                    ))}
-                                </select>
-                            </div>
+                                />
+                               
+                            </FloatLabel>
                         </div>
-                        <input type="hidden" name="Grupo" value={alumno.Grupo} />
 
-                        {/* Tutor */}
+                        {/* Apellidos */}
+                        <div className="agregar-alumno-double">
+                            <div className="agregar-alumno-group">
+                                <label>Apellido Paterno:</label>
+                                <FloatLabel>
+                                    <InputText
+                                        id="apellidoPaterno"
+                                        name="ApellidoPaterno"
+                                        value={alumno.ApellidoPaterno}
+                                        placeholder="Escribe el apellido parteno del alumno..."
+                                        onChange={handleChange}
+                                    />
+                                </FloatLabel>
+                            </div>
+                            <div className="agregar-alumno-group">
+                                <label>Apellido Materno:</label>
+                                <FloatLabel>
+                                    <InputText
+                                        id="apellidoMaterno"
+                                        name="ApellidoMaterno"
+                                        value={alumno.ApellidoMaterno}
+                                        placeholder="Escribe el apellido marteno del alumno..."
+                                        onChange={handleChange}
+                                    />
+                                </FloatLabel>
+                            </div>
+                        </div>
+
+                        {/* Grado y Grupo */}
+                        <div className="agregar-alumno-double">
+                            <div className="agregar-alumno-group">
+                                <label>Grado:</label>
+                                <FloatLabel>
+                                    <Dropdown
+                                        inputId="grado"
+                                        value={alumno.Grado}
+                                        options={[1, 2, 3, 4, 5, 6]}
+                                        onChange={(e) => handleChangeGrado({ target: { name: "Grado", value: e.value } })}
+                                        placeholder="Seleccione.."
+                                    />
+                                </FloatLabel>
+                            </div>
+
+                            <div className="agregar-alumno-group">
+                                <label>Grupo:</label>
+                                <FloatLabel>
+                                    <Dropdown
+                                        inputId="letra"
+                                        value={alumno.letra}
+                                        options={["A", "B", "C", "D", "E", "F", "G"]}
+                                        onChange={(e) => handleChangeLetra({ target: { name: "letra", value: e.value } })}
+                                        placeholder="Seleccione.."
+                                    />
+                                </FloatLabel>
+                            </div>
+                        </div>
+
+                        {/* Autocompletado para seleccionar padre/tutor */}
                         <div className="agregar-alumno-group">
-                            <label>👨🏻‍🦰 Seleccionar padre:</label>
+                            <label style={{ marginBottom: '10px' }}>👨🏻‍🦰 Seleccionar padre del alumno:</label>
                             <Select
                                 classNamePrefix="my-select"
                                 value={selectedTutor}
@@ -278,149 +351,171 @@ const AgregarAlumno = () => {
 
                         {/* Domicilio */}
                         <div className="agregar-alumno-group">
-                            <label>🏠 Domicilio:</label>
-                            <input
-                                type="text"
-                                name="Domicilio"
-                                value={alumno.Domicilio}
-                                onChange={handleChange}
-                                placeholder="Ingrese domicilio"
-                                required
-                            />
+                            <label>Domicilio:</label>
+                            <FloatLabel>
+                                <InputText
+                                    id="domicilio"
+                                    name="Domicilio"
+                                    value={alumno.Domicilio}
+                                    onChange={handleChange}
+                                    placeholder="Escribe el domicilio del alumno..."
+                                    required
+                                />
+                            </FloatLabel>
                         </div>
 
-                        {/* CURP */}
-                        <div className="agregar-alumno-group">
-                            <label>👤 CURP:</label>
-                            <input
-                                type="text"
-                                name="CURP"
-                                value={alumno.CURP}
-                                onChange={handleChange}
-                                placeholder="CURP del alumno"
-                            />
-                        </div>
-
-                        {/* Número de Control */}
-                        <div className="agregar-alumno-group">
-                            <label>🆔 Número de Control:</label>
-                            <input
-                                type="text"
-                                name="NumeroControl"
-                                value={alumno.NumeroControl}
-                                onChange={handleChange}
-                                placeholder="Número de control"
-                            />
+                        {/* CURP y Número de Control */}
+                        <div className="agregar-alumno-double">
+                            <div className="agregar-alumno-group">
+                                <label>CURP:</label>
+                                <FloatLabel>
+                                    <InputText
+                                        id="curp"
+                                        name="CURP"
+                                        value={alumno.CURP}
+                                        onChange={handleChange}
+                                        placeholder="Escribe la CURP del alumno..."
+                                    />
+                                </FloatLabel>
+                            </div>
+                            <div className="agregar-alumno-group">
+                                <label>Numero de Control:</label>
+                                <FloatLabel>
+                                    <InputText
+                                        id="numeroControl"
+                                        name="NumeroControl"
+                                        value={alumno.NumeroControl}
+                                        onChange={handleChange}
+                                        placeholder="Escribe el num. de control del alumno..."
+                                    />
+                                </FloatLabel>
+                            </div>
                         </div>
 
                         {/* Carrera */}
                         <div className="agregar-alumno-group">
-                            <label>📝 Carrera:</label>
-                            <select
-                                name="Carrera"
-                                value={alumno.Carrera}
-                                onChange={handleChange}
-                                required
-                            >
-                                <option value="">Seleccione una carrera</option>
-                                <option value="CIENCIA DE DATOS E INFORMACIÓN">
-                                    CIENCIA DE DATOS E INFORMACIÓN
-                                </option>
-                                <option value="CONSTRUCCIÓN">CONSTRUCCIÓN</option>
-                                <option value="CONTABILIDAD">CONTABILIDAD</option>
-                                <option value="LABORATORISTA CLÍNICO">
-                                    LABORATORISTA CLÍNICO
-                                </option>
-                                <option value="MANTENIMIENTO AUTOMOTRIZ">
-                                    MANTENIMIENTO AUTOMOTRIZ
-                                </option>
-                                <option value="MECATRÓNICA">MECATRÓNICA</option>
-                                <option value="PUERICULTURA">PUERICULTURA</option>
-                            </select>
+                            <label>Carrera:</label>
+                            <FloatLabel>
+                                <Dropdown
+                                    inputId="carrera"
+                                    value={alumno.Carrera}
+                                    options={carreras.map(c => ({ label: c, value: c }))}
+                                    onChange={(e) => setAlumno({ ...alumno, Carrera: e.value })}
+                                    placeholder="Seleccione"
+                                />
+                            </FloatLabel>
                         </div>
 
-                        {/* Plantel */}
-                        <div className="agregar-alumno-group">
-                            <label>🏫 Plantel:</label>
-                            <input
-                                type="text"
-                                name="Plantel"
-                                value={alumno.Plantel}
-                                onChange={handleChange}
-                                placeholder="Plantel asignado"
-                            />
-                        </div>
-
-                        {/* Turno */}
-                        <div className="agregar-alumno-group">
-                            <label>☀️🌜 Turno:</label>
-                            <input
-                                type="text"
-                                name="Turno"
-                                value={alumno.Turno}
-                                onChange={handleChange}
-                                placeholder="Matutino / Vespertino"
-                            />
+                        {/* Plantel y Turno */}
+                        <div className="agregar-alumno-double">
+                            <div className="agregar-alumno-group">
+                                <label>Plantel:</label>
+                                <FloatLabel>
+                                    <InputText
+                                        id="plantel"
+                                        name="Plantel"
+                                        value={alumno.Plantel}
+                                        onChange={handleChange}
+                                        placeholder="Escribe el plantel..."
+                                    />
+                                </FloatLabel>
+                            </div>
+                            <div className="agregar-alumno-group">
+                                <label>Turno:</label>
+                                <FloatLabel>
+                                    <InputText
+                                        id="turno"
+                                        name="Turno"
+                                        value={alumno.Turno}
+                                        onChange={handleChange}
+                                        placeholder="Escribe el turno del alumno..."
+                                    />
+                                </FloatLabel>
+                            </div>
                         </div>
 
                         {/* Generación */}
                         <div className="agregar-alumno-group">
-                            <label>🔢 Generación:</label>
-                            <input
-                                type="text"
-                                name="Generacion"
-                                value={alumno.Generacion}
-                                onChange={handleChange}
-                                placeholder="Generación"
-                            />
+                            <label>Generacion:</label>
+                            <FloatLabel>
+                                <InputText
+                                    id="generacion"
+                                    name="Generacion"
+                                    value={alumno.Generacion}
+                                    onChange={handleChange}
+                                    placeholder="Escribe la generación del alumno..."
+                                />
+                            </FloatLabel>
                         </div>
 
                         {/* Ciclo */}
                         <div className="agregar-alumno-group">
-                            <label>🔢 Ciclo Escolar:</label>
-                            <input
-                                type="text"
-                                name="Ciclo"
-                                value={alumno.Ciclo}
-                                onChange={handleChange}
-                                placeholder="SEMESTRAL 1 - 2024"
-                            />
+                            <label>Periodo Escolar:</label>
+                            <FloatLabel>
+                                <InputText
+                                    id="ciclo"
+                                    name="Ciclo"
+                                    value={alumno.Ciclo}
+                                    onChange={handleChange}
+                                    placeholder="Escribe el ciclo escolar del alumno..."
+                                />
+                            </FloatLabel>
                         </div>
 
                         {/* Botón Agregar */}
                         <div className="button-container">
-                            <button type="submit" className="agregar-alumno-btn">
-                                <img src={agregarIcon} alt="Agregar" className="back-icon" />
-                                Agregar Alumno
-                            </button>
+                            <Button
+                                type="submit"
+                                label={loading ? "Registrando..." : "Agregar Alumno"}
+                                icon="pi pi-user-plus"
+                                iconPos="left"
+                                className="p-button-rounded p-button-success p-button-lg"
+                                loading={loading}
+                            />
                         </div>
                     </form>
                 </div>
             </div>
 
             {/* Modal de QR */}
-            {showQrModal && (
-                <div className="modal-qr">
-                    <div className="modal-qr-content">
-                        <span className="close" onClick={() => setShowQrModal(false)}>
-                            ×
-                        </span>
-                        <h3>Código QR de {nombreCompletoQR}</h3>
-                        <img
-                            src={qrCompositeUrl}
-                            alt="Código QR con nombre"
-                            className="qr-image"
-                        />
-                        <a
-                            href={qrCompositeUrl}
-                            download={`${nombreArchivoQR}.png`}
-                            className="qr-download-btn"
-                        >
-                            Descargar QR
-                        </a>
-                    </div>
+                    <Dialog
+                        header={`Código QR de ${nombreCompletoQR}`}
+                        visible={showQrModal}
+                        style={{ width: '400px' }}
+                        onHide={() => setShowQrModal(false)}
+                        closable
+                        draggable={false}
+                        resizable={false}
+                            footer={
+                                <div className="flex justify-content-end gap-2">
+                                    <Button
+                                        label="Atrás"
+                                        icon="pi pi-times"
+                                        severity="secondary"
+                                        outlined
+                                        onClick={() => setShowQrModal(false)}
+                                    />
+                                    <a
+                                        href={qrCompositeUrl}
+                                        download={`${nombreArchivoQR}.png`}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        style={{ textDecoration: "none" }}
+                                    >
+                                        <Button
+                                            label="Descargar QR"
+                                            icon="pi pi-download"
+                                            severity="primary"
+                                        />
+                                    </a>
+                                </div>
+                            }
+
+                    >
+                         <div className="flex justify-content-center">
+                    <img src={qrCompositeUrl} alt="Código QR con nombre" style={{ width: "100%", maxWidth: "250px", borderRadius: "8px" }} />
                 </div>
-            )}
+                    </Dialog>
         </div>
     );
 };

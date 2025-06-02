@@ -52,6 +52,7 @@ namespace MonitoreoEscolar.Server.Controllers
             string mensajeCorreo = "";
             string asuntoCorreo = "";
             string hora = DateTime.Now.ToString("HH:mm:ss");
+            string fecha = DateTime.Now.ToString("dd/MM/yyyy");
 
             if (asistenciaHoy == null)
             {
@@ -66,7 +67,7 @@ namespace MonitoreoEscolar.Server.Controllers
                 mensajeCorreo = $@"
                 El alumno <strong>{alumno.Nombre} {alumno.ApellidoPaterno} {alumno.ApellidoMaterno}</strong> 
                 de la carrera <strong>{alumno.Carrera}</strong> del grupo <strong>{alumno.Grupo}</strong> en el turno <strong>{alumno.Turno}</strong> 
-                ha registrado su <strong>ENTRADA</strong> a la escuela a las <strong>{hora}</strong>.";
+                ha registrado su <strong>ENTRADA</strong> a la escuela a las <strong>{hora}</strong> del <strong>{fecha}</strong>.";
 
                 asuntoCorreo = "Registro de Entrada Escolar";
             }
@@ -90,7 +91,7 @@ namespace MonitoreoEscolar.Server.Controllers
                 mensajeCorreo = $@"
                 El alumno <strong>{alumno.Nombre} {alumno.ApellidoPaterno} {alumno.ApellidoMaterno}</strong> 
                 de la carrera <strong>{alumno.Carrera}</strong> del grupo <strong>{alumno.Grupo}</strong> en el turno <strong>{alumno.Turno}</strong> 
-                ha registrado su <strong>SALIDA</strong> de la escuela a las <strong>{hora}</strong>.";
+                ha registrado su <strong>SALIDA</strong> de la escuela a las <strong>{hora}</strong> del <strong>{fecha}</strong>.";
 
                 asuntoCorreo = "Registro de Salida Escolar";
             }
@@ -144,12 +145,12 @@ namespace MonitoreoEscolar.Server.Controllers
                 <p style='font-size: 16px; color: #333;'>Estimado/a {nombreTutor}</p>
                 <p style='font-size: 15px; color: #444;'>{mensaje}</p>
 
-                <p style='font-size: 14px; color: #888; margin-top: 30px;'>
+                <p style='font-size: 10px; color: #888; margin-top: 30px;'>
                     Este correo ha sido enviado automáticamente por el sistema de monitoreo escolar.<br/>
                     Si tiene dudas, comuníquese con la escuela.
                 </p>
 
-                <p style='text-align: center; font-size: 13px; color: #aaa;'>© {DateTime.Now.Year} Monitoreo Escolar</p>
+                <p style='text-align: center; font-size: 9px; color: #aaa;'>© {DateTime.Now.Year} Monitoreo Escolar</p>
             </div>
         </div>"
             };

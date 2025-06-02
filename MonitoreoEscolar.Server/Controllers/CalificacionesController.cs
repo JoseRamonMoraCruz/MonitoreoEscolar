@@ -89,40 +89,25 @@ namespace MonitoreoEscolar.Server.Controllers
                         continue;
                     }
 
-                    string parcialUnidad = "Parcial 1";
-
-                    bool yaExiste = await _context.Calificaciones.AnyAsync(c =>
-                        c.AlumnoId == alumno.Id &&
-                        c.NombreAsignatura == asignatura &&
-                        c.GrupoId == grupo.Id &&
-                        c.ParcialUnidad == parcialUnidad
-                    );
-
-                    if (yaExiste)
+                    string parcialTexto = worksheet.Cells[row, 22].Text.Trim(); // Asegúrate que columna 22 sea PARCIAL
+                                                                              
+                    if (parcial1 > 0)
                     {
-                        _logger.LogInformation("Calificación ya existente para {0} - {1}", nombreNormalizado, asignatura);
-                        continue;
+                        await ProcesarParcial(alumno, grupo, asignatura, parcial1, "Parcial 1", periodo, firmado, asistenciasTotal, tipo, calificacionesGuardadas, nombreOriginal);
                     }
 
-                    //  Crear y agregar nueva calificación
-                    var calificacion = new Calificacion
+                    // Procesar Parcial 2
+                    if (parcial2 > 0)
                     {
-                        Nombre = nombreOriginal,
-                        NombreAsignatura = asignatura,
-                        Parcial1 = parcial1,
-                        Parcial2 = parcial2,
-                        Parcial3 = parcial3,
-                        CalificacionValor = califFinal,
-                        Tipo = tipo,
-                        Periodo = periodo,
-                        Firmado = firmado,
-                        AsistenciasTotal = asistenciasTotal,
-                        ParcialUnidad = parcialUnidad,
-                        GrupoId = grupo.Id,
-                        AlumnoId = alumno.Id
-                    };
+                        await ProcesarParcial(alumno, grupo, asignatura, parcial2, "Parcial 2", periodo, firmado, asistenciasTotal, tipo, calificacionesGuardadas, nombreOriginal);
+                    }
 
-                    calificacionesGuardadas.Add(calificacion);
+                    // Procesar Parcial 3
+                    if (parcial3 > 0)
+                    {
+                        await ProcesarParcial(alumno, grupo, asignatura, parcial3, "Parcial 3", periodo, firmado, asistenciasTotal, tipo, calificacionesGuardadas, nombreOriginal);
+                    }
+
 
                     if (alumno.TutorUsuario != null && !string.IsNullOrEmpty(alumno.TutorUsuario.Correo))
                     {
@@ -290,10 +275,72 @@ namespace MonitoreoEscolar.Server.Controllers
 
             using var smtp = new SmtpClient();
             await smtp.ConnectAsync("smtp.gmail.com", 587, SecureSocketOptions.StartTls);
-            await smtp.AuthenticateAsync("serviciosmonitoreoescolar@gmail.com", "dxzarzmqarilrlbz");
+            await smtp.AuthenticateAsync("serviciosmonitoreoescolar@gmail.com", "dxzarzmqarilrlbz"); 
             await smtp.SendAsync(email);
             await smtp.DisconnectAsync(true);
         }
 
+        private async Task ProcesarParcial(
+     Alumno alumno,
+     Grupo grupo,
+     string asignatura,
+     int calificacion,
+     string parcialUnidad,
+     string periodo,
+     bool firmado,
+     int asistencias,
+     string tipo,
+     List<Calificacion> listaGuardar,
+     string nombreOriginal)
+        {
+            var calificacionExistente = await _context.Calificaciones.FirstOrDefaultAsync(c =>
+                c.AlumnoId == alumno.Id &&
+                c.NombreAsignatura == asignatura &&
+                c.GrupoId == grupo.Id &&
+                c.ParcialUnidad == parcialUnidad
+            );
+
+            if (calificacionExistente != null)
+            {
+                // Actualizar la calificación existente
+                calificacionExistente.CalificacionValor = calificacion;
+                calificacionExistente.Periodo = periodo;
+                calificacionExistente.Firmado = firmado;
+                calificacionExistente.AsistenciasTotal = asistencias;
+                calificacionExistente.Tipo = tipo;
+
+                // Actualizar el campo correspondiente al parcial
+                if (parcialUnidad == "Parcial 1")
+                    calificacionExistente.Parcial1 = calificacion;
+                else if (parcialUnidad == "Parcial 2")
+                    calificacionExistente.Parcial2 = calificacion;
+                else if (parcialUnidad == "Parcial 3")
+                    calificacionExistente.Parcial3 = calificacion;
+
+                _context.Calificaciones.Update(calificacionExistente);
+            }
+            else
+            {
+                // Crear una nueva calificación
+                var nueva = new Calificacion
+                {
+                    Nombre = nombreOriginal,
+                    NombreAsignatura = asignatura,
+                    ParcialUnidad = parcialUnidad,
+                    CalificacionValor = calificacion,
+                    Periodo = periodo,
+                    Firmado = firmado,
+                    AsistenciasTotal = asistencias,
+                    Tipo = tipo,
+                    GrupoId = grupo.Id,
+                    AlumnoId = alumno.Id,
+                    Parcial1 = parcialUnidad == "Parcial 1" ? calificacion : null,
+                    Parcial2 = parcialUnidad == "Parcial 2" ? calificacion : null,
+                    Parcial3 = parcialUnidad == "Parcial 3" ? calificacion : null
+                };
+
+                listaGuardar.Add(nueva);
+            }
+        }
     }
 }

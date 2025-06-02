@@ -1,8 +1,9 @@
-﻿// Padre.jsx
-import { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+﻿import { useState, useEffect, useRef } from "react";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
 import "./Padre.css";
+import { Toast } from 'primereact/toast';
+
 
 const Padre = () => {
     const [hijos, setHijos] = useState([]);
@@ -11,19 +12,32 @@ const Padre = () => {
     const [asistenciasPorAlumno, setAsistenciasPorAlumno] = useState({});
     const [fechasPorAlumno, setFechasPorAlumno] = useState({});
     const [rangosPorAlumno, setRangosPorAlumno] = useState({});
-    const [nombrePadre, setNombrePadre] = useState("");
-    const [showToast, setShowToast] = useState(false);
+    const toast = useRef(null);
+    const toastShownRef = useRef(false);
 
     const navigate = useNavigate();
 
-    // Bienvenida al padre
+    const location = useLocation(); 
+
     useEffect(() => {
-        const nombre = localStorage.getItem("nombrePadre") || "";
-        setNombrePadre(nombre);
-        setShowToast(true);
-        const timer = setTimeout(() => setShowToast(false), 3000);
-        return () => clearTimeout(timer);
-    }, []);
+        if (location.state?.mensajeBienvenida && !toastShownRef.current) {
+            toast.current?.show({
+                severity: "success",
+                summary: "¡Bienvenido!",
+                detail: location.state.mensajeBienvenida,
+                life: 3000
+            });
+
+            toastShownRef.current = true;
+
+            // Borra el estado de navegación para evitar duplicados
+            window.history.replaceState({}, document.title);
+        }
+    }, [location.state]);
+
+
+
+
 
     // Carga los hijos del padre al montar
     useEffect(() => {
@@ -36,7 +50,7 @@ const Padre = () => {
 
         const obtenerHijosConGrupo = async () => {
             try {
-                const response = await axios.get(`/api/padres/obtener-hijos-con-grupo/${idPadre}`);
+                const response = await axios.get(`http://localhost:5099/api/padres/obtener-hijos-con-grupo/${idPadre}`);
                 setHijos(response.data);
             } catch (error) {
                 console.error("❌ Error al obtener hijos con grupo:", error);
@@ -50,7 +64,7 @@ const Padre = () => {
     const descargarPDF = async (alumnoId, nombreCompleto) => {
         try {
             const response = await axios.get(
-                `/api/padres/descargar-reporte/${alumnoId}`,
+                `http://localhost:5099/api/padres/descargar-reporte/${alumnoId}`,
                 { responseType: "blob" }
             );
 
@@ -88,7 +102,7 @@ const Padre = () => {
         }));
         try {
             const response = await axios.get(
-                `/api/padres/obtener-asistencias-alumno/${alumnoId}?fechaInicio=${inicio}&fechaFin=${fin}`
+                `http://localhost:5099/api/padres/obtener-asistencias-alumno/${alumnoId}?fechaInicio=${inicio}&fechaFin=${fin}`
             );
             setAsistenciasPorAlumno(prev => ({ ...prev, [alumnoId]: response.data }));
         } catch (error) {
@@ -106,7 +120,7 @@ const Padre = () => {
         // Si aún no tenemos asistencias, las traemos
         if (!asistenciasPorAlumno[alumnoId]) {
             try {
-                const resp = await axios.get(`/api/padres/obtener-asistencias-alumno/${alumnoId}`);
+                const resp = await axios.get(`http://localhost:5099/api/padres/obtener-asistencias-alumno/${alumnoId}`);
                 setAsistenciasPorAlumno(prev => ({ ...prev, [alumnoId]: resp.data }));
             } catch (err) {
                 console.error("❌ Error al obtener asistencias:", err);
@@ -124,7 +138,7 @@ const Padre = () => {
         // Si aún no tenemos reportes, los traemos
         if (!reportesPorAlumno[alumnoId]) {
             try {
-                const resp = await axios.get(`/api/padres/obtener-reportes-hijo/${alumnoId}`);
+                const resp = await axios.get(`http://localhost:5099/api/padres/obtener-reportes-hijo/${alumnoId}`);
                 setReportesPorAlumno(prev => ({ ...prev, [alumnoId]: resp.data }));
             } catch (err) {
                 console.error("❌ Error al obtener reportes:", err);
@@ -135,7 +149,7 @@ const Padre = () => {
         const hijo = hijos.find(h => h.alumnoId === alumnoId);
         if (hijo && !hijo.calificaciones) {
             try {
-                const resp = await axios.get(`/api/padres/obtener-calificaciones-alumno/${alumnoId}`);
+                const resp = await axios.get(`http://localhost:5099/api/padres/obtener-calificaciones-alumno/${alumnoId}`);
                 setHijos(prev =>
                     prev.map(h =>
                         h.alumnoId === alumnoId ? { ...h, calificaciones: resp.data } : h
@@ -149,15 +163,11 @@ const Padre = () => {
 
     return (
         <>
+            <Toast ref={toast} />
             <nav className="menu-bar">
                 <ul className="menu-list">
                     <li><Link to="/" className="logout-link">Cerrar Sesión</Link></li>
                 </ul>
-                {showToast && (
-                    <div className="welcome-toast">
-                        ¡Bienvenido, <strong>{nombrePadre}</strong>!
-                    </div>
-                )}
             </nav>
 
             <div className="padre-container">

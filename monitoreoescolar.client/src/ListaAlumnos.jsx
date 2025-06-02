@@ -1,15 +1,16 @@
 ﻿import { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import "./ListaAlumnos.css";
-import addIcon from "./assets/agregar-grupo.png";
 import Select from "react-select";
 import deleteIcon from "./assets/borrar.png";
 import editIcon from "./assets/editar-informacion.png";
 import removeIcon from "./assets/eliminar-informacion.png";
-import aceptarIcon from "./assets/aceptar.png";
-import rechazarIcon from "./assets/rechazar.png";
 import WhatsappIcon from "./assets/whatsapp.png";
 import QrIcon from "./assets/codigo-qr.png";
+import { Dialog } from 'primereact/dialog';
+import { Button } from 'primereact/button';
+import { InputText } from 'primereact/inputtext';
+import { Toast } from 'primereact/toast';
 
 const ListaAlumnos = () => {
     const [grupos, setGrupos] = useState([]);
@@ -51,6 +52,19 @@ const ListaAlumnos = () => {
     const [qrCompositeUrl, setQrCompositeUrl] = useState(null);
     const [nombreCompletoQR, setNombreCompletoQR] = useState("");
 
+    // Estado para el modal de confirmación de eliminación de docente
+    const [showConfirmEliminarDocente, setShowConfirmEliminarDocente] = useState(false);
+    const [grupoDocenteAEliminar, setGrupoDocenteAEliminar] = useState(null);
+    const toast = useRef(null);
+
+    const mostrarToast = (summary, detail, severity = "success") => {
+        toast.current?.show({
+            severity,
+            summary,
+            detail,
+            life: 3000,
+        });
+    };
 
     useEffect(() => {
         obtenerGrupos();
@@ -129,14 +143,6 @@ const ListaAlumnos = () => {
         return inputValue;
     };
 
- /*   const handleCarreraChangeEdit = option => {
-        setSelectedCarreraEdit(option);
-        setAlumnoSeleccionado(prev => ({
-            ...prev,
-            carrera: option ? option.value : ""
-        }));
-    };  */
-
     const handleTutorChangeSelect = (selectedOption) => {
         setSelectedTutorEdit(selectedOption);
         setAlumnoSeleccionado((prev) => ({
@@ -149,7 +155,7 @@ const ListaAlumnos = () => {
         setSelectedGroupEdit(option);
         setAlumnoSeleccionado(prev => ({
             ...prev,
-           
+
             grupo: option.value
         }));
     };
@@ -183,7 +189,7 @@ const ListaAlumnos = () => {
             carrera: alumno.carrera ?? "",
             numeroControl: alumno.numeroControl ?? "",
             curp: alumno.curp ?? ""
-           
+
         });
 
         // 2) Inicializa cada Select con su opción correspondiente
@@ -227,7 +233,7 @@ const ListaAlumnos = () => {
     const actualizarAlumno = async (alumno) => {
         // 1) Validar que ya se haya seleccionado un grupo
         if (!alumno.grupo) {
-            alert("❌ Por favor, seleccione un grupo.");
+            mostrarToast("Campos incompletos", "Por favor, seleccione un grupo.", "warn");
             return;
         }
 
@@ -236,7 +242,7 @@ const ListaAlumnos = () => {
             (g) => `${g.grado}${g.letra}` === alumno.grupo
         );
         if (!grupoExistente) {
-            alert("❌ El grupo seleccionado no existe.");
+            mostrarToast("Grupo inválido", "El grupo seleccionado no existe.", "error");
             return;
         }
 
@@ -254,7 +260,7 @@ const ListaAlumnos = () => {
                 `/api/alumnos/editar/${alumno.id}`,
                 alumnoParaActualizar
             );
-            alert(response.data.mensaje);
+            mostrarToast("Alumno actualizado", response.data.mensaje, "success");
             setAlumnosGrupo((prev) =>
                 prev.map((al) =>
                     al.id === alumno.id ? alumnoParaActualizar : al
@@ -268,10 +274,7 @@ const ListaAlumnos = () => {
                 "Error al actualizar alumno:",
                 error.response?.data || error.message
             );
-            alert(
-                "❌ No se pudo actualizar al alumno. " +
-                (error.response?.data?.mensaje || error.message)
-            );
+            mostrarToast("Error", `No se pudo actualizar al alumno. ${error.response?.data?.mensaje || error.message}`, "error");
         }
     };
 
@@ -283,17 +286,17 @@ const ListaAlumnos = () => {
 
     const agregarGrupo = async () => {
         if (!nuevoGrupo.grado || !nuevoGrupo.letra || !nuevoGrupo.nombreDocente) {
-            alert("Por favor, complete todos los campos.");
+            mostrarToast("Campos incompletos", "Por favor, complete todos los campos.", "warn");
             return;
         }
         try {
             await axios.post("/api/grupos/agregar", nuevoGrupo);
-            alert("✅ Grupo agregado correctamente.");
+            mostrarToast("Grupo agregado", "Grupo agregado correctamente.", "success");
             obtenerGrupos();
             cerrarModalGrupo();
         } catch (error) {
             console.error("Error al agregar grupo:", error);
-            alert("❌ No se pudo agregar el grupo.");
+            mostrarToast("Error", "No se pudo agregar el grupo.", "error");
         }
     };
 
@@ -314,7 +317,7 @@ const ListaAlumnos = () => {
             setExpandedGroup(grupo);
         } catch (error) {
             console.error("Error al obtener alumnos del grupo:", error);
-            alert("❌ No se pudieron obtener los alumnos de este grupo.");
+            mostrarToast("Error", "No se pudieron obtener los alumnos de este grupo.", "error");
         }
     };
 
@@ -334,7 +337,7 @@ const ListaAlumnos = () => {
         if (!grupoSeleccionado) return;
         try {
             await axios.delete(`/api/grupos/eliminar/${grupoSeleccionado.id}`);
-            alert("✅ Grupo eliminado exitosamente.");
+            mostrarToast("Grupo eliminado", "Grupo eliminado exitosamente.", "success");
             setGrupos(grupos.filter((g) => g.id !== grupoSeleccionado.id));
             if (expandedGroup && expandedGroup.id === grupoSeleccionado.id) {
                 setExpandedGroup(null);
@@ -343,7 +346,7 @@ const ListaAlumnos = () => {
             cerrarModalEliminarGrupo();
         } catch (error) {
             console.error("Error al eliminar grupo:", error);
-            alert("❌ No se pudo eliminar el grupo.");
+            mostrarToast("Error", "No se pudo eliminar el grupo.", "error");
         }
     };
 
@@ -362,12 +365,12 @@ const ListaAlumnos = () => {
         if (!alumnoSeleccionado) return;
         try {
             await axios.delete(`/api/alumnos/eliminar/${alumnoSeleccionado.id}`);
-            alert("✅ Alumno eliminado correctamente.");
+            mostrarToast("Alumno eliminado", "El alumno fue eliminado correctamente.", "success");
             setAlumnosGrupo(alumnosGrupo.filter((al) => al.id !== alumnoSeleccionado.id));
             cerrarModalEliminarAlumno();
         } catch (error) {
             console.error("Error al eliminar alumno:", error);
-            alert("❌ No se pudo eliminar al alumno.");
+            mostrarToast("Error", "No se pudo eliminar al alumno.", "error");
         }
     };
 
@@ -418,7 +421,7 @@ const ListaAlumnos = () => {
     // Función para editar el grupo
     const actualizarGrupoDocente = async () => {
         if (!grupoDocenteEditado.grado || !grupoDocenteEditado.letra) {
-            alert("❌ Por favor, seleccione el grado y el grupo.");
+            mostrarToast("Campos incompletos", "Seleccione el grado y el grupo.", "warn");
             return;
         }
         try {
@@ -426,7 +429,7 @@ const ListaAlumnos = () => {
                 `/api/grupos/editar/${grupoDocenteEditado.id}`,
                 grupoDocenteEditado
             );
-            alert(response.data.mensaje);
+            mostrarToast("Grupo actualizado", response.data.mensaje, "success");
             obtenerGrupos();
             cerrarModalEditarDocente();
         } catch (error) {
@@ -434,26 +437,29 @@ const ListaAlumnos = () => {
                 "Error al actualizar grupo y docente:",
                 error.response?.data || error.message
             );
-            alert(
-                "❌ No se pudo actualizar el grupo y el docente. " +
-                (error.response?.data.mensaje || error.message)
-            );
+            mostrarToast("Error", `No se pudo actualizar el grupo y el docente. ${error.response?.data?.mensaje || error.message}`, "error");
         }
     };
     //FUNCION PARA LA CONFIRMACION DE ELIMINAR DOCENTE
-    const confirmarEliminarDocente = async (grupo) => {
-        const confirmacion = window.confirm("¿Está seguro que desea eliminar el docente?");
-        if (!confirmacion) return;
+    const confirmarEliminarDocente = (grupo) => {
+        setGrupoDocenteAEliminar(grupo);
+        setShowConfirmEliminarDocente(true);
+    };
+    const eliminarDocenteDelGrupo = async () => {
+        if (!grupoDocenteAEliminar) return;
 
         try {
             // Llamada al nuevo endpoint para eliminar el docente
-            const response = await axios.put(`/api/grupos/eliminarDocente/${grupo.id}`);
-            alert(response.data.mensaje);
+            const response = await axios.put(`/api/grupos/eliminarDocente/${grupoDocenteAEliminar.id}`);
+            mostrarToast("Docente eliminado", response.data.mensaje, "success");
             obtenerGrupos();
             cerrarMenuGrupo();
+
+            setShowConfirmEliminarDocente(false);
+
         } catch (error) {
             console.error("Error al eliminar el docente:", error.response?.data || error.message);
-            alert("❌ No se pudo eliminar el docente: " + (error.response?.data.mensaje || error.message));
+            mostrarToast("Error", `No se pudo eliminar el docente: ${error.response?.data?.mensaje || error.message}`, "error");
         }
     };
 
@@ -516,7 +522,7 @@ const ListaAlumnos = () => {
             img.src = rawUrl;
         } catch (error) {
             console.error("Error al generar QR compuesto:", error);
-            alert("❌ No se pudo generar el código QR con el nombre.");
+            mostrarToast("Error", "No se pudo generar el código QR con el nombre.", "error");
         }
     };
 
@@ -529,15 +535,21 @@ const ListaAlumnos = () => {
 
     return (
         <div className="buscador-alumno-container">
+            <Toast ref={toast} />
             <div className="lista-content">
-                <div className="lista-search-container">
-                    <input
-                        type="text"
-                        placeholder="Buscar un grupo y alumno por su nombre o por carrera"
+                <div className="busqueda-alumnos-prime-wrapper">
+                    <InputText
                         value={searchTerm}
                         onChange={handleSearchChange}
+                        placeholder="Buscar un grupo y alumno por su nombre o por carrera"
+                        className="busqueda-alumnos-prime-input"
                     />
-                    <button className="lista-search-button">🔍</button>
+                    <Button
+                        icon="pi pi-search"
+                        severity="info"
+                        rounded
+                        className="busqueda-alumnos-prime-btn"
+                    />
                 </div>
                 <div className="lista-header">
                     <h2 className="lista-title">Lista de Grupos</h2>
@@ -613,16 +625,16 @@ const ListaAlumnos = () => {
                                                 <table className="tabla-alumnos">
                                                     <thead>
                                                         <tr>
-                                                           <th>Nombre Alumno</th>
-                                                           <th>Padre</th>
-                                                           <th>Domicilio</th>
-                                                           <th>Carrera</th>
-                                                           <th>No. Control</th>
-                                                           <th>Curp</th>
-                                                           <th>Turno</th>
-                                                           <th>Generación</th>
-                                                           <th>Periodo</th>
-                                                           <th>Acciones</th>
+                                                            <th>Nombre Alumno</th>
+                                                            <th>Padre</th>
+                                                            <th>Domicilio</th>
+                                                            <th>Carrera</th>
+                                                            <th>No. Control</th>
+                                                            <th>Curp</th>
+                                                            <th>Turno</th>
+                                                            <th>Generación</th>
+                                                            <th>Periodo</th>
+                                                            <th>Acciones</th>
                                                         </tr>
                                                     </thead>
                                                     <tbody>{ /*ELIMINAR POR SI LAS DUDAS POR SI NO FUNCIONA*/}
@@ -790,362 +802,401 @@ const ListaAlumnos = () => {
                     )}
                 </div>
             </div>
-            <button className="boton-agregar" onClick={abrirModalGrupo}
-                title="Agregar Grupo"
-                aria-label="Agregar Grupo"
+            <Button
+                icon="pi pi-plus"
+                rounded
+                outlined
+                severity="help"
+                aria-label="Agregar"
+                className="boton-agregar"
+                onClick={abrirModalGrupo}
+            />
+
+            <Dialog
+                header="📚 Agregar Grupo"
+                visible={modalGrupo}
+                style={{ width: '30vw' }}
+                onHide={cerrarModalGrupo}
+                draggable={false}
+                resizable={false}
+                footer={
+                    <div className="flex justify-content-end gap-2">
+                        <Button
+                            label="Cancelar"
+                            icon="pi pi-times"
+                            className="p-button-text"
+                            onClick={cerrarModalGrupo}
+                        />
+                        <Button
+                            label="Guardar"
+                            icon="pi pi-check"
+                            severity="success"
+                            onClick={agregarGrupo}
+                            autoFocus
+                        />
+                    </div>
+                }
             >
-                <img src={addIcon} alt="Agregar Grupo" />
-            </button>
-
-            {modalGrupo && (
-                <div className="modal-overlay">
-                    <div className="modal-content">
-                        <button className="close-button" onClick={cerrarModalGrupo}>
-                            ✖
-                        </button>
-                        <h2 className="modal-title">Agregar Grupo</h2>
-                        <div className="form-group">
-                            <div className="select-container">
-                                <div className="input-group">
-                                    <label>Grado:</label>
-                                    <select name="grado" value={nuevoGrupo.grado} onChange={handleChange}>
-                                        <option value="">Seleccione</option>
-                                        {[1, 2, 3, 4, 5, 6].map((grado) => (
-                                            <option key={grado} value={grado}>
-                                                {grado}
-                                            </option>
-                                        ))}
-                                    </select>
-                                </div>
-                                <div className="input-group">
-                                    <label>Grupo:</label>
-                                    <select name="letra" value={nuevoGrupo.letra} onChange={handleChange}>
-                                        <option value="">Seleccione</option>
-                                        {["A", "B", "C", "D", "E", "F", "G"].map((letra) => (
-                                            <option key={letra} value={letra}>
-                                                {letra}
-                                            </option>
-                                        ))}
-                                    </select>
-                                </div>
-                            </div>
-                            <div className="input-group">
-                                <label>Docente:</label>
-                                <input
-                                    type="text"
-                                    name="nombreDocente"
-                                    value={nuevoGrupo.nombreDocente || ""}
-                                    onChange={handleChange}
-                                    placeholder="Nombre del docente"
-                                />
-                            </div>
-                        </div>
-                        <button className="save-button" onClick={agregarGrupo}>
-                            Guardar
-                        </button>
-                    </div>
-                </div>
-            )}
-
-            {modalEliminarAlumno && (
-                <div className="modal-overlay">
-                    <div className="modal-content">
-                        <button className="close-button" onClick={cerrarModalEliminarAlumno}>
-                            &times;
-                        </button>
-                        <h2>¿Estás seguro?</h2>
-                        <p>
-                            ¿Quieres eliminar al alumno {alumnoSeleccionado?.nombre}{" "}
-                            {alumnoSeleccionado?.apellidoPaterno} {alumnoSeleccionado?.apellidoMaterno}?
-                        </p>
-                        <div className="modal-buttons">
-                            <button className="confirm-button" onClick={eliminarAlumno}>
-                                <img src={aceptarIcon} alt="Aceptar" />
-                            </button>
-                            <button className="cancel-button" onClick={cerrarModalEliminarAlumno}>
-                                <img src={rechazarIcon} alt="Cancelar" />
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            )}
-
-            {modalEliminarGrupo && (
-                <div className="modal-overlay">
-                    <div className="modal-content">
-                        <button className="close-button" onClick={cerrarModalEliminarGrupo}>
-                            &times;
-                        </button>
-                        <h2>¿Estás seguro?</h2>
-                        <p>
-                            ¿Deseas eliminar el grupo {grupoSeleccionado?.grado}
-                            {grupoSeleccionado?.letra}
-                            {grupoSeleccionado?.nombreDocente &&
-                                `, asignado al docente ${grupoSeleccionado.nombreDocente}`}?
-                            <br /><br />
-                            <strong>Atención:</strong> Los alumnos no se eliminarán de la base de datos. Cuando recrees este grupo, volverán a aparecer asignados.
-                        </p>
-                        <div className="modal-buttons">
-                            <button className="confirm-button" onClick={eliminarGrupo}>
-                                <img src={aceptarIcon} alt="Aceptar" />
-                            </button>
-                            <button className="cancel-button" onClick={cerrarModalEliminarGrupo}>
-                                <img src={rechazarIcon} alt="Cancelar" />
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            )}
-
-            {/* MODAL DE EDITAR ALUMNO */}
-            {modalEditarAlumno && alumnoSeleccionado && (
-                <div className="modal-editar-overlay">
-                    <div className="modal-editar-content">
-                        <button className="close-button" onClick={cerrarModalEditarAlumno}>✖</button>
-                        <h2 className="modal-title">Editar Alumno</h2>
-
-                        <div className="input-container">
-                            <label>Nombre:</label>
-                            <input
-                                type="text"
-                                name="nombre"
-                                value={alumnoSeleccionado.nombre}
-                                onChange={e =>
-                                    setAlumnoSeleccionado(prev => ({
-                                        ...prev,
-                                        nombre: e.target.value
-                                    }))
-                                }
-                            />
-                        </div>
-
-                        <div className="input-container">
-                            <label>Apellido Paterno:</label>
-                            <input
-                                type="text"
-                                name="apellidoPaterno"
-                                value={alumnoSeleccionado.apellidoPaterno}
-                                onChange={(e) =>
-                                    setAlumnoSeleccionado(prev => ({
-                                        ...prev,
-                                        alumnoSeleccionado, apellidoPaterno: e.target.value
-                                    }))
-                                }
-                            />
-                        </div>
-
-                        <div className="input-container">
-                            <label>Apellido Materno:</label>
-                            <input
-                                type="text"
-                                name="apellidoMaterno"
-                                value={alumnoSeleccionado.apellidoMaterno}
-                                onChange={(e) =>
-                                    setAlumnoSeleccionado(prev => ({
-                                        ...prev,
-                                        alumnoSeleccionado, apellidoMaterno: e.target.value
-                                    }))
-                                }
-                            />
-                        </div>
-                        <div className="input-container">
-                            <label>Grupo:</label>
-                            <Select
-                                classNamePrefix="my-select"
-                                options={groupOptions}
-                                value={selectedGroupEdit}
-                                onChange={handleGroupChangeSelect}
-                                placeholder="Seleccione un grupo..."
-                                noOptionsMessage={() => "No hay grupos aún"}
-                            />
-                        </div>
-
-                        {/* Selección del tutor en el modal de edición */}
-                        <div className="input-container">
-                            <label>Padre:(Si quiere cambiarlo o si no tiene asignado)</label>
-                            <Select
-                                classNamePrefix="my-select"
-                                value={selectedTutorEdit}
-                                onChange={handleTutorChangeSelect}
-                                onInputChange={handleTutorInputChangeEdit}
-                                options={tutorOptionsEdit}
-                                placeholder="Escriba el nombre del nuevo padre..."
-                                noOptionsMessage={() => "No se encontraron coincidencias"}
-                            />
-                        </div>
-
-                        <div className="input-container">
-                            <label>Domicilio:</label>
-                            <input
-                                type="text"
-                                name="domicilio"
-                                value={alumnoSeleccionado.domicilio}
-                                onChange={(e) =>
-                                    setAlumnoSeleccionado(prev => ({
-                                        ...prev,
-                                        alumnoSeleccionado, domicilio: e.target.value
-                                    }))
-                                }
-                            />
-                        </div>
-
-                        {/* Carrera */}
-                        <div className="input-container">
-                            <label>Carrera:</label>
+                <div className="p-fluid">
+                    <div className="grid formgrid">
+                        <div className="col-6">
+                            <label>Grado:</label>
                             <select
-                                name="carrera"
-                                value={alumnoSeleccionado.carrera || ""}
-                                onChange={e =>
-                                    setAlumnoSeleccionado({
-                                        ...alumnoSeleccionado,
-                                        carrera: e.target.value
-                                    })
-                                }
+                                name="grado"
+                                value={nuevoGrupo.grado}
+                                onChange={handleChange}
+                                className="p-inputtext"
                             >
-                                <option value="">Seleccione una carrera</option>
-                                <option value="CIENCIA DE DATOS E INFORMACIÓN">CIENCIA DE DATOS E INFORMACIÓN </option>
-                                <option value="CONSTRUCCIÓN">CONSTRUCCIÓN</option>
-                                <option value="CONTABILIDAD">CONTABILIDAD</option>
-                                <option value="LABORATORISTA CLÍNICO">LABORATORISTA CLÍNICO</option>
-                                <option value="MANTENIMIENTO AUTOMOTRIZ">MANTENIMIENTO AUTOMOTRIZ</option>
-                                <option value="MECATRÓNICA">MECATRÓNICA</option>
-                                <option value="PUERICULTURA">PUERICULTURA</option>
+                                <option value="">Seleccione</option>
+                                {[1, 2, 3, 4, 5, 6].map((grado) => (
+                                    <option key={grado} value={grado}>
+                                        {grado}
+                                    </option>
+                                ))}
                             </select>
                         </div>
 
-                        {/* Número de Control */}
-                        <div className="input-container">
-                            <label>Número de Control:</label>
-                            <input
-                                type="text"
-                                name="numeroControl"
-                                value={alumnoSeleccionado.numeroControl || ""}
-                                onChange={(e) =>
-                                    setAlumnoSeleccionado(prev => ({
-                                        ...prev,
-                                        alumnoSeleccionado, numeroControl: e.target.value
-                                    }))
-                                }
-                            />
-                        </div>
-
-                        {/* CURP */}
-                        <div className="input-container">
-                            <label>CURP:</label>
-                            <input
-                                type="text"
-                                name="curp"
-                                value={alumnoSeleccionado.curp || ""}
-                                onChange={(e) =>
-                                    setAlumnoSeleccionado(prev => ({
-                                        ...prev,
-                                        alumnoSeleccionado, curp: e.target.value
-                                    }))
-                                }
-                            />
-                        </div>
-
-                        {/* Turno */}
-                        <div className="input-container">
-                            <label>Turno:</label>
-                            <input
-                                type="text"
-                                name="turno"
-                                value={alumnoSeleccionado.turno || ""}
-                                onChange={e =>
-                                    setAlumnoSeleccionado({ ...alumnoSeleccionado, turno: e.target.value })
-                                }
-                            />
-                        </div>
-
-                        {/* Generación */}
-                        <div className="input-container">
-                            <label>Generación:</label>
-                            <input
-                                type="text"
-                                name="generacion"
-                                value={alumnoSeleccionado.generacion || ""}
-                                onChange={e =>
-                                    setAlumnoSeleccionado({ ...alumnoSeleccionado, generacion: e.target.value })
-                                }
-                            />
-                        </div>
-
-                        {/* Periodo Escolar (Ciclo) */}
-                        <div className="input-container">
-                            <label>Periodo Escolar:</label>
-                            <input
-                                type="text"
-                                name="Ciclo"
-                                value={alumnoSeleccionado.ciclo || ""}
-                                onChange={e =>
-                                    setAlumnoSeleccionado({ ...alumnoSeleccionado, ciclo: e.target.value })
-                                }
-                            />
-                        </div>
-
-                        <div className="modal-buttons">
-                            <button className="confirm-button" onClick={() => actualizarAlumno(alumnoSeleccionado)}>
-                                <img src={aceptarIcon} alt="Aceptar" />
-                            </button>
-                            <button className="cancel-button" onClick={cerrarModalEditarAlumno}>
-                                <img src={rechazarIcon} alt="Cancelar" />
-                            </button>
+                        <div className="col-6">
+                            <label>Grupo:</label>
+                            <select
+                                name="letra"
+                                value={nuevoGrupo.letra}
+                                onChange={handleChange}
+                                className="p-inputtext"
+                            >
+                                <option value="">Seleccione</option>
+                                {["A", "B", "C", "D", "E", "F", "G"].map((letra) => (
+                                    <option key={letra} value={letra}>
+                                        {letra}
+                                    </option>
+                                ))}
+                            </select>
                         </div>
                     </div>
-                </div>
-            )}
 
-            {modalEditarDocente && grupoDocenteEditado && (
-                <div className="modal-overlay">
-                    <div className="modal-content">
-                        <button className="close-button" onClick={cerrarModalEditarDocente}>
-                            ✖
-                        </button>
-                        <h2 className="modal-title">Editar Docente</h2>
-                        <div className="form-group">
-                            <div className="select-container">
-                                {/* AQUI IRIA SI SE VUELVE  PONER LO DE EDITAR GRUPO*/}
-                            </div>
-                            <div className="input-container">
-                                <label>Nombre del Docente:</label>
-                                <input
-                                    type="text"
-                                    value={grupoDocenteEditado.nombreDocente}
-                                    onChange={(e) =>
-                                        setGrupoDocenteEditado({
-                                            ...grupoDocenteEditado,
-                                            nombreDocente: e.target.value,
-                                        })
-                                    }
-                                    placeholder="Nombre del docente"
-                                />
-                            </div>
-                        </div>
-                        <div className="modal-buttons" style={{ justifyContent: "center", gap: "20px" }}>
-                            <button className="save-button" onClick={actualizarGrupoDocente}>
-                                Guardar Cambios
-                            </button>
-                        </div>
+                    <div className="field mt-3">
+                        <label>Docente:</label>
+                        <InputText
+                            name="nombreDocente"
+                            value={nuevoGrupo.nombreDocente || ""}
+                            onChange={handleChange}
+                            placeholder="Nombre del docente"
+                        />
                     </div>
                 </div>
-            )}
-            {showQrModal && qrCompositeUrl && (
-                <div className="modal-qr">
-                    <div className="modal-qr-content">
-                        <span className="close" onClick={() => setShowQrModal(false)}>×</span>
-                        <h3>Código QR de {nombreCompletoQR}</h3>
-                        <img src={qrCompositeUrl} alt="QR con nombre" className="qr-image" />
+            </Dialog>
+
+            <Dialog
+                header="¿Confirmar eliminación del alumno?"
+                visible={modalEliminarAlumno}
+                position="top"
+                style={{ width: '30vw' }}
+                onHide={cerrarModalEliminarAlumno}
+                draggable={false}
+                resizable={false}
+                footer={
+                    <div className="flex justify-content-end gap-2">
+                        <Button
+                            label="Cancelar"
+                            icon="pi pi-times"
+                            className="p-button-text"
+                            onClick={cerrarModalEliminarAlumno}
+                        />
+                        <Button
+                            label="Sí, eliminar"
+                            icon="pi pi-check"
+                            severity="danger"
+                            onClick={eliminarAlumno}
+                            autoFocus
+                        />
+                    </div>
+                }
+            >
+                <p>
+                    ¿Quieres eliminar al alumno <strong>{alumnoSeleccionado?.nombre} {alumnoSeleccionado?.apellidoPaterno} {alumnoSeleccionado?.apellidoMaterno}</strong>?
+                </p>
+            </Dialog>
+
+
+            <Dialog
+                header="¿Confirmar eliminación del grupo?"
+                visible={modalEliminarGrupo}
+                position="top"
+                style={{ width: '30vw' }}
+                onHide={cerrarModalEliminarGrupo}
+                draggable={false}
+                resizable={false}
+                footer={
+                    <div className="flex justify-content-end gap-2">
+                        <Button
+                            label="Cancelar"
+                            icon="pi pi-times"
+                            className="p-button-text"
+                            onClick={cerrarModalEliminarGrupo}
+                        />
+                        <Button
+                            label="Sí, eliminar"
+                            icon="pi pi-check"
+                            severity="danger"
+                            onClick={eliminarGrupo}
+                            autoFocus
+                        />
+                    </div>
+                }
+            >
+                <p>
+                    ¿Deseas eliminar el grupo <strong>{grupoSeleccionado?.grado}{grupoSeleccionado?.letra}</strong>
+                    {grupoSeleccionado?.nombreDocente && (
+                        <> asignado al docente <strong>{grupoSeleccionado.nombreDocente}</strong></>
+                    )}?
+                    <br /><br />
+                    <strong>Atención:</strong> Los alumnos no se eliminarán de la base de datos. Cuando recrees este grupo, volverán a aparecer asignados.
+                </p>
+            </Dialog>
+
+
+            {/* MODAL DE EDITAR ALUMNO */}
+            <Dialog
+                header="✏️ Editar Alumno"
+                visible={modalEditarAlumno}
+                style={{ width: '35vw' }}
+                onHide={cerrarModalEditarAlumno}
+                draggable={false}
+                resizable={false}
+                footer={
+                    <div className="flex justify-content-end gap-2">
+                        <Button
+                            label="Cancelar"
+                            icon="pi pi-times"
+                            className="p-button-text"
+                            onClick={cerrarModalEditarAlumno}
+                        />
+                        <Button
+                            label="Guardar"
+                            icon="pi pi-check"
+                            onClick={() => actualizarAlumno(alumnoSeleccionado)}
+                            autoFocus
+                        />
+                    </div>
+                }
+            >
+                <div className="p-fluid">
+                    <label className="font-semibold">Nombre:</label>
+                    <InputText
+                        value={alumnoSeleccionado?.nombre || ""}
+                        onChange={e => setAlumnoSeleccionado(prev => ({ ...prev, nombre: e.target.value }))}
+                        className="mb-2"
+                    />
+
+                    <label className="font-semibold">Apellido Paterno:</label>
+                    <InputText
+                        value={alumnoSeleccionado?.apellidoPaterno || ""}
+                        onChange={e => setAlumnoSeleccionado(prev => ({ ...prev, apellidoPaterno: e.target.value }))}
+                        className="mb-2"
+                    />
+
+                    <label className="font-semibold">Apellido Materno:</label>
+                    <InputText
+                        value={alumnoSeleccionado?.apellidoMaterno || ""}
+                        onChange={e => setAlumnoSeleccionado(prev => ({ ...prev, apellidoMaterno: e.target.value }))}
+                        className="mb-2"
+                    />
+
+                    <label className="font-semibold">Grupo:</label>
+                    <Select
+                        classNamePrefix="my-select"
+                        options={groupOptions}
+                        value={selectedGroupEdit}
+                        onChange={handleGroupChangeSelect}
+                        placeholder="Seleccione un grupo..."
+                        noOptionsMessage={() => "No hay grupos aún"}
+                    />
+
+                    <label className="font-semibold mt-3">Padre:</label>
+                    <Select
+                        classNamePrefix="my-select"
+                        value={selectedTutorEdit}
+                        onChange={handleTutorChangeSelect}
+                        onInputChange={handleTutorInputChangeEdit}
+                        options={tutorOptionsEdit}
+                        placeholder="Escriba el nombre del nuevo padre..."
+                        noOptionsMessage={() => "No se encontraron coincidencias"}
+                    />
+
+                    <label className="font-semibold mt-3">Domicilio:</label>
+                    <InputText
+                        value={alumnoSeleccionado?.domicilio || ""}
+                        onChange={e => setAlumnoSeleccionado(prev => ({ ...prev, domicilio: e.target.value }))}
+                        className="mb-2"
+                    />
+
+                    <label className="font-semibold">Carrera:</label>
+                    <select
+                        value={alumnoSeleccionado?.carrera || ""}
+                        onChange={e => setAlumnoSeleccionado(prev => ({ ...prev, carrera: e.target.value }))}
+                        className="p-inputtext mb-2"
+                    >
+                        <option value="">Seleccione una carrera</option>
+                        <option value="CIENCIA DE DATOS E INFORMACIÓN">CIENCIA DE DATOS E INFORMACIÓN</option>
+                        <option value="CONSTRUCCIÓN">CONSTRUCCIÓN</option>
+                        <option value="CONTABILIDAD">CONTABILIDAD</option>
+                        <option value="LABORATORISTA CLÍNICO">LABORATORISTA CLÍNICO</option>
+                        <option value="MANTENIMIENTO AUTOMOTRIZ">MANTENIMIENTO AUTOMOTRIZ</option>
+                        <option value="MECATRÓNICA">MECATRÓNICA</option>
+                        <option value="PUERICULTURA">PUERICULTURA</option>
+                    </select>
+
+                    <label className="font-semibold">Número de Control:</label>
+                    <InputText
+                        value={alumnoSeleccionado?.numeroControl || ""}
+                        onChange={e => setAlumnoSeleccionado(prev => ({ ...prev, numeroControl: e.target.value }))}
+                        className="mb-2"
+                    />
+
+                    <label className="font-semibold">CURP:</label>
+                    <InputText
+                        value={alumnoSeleccionado?.curp || ""}
+                        onChange={e => setAlumnoSeleccionado(prev => ({ ...prev, curp: e.target.value }))}
+                        className="mb-2"
+                    />
+
+                    <label className="font-semibold">Turno:</label>
+                    <InputText
+                        value={alumnoSeleccionado?.turno || ""}
+                        onChange={e => setAlumnoSeleccionado(prev => ({ ...prev, turno: e.target.value }))}
+                        className="mb-2"
+                    />
+
+                    <label className="font-semibold">Generación:</label>
+                    <InputText
+                        value={alumnoSeleccionado?.generacion || ""}
+                        onChange={e => setAlumnoSeleccionado(prev => ({ ...prev, generacion: e.target.value }))}
+                        className="mb-2"
+                    />
+
+                    <label className="font-semibold">Periodo Escolar:</label>
+                    <InputText
+                        value={alumnoSeleccionado?.ciclo || ""}
+                        onChange={e => setAlumnoSeleccionado(prev => ({ ...prev, ciclo: e.target.value }))}
+                        className="mb-2"
+                    />
+                </div>
+            </Dialog>
+
+            <Dialog
+                header="✏️ Editar Docente"
+                visible={modalEditarDocente}
+                style={{ width: '30vw' }}
+                onHide={cerrarModalEditarDocente}
+                draggable={false}
+                resizable={false}
+                footer={
+                    <div className="flex justify-content-end gap-2">
+                        <Button
+                            label="Cancelar"
+                            icon="pi pi-times"
+                            className="p-button-text"
+                            onClick={cerrarModalEditarDocente}
+                        />
+                        <Button
+                            label="Guardar Cambios"
+                            icon="pi pi-check"
+                            onClick={actualizarGrupoDocente}
+                            severity="success"
+                            autoFocus
+                        />
+                    </div>
+                }
+            >
+                <div className="p-fluid">
+                    <label className="font-semibold">Nombre del Docente:</label>
+                    <InputText
+                        value={grupoDocenteEditado?.nombreDocente || ""}
+                        onChange={(e) =>
+                            setGrupoDocenteEditado({
+                                ...grupoDocenteEditado,
+                                nombreDocente: e.target.value,
+                            })
+                        }
+                        placeholder="Nombre del docente"
+                    />
+                </div>
+            </Dialog>
+
+            <Dialog
+                header={`Código QR de ${nombreCompletoQR}`}
+                visible={showQrModal}
+                style={{ width: '400px' }}
+                onHide={() => setShowQrModal(false)}
+                closable
+                draggable={false}
+                resizable={false}
+                footer={
+                    <div className="flex justify-content-end gap-2">
+                        <Button
+                            label="Atrás"
+                            icon="pi pi-times"
+                            severity="secondary"
+                            outlined
+                            onClick={() => setShowQrModal(false)}
+                        />
                         <a
                             href={qrCompositeUrl}
                             download={`${nombreArchivoQR}.png`}
-                            className="qr-download-btn"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            style={{ textDecoration: "none" }}
                         >
-                            Descargar QR
+                            <Button
+                                label="Descargar QR"
+                                icon="pi pi-download"
+                                severity="primary"
+                            />
                         </a>
                     </div>
+                }
+            >
+                <div className="flex justify-content-center">
+                    <img
+                        src={qrCompositeUrl}
+                        alt="Código QR con nombre"
+                        style={{ width: "100%", maxWidth: "250px", borderRadius: "8px" }}
+                    />
                 </div>
-            )}
+            </Dialog>
+            <Dialog
+                header="❗ Confirmar eliminación"
+                visible={showConfirmEliminarDocente}
+                position="top"
+                style={{ width: '30vw' }}
+                onHide={() => setShowConfirmEliminarDocente(false)}
+                draggable={false}
+                resizable={false}
+                footer={
+                    <div className="flex justify-content-end gap-2">
+                        <Button
+                            label="Cancelar"
+                            icon="pi pi-times"
+                            className="p-button-text"
+                            onClick={() => setShowConfirmEliminarDocente(false)}
+                        />
+                        <Button
+                            label="Sí, eliminar"
+                            icon="pi pi-check"
+                            severity="danger"
+                            onClick={eliminarDocenteDelGrupo}
+                            autoFocus
+                        />
+                    </div>
+                }
+            >
+                <p>
+                    ¿Estás seguro de que deseas eliminar al docente del grupo{" "}
+                    <strong>{grupoDocenteAEliminar?.grado}{grupoDocenteAEliminar?.letra}</strong>?
+                    <br />
+                    Esta acción no elimina el grupo ni los alumnos.
+                </p>
+            </Dialog>
 
         </div>
     );

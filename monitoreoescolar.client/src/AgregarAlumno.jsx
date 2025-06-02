@@ -33,14 +33,17 @@ const AgregarAlumno = () => {
         TutorId: null,
     });
 
+    const [loading, setLoading] = useState(false);
+
     // 2) Autocomplete de tutores
     const [tutorOptions, setTutorOptions] = useState([]);
     const [selectedTutor, setSelectedTutor] = useState(null);
 
     // 3) Estados para QR
-    const [qrCompositeUrl, setQrCompositeUrl] = useState(null);
     const [nombreArchivoQR, setNombreArchivoQR] = useState("QR_alumno");
     const [nombreCompletoQR, setNombreCompletoQR] = useState("");
+    const [qrCompositeUrl, setQrCompositeUrl] = useState(null);
+
 
     // Manejadores de inputs
     const handleChange = (e) => {
@@ -74,7 +77,7 @@ const AgregarAlumno = () => {
     const fetchTutorOptions = async (input) => {
         if (!input || input.length < 2) return setTutorOptions([]);
         try {
-            const response = await axios.get(`http://localhost:5099/api/usuarios/autocompletePadres?termino=${inputValue}`);
+            const response = await axios.get(`http://localhost:5099/api/usuarios/autocompletePadres?termino=${input}`);
             const optionsData = response.data.map((padre) => ({
                 value: padre.id_Usuario,
                 label: `${padre.nombre} ${padre.apellidoPaterno} ${padre.apellidoMaterno}`
@@ -105,7 +108,6 @@ const AgregarAlumno = () => {
     ];
 
     // Estado para almacenar la URL del código QR
-    const [qrUrl, setQrUrl] = useState(null);
     const [showQrModal, setShowQrModal] = useState(false);
 
     const toast = useRef(null);
@@ -115,7 +117,6 @@ const AgregarAlumno = () => {
         e.preventDefault();
         setLoading(true);
 
-        // 1) validar grupo existe
         try {
             const gruposResponse = await axios.get("http://localhost:5099/api/grupos");
             const gruposExistentes = gruposResponse.data;
@@ -142,15 +143,13 @@ const AgregarAlumno = () => {
             });
             return;
         } finally {
-            setLoading(false); // 👈 Desactiva loading al final, siempre
+            setLoading(false);
         }
 
-        // 2) arma nombre completo
         const nombreFull = `${alumno.Nombre} ${alumno.ApellidoPaterno} ${alumno.ApellidoMaterno}`;
         setNombreCompletoQR(nombreFull);
         setNombreArchivoQR(`QR_${nombreFull.replace(/\s+/g, "_")}`);
 
-        // 3) registrar alumno
         try {
             const response = await axios.post("http://localhost:5099/api/alumnos/registro", alumno);
             toast.current.show({
@@ -160,24 +159,61 @@ const AgregarAlumno = () => {
                 life: 3000
             });
 
-            // Obtener el ID del nuevo alumno
             const alumnoId = response.data.alumno.id;
-
-            // Obtener el QR desde el backend
             const qrResponse = await axios.get(`http://localhost:5099/api/alumnos/qr/${alumnoId}`, {
                 responseType: "blob"
             });
-            const blobUrl = URL.createObjectURL(
-                new Blob([qrResp.data], { type: "image/png" })
-            );
 
-            // Ocultar automáticamente el modal tras 10 segundos
+            const qrBlob = new Blob([qrResponse.data], { type: "image/png" });
+            const qrImageUrl = URL.createObjectURL(qrBlob);
+            const img = new Image();
+            img.onload = () => {
+                const padding = 20;
+                const textHeight = 30;
+                const canvasWidth = img.width + padding * 2;
+                const canvasHeight = img.height + padding * 2 + textHeight;
+
+                const canvas = document.createElement("canvas");
+                canvas.width = canvasWidth;
+                canvas.height = canvasHeight;
+
+                const ctx = canvas.getContext("2d");
+
+                // Fondo blanco
+                ctx.fillStyle = "#fff";
+                ctx.fillRect(0, 0, canvasWidth, canvasHeight);
+
+                // Imagen QR
+                ctx.drawImage(img, padding, padding);
+
+                // Texto centrado debajo
+                ctx.fillStyle = "#000";
+                ctx.font = "bold 18px sans-serif";
+                ctx.textAlign = "center";
+                ctx.fillText(nombreFull, canvasWidth / 2, img.height + padding + textHeight * 0.8);
+
+                // Convertir canvas a blob y mostrar
+                canvas.toBlob((blob) => {
+                    const finalUrl = URL.createObjectURL(blob);
+                    setQrCompositeUrl(finalUrl);
+                    setShowQrModal(true);
+
+                    // Limpiar después de unos segundos
+                    setTimeout(() => {
+                        setShowQrModal(false);
+                        setQrCompositeUrl(null);
+                    }, 10000);
+                }, "image/png");
+            };
+            img.src = qrImageUrl;
+
+
+            setShowQrModal(true);
             setTimeout(() => {
                 setShowQrModal(false);
-                setQrUrl(null);
             }, 10000);
 
-            // Limpiar formulario
+
             setAlumno({
                 Nombre: "",
                 ApellidoPaterno: "",
@@ -201,8 +237,7 @@ const AgregarAlumno = () => {
         } catch (error) {
             console.error("Error al registrar:", error);
 
-            if (error.response && error.response.data && error.response.data.mensaje) {
-                // Error específico del backend (como CURP duplicada)
+            if (error.response?.data?.mensaje) {
                 toast.current.show({
                     severity: 'error',
                     summary: 'Registro fallido',
@@ -210,7 +245,6 @@ const AgregarAlumno = () => {
                     life: 3000
                 });
             } else {
-                // Error genérico o sin mensaje claro
                 toast.current.show({
                     severity: 'error',
                     summary: 'Error interno',
@@ -219,7 +253,6 @@ const AgregarAlumno = () => {
                 });
             }
         }
-
     };
 
     return (
@@ -238,6 +271,7 @@ const AgregarAlumno = () => {
                                     name="Nombre"
                                     value={alumno.Nombre}
                                     onChange={handleChange}
+                                    placeholder="Escribe el nombre del alumno..."
                                     required
                                 />
                                
@@ -253,6 +287,7 @@ const AgregarAlumno = () => {
                                         id="apellidoPaterno"
                                         name="ApellidoPaterno"
                                         value={alumno.ApellidoPaterno}
+                                        placeholder="Escribe el apellido parteno del alumno..."
                                         onChange={handleChange}
                                     />
                                 </FloatLabel>
@@ -264,6 +299,7 @@ const AgregarAlumno = () => {
                                         id="apellidoMaterno"
                                         name="ApellidoMaterno"
                                         value={alumno.ApellidoMaterno}
+                                        placeholder="Escribe el apellido marteno del alumno..."
                                         onChange={handleChange}
                                     />
                                 </FloatLabel>
@@ -280,7 +316,7 @@ const AgregarAlumno = () => {
                                         value={alumno.Grado}
                                         options={[1, 2, 3, 4, 5, 6]}
                                         onChange={(e) => handleChangeGrado({ target: { name: "Grado", value: e.value } })}
-                                        placeholder="Seleccione"
+                                        placeholder="Seleccione.."
                                     />
                                 </FloatLabel>
                             </div>
@@ -293,7 +329,7 @@ const AgregarAlumno = () => {
                                         value={alumno.letra}
                                         options={["A", "B", "C", "D", "E", "F", "G"]}
                                         onChange={(e) => handleChangeLetra({ target: { name: "letra", value: e.value } })}
-                                        placeholder="Seleccione"
+                                        placeholder="Seleccione.."
                                     />
                                 </FloatLabel>
                             </div>
@@ -322,6 +358,7 @@ const AgregarAlumno = () => {
                                     name="Domicilio"
                                     value={alumno.Domicilio}
                                     onChange={handleChange}
+                                    placeholder="Escribe el domicilio del alumno..."
                                     required
                                 />
                             </FloatLabel>
@@ -332,13 +369,25 @@ const AgregarAlumno = () => {
                             <div className="agregar-alumno-group">
                                 <label>CURP:</label>
                                 <FloatLabel>
-                                    <InputText id="curp" name="CURP" value={alumno.CURP} onChange={handleChange} />
+                                    <InputText
+                                        id="curp"
+                                        name="CURP"
+                                        value={alumno.CURP}
+                                        onChange={handleChange}
+                                        placeholder="Escribe la CURP del alumno..."
+                                    />
                                 </FloatLabel>
                             </div>
                             <div className="agregar-alumno-group">
                                 <label>Numero de Control:</label>
                                 <FloatLabel>
-                                    <InputText id="numeroControl" name="NumeroControl" value={alumno.NumeroControl} onChange={handleChange} />
+                                    <InputText
+                                        id="numeroControl"
+                                        name="NumeroControl"
+                                        value={alumno.NumeroControl}
+                                        onChange={handleChange}
+                                        placeholder="Escribe el num. de control del alumno..."
+                                    />
                                 </FloatLabel>
                             </div>
                         </div>
@@ -362,13 +411,25 @@ const AgregarAlumno = () => {
                             <div className="agregar-alumno-group">
                                 <label>Plantel:</label>
                                 <FloatLabel>
-                                    <InputText id="plantel" name="Plantel" value={alumno.Plantel} onChange={handleChange} />
+                                    <InputText
+                                        id="plantel"
+                                        name="Plantel"
+                                        value={alumno.Plantel}
+                                        onChange={handleChange}
+                                        placeholder="Escribe el plantel..."
+                                    />
                                 </FloatLabel>
                             </div>
                             <div className="agregar-alumno-group">
                                 <label>Turno:</label>
                                 <FloatLabel>
-                                    <InputText id="turno" name="Turno" value={alumno.Turno} onChange={handleChange} />
+                                    <InputText
+                                        id="turno"
+                                        name="Turno"
+                                        value={alumno.Turno}
+                                        onChange={handleChange}
+                                        placeholder="Escribe el turno del alumno..."
+                                    />
                                 </FloatLabel>
                             </div>
                         </div>
@@ -382,6 +443,7 @@ const AgregarAlumno = () => {
                                     name="Generacion"
                                     value={alumno.Generacion}
                                     onChange={handleChange}
+                                    placeholder="Escribe la generación del alumno..."
                                 />
                             </FloatLabel>
                         </div>
@@ -395,6 +457,7 @@ const AgregarAlumno = () => {
                                     name="Ciclo"
                                     value={alumno.Ciclo}
                                     onChange={handleChange}
+                                    placeholder="Escribe el ciclo escolar del alumno..."
                                 />
                             </FloatLabel>
                         </div>
@@ -423,32 +486,34 @@ const AgregarAlumno = () => {
                         closable
                         draggable={false}
                         resizable={false}
-                        footer={
-                            <div className="flex justify-content-end gap-2">
-                                <Button
-                                    label="Atrás"
-                                    icon="pi pi-times"
-                                    severity="secondary"
-                                    outlined
-                                    onClick={() => setShowQrModal(false)}
-                                />
-                                <a
-                                    href={qrCompositeUrl}
-                                    download={`${nombreArchivoQR}.png`}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                >
+                            footer={
+                                <div className="flex justify-content-end gap-2">
                                     <Button
-                                        label="Descargar QR"
-                                        icon="pi pi-download"
-                                        severity="primary"
+                                        label="Atrás"
+                                        icon="pi pi-times"
+                                        severity="secondary"
+                                        outlined
+                                        onClick={() => setShowQrModal(false)}
                                     />
-                                </a>
-                            </div>
-                        }
+                                    <a
+                                        href={qrCompositeUrl}
+                                        download={`${nombreArchivoQR}.png`}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        style={{ textDecoration: "none" }}
+                                    >
+                                        <Button
+                                            label="Descargar QR"
+                                            icon="pi pi-download"
+                                            severity="primary"
+                                        />
+                                    </a>
+                                </div>
+                            }
+
                     >
                          <div className="flex justify-content-center">
-                    <img src={qrUrl} alt="Código QR" style={{ width: "100%", maxWidth: "250px", borderRadius: "8px" }} />
+                    <img src={qrCompositeUrl} alt="Código QR con nombre" style={{ width: "100%", maxWidth: "250px", borderRadius: "8px" }} />
                 </div>
                     </Dialog>
         </div>

@@ -1,8 +1,9 @@
-﻿// Padre.jsx
-import { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+﻿import { useState, useEffect, useRef } from "react";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
 import "./Padre.css";
+import { Toast } from 'primereact/toast';
+
 
 const Padre = () => {
     const [hijos, setHijos] = useState([]);
@@ -11,19 +12,32 @@ const Padre = () => {
     const [asistenciasPorAlumno, setAsistenciasPorAlumno] = useState({});
     const [fechasPorAlumno, setFechasPorAlumno] = useState({});
     const [rangosPorAlumno, setRangosPorAlumno] = useState({});
-    const [nombrePadre, setNombrePadre] = useState("");
-    const [showToast, setShowToast] = useState(false);
+    const toast = useRef(null);
+    const toastShownRef = useRef(false);
 
     const navigate = useNavigate();
 
-    // Bienvenida al padre
+    const location = useLocation(); 
+
     useEffect(() => {
-        const nombre = localStorage.getItem("nombrePadre") || "";
-        setNombrePadre(nombre);
-        setShowToast(true);
-        const timer = setTimeout(() => setShowToast(false), 3000);
-        return () => clearTimeout(timer);
-    }, []);
+        if (location.state?.mensajeBienvenida && !toastShownRef.current) {
+            toast.current?.show({
+                severity: "success",
+                summary: "¡Bienvenido!",
+                detail: location.state.mensajeBienvenida,
+                life: 3000
+            });
+
+            toastShownRef.current = true;
+
+            // Borra el estado de navegación para evitar duplicados
+            window.history.replaceState({}, document.title);
+        }
+    }, [location.state]);
+
+
+
+
 
     // Carga los hijos del padre al montar
     useEffect(() => {
@@ -149,15 +163,11 @@ const Padre = () => {
 
     return (
         <>
+            <Toast ref={toast} />
             <nav className="menu-bar">
                 <ul className="menu-list">
                     <li><Link to="/" className="logout-link">Cerrar Sesión</Link></li>
                 </ul>
-                {showToast && (
-                    <div className="welcome-toast">
-                        ¡Bienvenido, <strong>{nombrePadre}</strong>!
-                    </div>
-                )}
             </nav>
 
             <div className="padre-container">

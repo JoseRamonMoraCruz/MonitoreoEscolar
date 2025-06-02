@@ -108,13 +108,15 @@ select,
 
 /* === React Select === */
 .my-select__control {
-    background-color: #D9D9D9 !important;
+    background-color: #ffffff !important;
     border-radius: 8px !important;
     height: 45px !important;
-    border: none !important;
+    border: 1px solid rgba(0, 0, 0, 1) !important; /* ← igual que los InputText */
     box-shadow: none !important;
     font-size: 16px;
+    transition: border-color 0.2s ease-in-out;
 }
+
 .my-select__control--is-focused {
     border: 2px solid #8800ff !important;
 }
@@ -256,7 +258,7 @@ select,
     height: 45px !important;
     font-size: 1rem;
     border-radius: 8px !important;
-    border: 1px solid #ced4da !important;
+    border: 1px solid rgba(0, 0, 0, 1) !important; /* Negro sólido */
     background-color: white !important;
     color: #000 !important;
     box-shadow: none !important;
@@ -290,4 +292,26 @@ select,
         width: 100%;
         text-align: center;
     }
+}
+/* === ENFOQUE UNIFICADO PARA INPUTS, DROPDOWNS, TEXTOS === */
+.p-inputtext:focus,
+.p-dropdown.p-focus,
+.my-select__control--is-focused {
+    border: 2px solid #8800ff !important;
+    box-shadow: none !important;
+    outline: none !important;
+}
+
+/* También aplica cuando haces clic sobre FloatLabel */
+.p-float-label input:focus {
+    border: 2px solid #8800ff !important;
+    outline: none !important;
+}
+.p-float-label input::placeholder {
+    opacity: 1 !important;
+    color: #777 !important;
+}
+::placeholder {
+    color: #777 !important;
+    opacity: 1 !important;
 }

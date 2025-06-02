@@ -55,20 +55,23 @@ namespace MonitoreoEscolar.Server.Services
                     Parcial = c.ParcialUnidad
                 }).ToList(),
 
-                Asistencias = asistencias.Select(a => new AsistenciaDTO
+                Asistencias = asistencias.Select(a => new AsistenciaReporteDTO
                 {
                     Entrada = a.HoraEntrada.HasValue
-                                      ? a.HoraEntrada.Value.ToString("hh:mm tt") : "--",
+           ? a.HoraEntrada.Value.ToString("hh:mm tt") : "--",
                     Salida = a.HoraSalida.HasValue
-                                      ? a.HoraSalida.Value.ToString("hh:mm tt") : "--",
+           ? a.HoraSalida.Value.ToString("hh:mm tt") : "--",
+                    Fecha = a.Fecha.ToString("dd/MM/yyyy")
                 }).ToList(),
+
 
                 Reportes = reportes.Select(r => new ReporteDto
                 {
                     Motivo = r.Motivo,
-                    Fecha = r.Fecha,
+                    Fecha = r.Fecha.ToString("dd/MM/yyyy hh:mm tt"),
                     Responsable = r.ResponsableDelReporte
                 }).ToList()
+
             };
 
             // 4) Generar PDF

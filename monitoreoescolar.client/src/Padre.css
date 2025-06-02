@@ -140,42 +140,21 @@
     .boton-descargar:hover {
         background-color: #2563EB;
     }
-.welcome-toast {
-    position: fixed;
-    top: 20px;
-    left: 50%;
-    transform: translateX(-50%);
-    background: #8800ff;
-    color: #fff;
-    padding: 15px 30px;
-    border-radius: 8px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
-    font-size: 1.25rem;
-    font-weight: 600;
-    text-align: center;
-    z-index: 1002;
-    opacity: 0;
-    animation: fadeInOut 3s forwards;
+
+/* Personaliza el toast de bienvenida */
+/*.p-toast .p-toast-message.p-toast-message-success {
+    background: #54277b;
+    color: white;
+    font-weight: bold;
+    font-size: 1.1rem;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 }
 
-@keyframes fadeInOut {
-    0% {
-        opacity: 0;
-        transform: translate(-50%, -10px);
-    }
-
-    10% {
-        opacity: 1;
-        transform: translate(-50%, 0);
-    }
-
-    90% {
-        opacity: 1;
-        transform: translate(-50%, 0);
-    }
-
-    100% {
-        opacity: 0;
-        transform: translate(-50%, -10px);
-    }
+.p-toast .p-toast-message .p-toast-summary {
+    font-weight: bold;
 }
+
+.p-toast .p-toast-message .p-toast-detail {
+    color: white;
+}*/

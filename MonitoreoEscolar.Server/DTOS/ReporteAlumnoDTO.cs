@@ -9,8 +9,7 @@
 
         public List<CalificacionAlumnoDto> Calificaciones { get; set; }
             = new List<CalificacionAlumnoDto>();
-        public List<AsistenciaDTO> Asistencias { get; set; }
-            = new List<AsistenciaDTO>();
+        public List<AsistenciaReporteDTO> Asistencias { get; set; } = new();
         public List<ReporteDto> Reportes { get; set; }
             = new List<ReporteDto>();
     }

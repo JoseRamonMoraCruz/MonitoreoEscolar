@@ -1,9 +1,10 @@
-﻿import { useState, useEffect } from "react";
+﻿import { useState, useRef } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import familiaIcon from "./assets/familia.png"; 
 import escuelaIcon from "./assets/edificio-escolar.png"; 
 import AtrasIcon from './assets/flecha-hacia-atras.png'; 
+import { Toast } from 'primereact/toast'; 
 
 
 export default function Registro() {
@@ -14,44 +15,47 @@ export default function Registro() {
     const [correo, setCorreo] = useState("");
     const [telefono, setTelefono] = useState("");
     const [contrasena, setContrasena] = useState("");
-    const [error, setError] = useState("");
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
     const [confirmarContrasena, setConfirmarContrasena] = useState("");
-    const [toastMensaje, setToastMensaje] = useState("");
-
-    useEffect(() => {
-        if (toastMensaje) {
-            const timer = setTimeout(() => setToastMensaje(""), 8000); 
-            return () => clearTimeout(timer);
-        }
-    }, [toastMensaje]);
+    const toast = useRef(null);
 
     const handleRegistro = async (e) => {
         e.preventDefault();
 
         if (!Nombre || !apellidoPaterno || !apellidoMaterno || !telefono || !correo || !contrasena || !confirmarContrasena) {
-            setError("❌ Todos los campos son obligatorios.");
+            toast.current?.show({
+                severity: 'error',
+                summary: 'Campos requeridos',
+                detail: '❌ Todos los campos son obligatorios.',
+                life: 3000
+            });
             return;
         }
 
         if (contrasena !== confirmarContrasena) {
-            setError("❌ Las contraseñas no coinciden.");
-            return;
-        }
-        if (contrasena !== confirmarContrasena) {
-            setToastMensaje("❌ Las contraseñas no coinciden.");
+            toast.current?.show({
+                severity: 'error',
+                summary: 'Contraseña inválida',
+                detail: '❌ Las contraseñas no coinciden.',
+                life: 3000
+            });
             return;
         }
 
          const MASTER_PASS = "EscolarPerson123";  
-           if (tipoUsuario === "personal" && contrasena !== MASTER_PASS) {
-                   setError("❌ Contraseña de acceso para personal inválida.");
-                   return;
-           }
+        if (tipoUsuario === "personal" && contrasena !== MASTER_PASS) {
+            toast.current?.show({
+                severity: 'error',
+                summary: 'Acceso denegado',
+                detail: '❌ Contraseña de acceso para personal inválida.',
+                life: 3000
+            });
+            return;
+        }
+
 
         setLoading(true);
-        setError(""); // Limpia errores anteriores
 
         const usuario = {
             Nombre,
@@ -64,12 +68,20 @@ export default function Registro() {
         };
 
         try {
-            const response = await axios.post("http://localhost:5099/api/usuarios/registro", usuario);
-            alert(response.data.mensaje);
-            navigate("/"); 
+            await axios.post("http://localhost:5099/api/usuarios/registro", usuario);
+            navigate("/", {
+                state: {
+                    mensajeRegistro: `¡Bienvenido ${Nombre}! Tu cuenta fue creada exitosamente como ${tipoUsuario === "padre" ? "padre de familia" : "personal escolar"}.`
+                }
+            });
         } catch (error) {
-            console.error("Error en el registro:", error.response?.data || error.message);
-            setError(error.response?.data?.mensaje || "❌ Error en el registro.");
+            toast.current?.show({
+                severity: 'error',
+                summary: 'Registro fallido',
+                detail: error.response?.data?.mensaje || "❌ Error en el registro.",
+                life: 3000
+            });
+
         } finally {
             setLoading(false);
         }
@@ -78,6 +90,7 @@ export default function Registro() {
 
     return (
         <div className="container">
+            <Toast ref={toast} />
             <div className={`register-container ${tipoUsuario === "padre" ? "padre" : ""}`}>
                
                 <button className="back-button" onClick={() => navigate("/")}>
@@ -85,22 +98,13 @@ export default function Registro() {
                 </button>
 
                 <h2 className="register-title">Regístrate</h2>
-
-                
-                <button className="back-button" onClick={() => navigate("/")}>
-                    <img src={AtrasIcon} alt="Volver" className="back-icon" />
-                </button>
-
                
                 <img
                     src={tipoUsuario === "padre" ? familiaIcon : escuelaIcon}
                     alt="Tipo de usuario"
                     className="user-icon"
                 />
-
-                {error && <p style={{ color: 'red' }}>{error}</p>}
-
-               
+ 
                 <div className="selector-container">
                     <button
                         className={`selector-button ${tipoUsuario === "padre" ? "selected" : ""}`}
@@ -118,11 +122,6 @@ export default function Registro() {
                     </button>
                 </div>
 
-                {toastMensaje && (
-                    <div className="toast-mensaje">
-                        {toastMensaje}
-                    </div>
-                )}
 
                 {/* Formulario */}
                 <form onSubmit={handleRegistro}>

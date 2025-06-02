@@ -161,6 +161,11 @@ const GenerarReportes = () => {
         return inputValue;
     };
 
+    // Convierte una fecha a ISO sin cambiar a UTC
+    const toLocalISOString = (date) => {
+        return new Date(date.getTime() - date.getTimezoneOffset() * 60000).toISOString();
+    };
+
     // Envía el reporte al backend
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -174,7 +179,7 @@ const GenerarReportes = () => {
 
             const response = await axios.post("http://localhost:5099/api/reportes/generar", {
                 ...reporte,
-                fecha: reporte.fecha?.toISOString()
+                fecha: toLocalISOString(reporte.fecha)
             });
 
             mostrarToast("Reporte generado", response.data.mensaje, "success");

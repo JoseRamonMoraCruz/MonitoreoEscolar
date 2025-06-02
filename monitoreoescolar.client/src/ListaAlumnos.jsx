@@ -45,7 +45,7 @@ const ListaAlumnos = () => {
 
     // Carreras para el Select de edición
     const [carreraOptions, setCarreraOptions] = useState([]);
-    const [selectedCarreraEdit, setSelectedCarreraEdit] = useState(null);
+    const [selectedCarreraEdit, setSelectedCarreraEdit] = useState(null); 
 
     // junto a tus useState existentes
     const [qrCompositeUrl, setQrCompositeUrl] = useState(null);
@@ -64,36 +64,6 @@ const ListaAlumnos = () => {
                 label: `${g.grado}${g.letra}`
             }));
             setGroupOptions(opciones);
-        }
-    }, [grupos]);
-    useEffect(() => {
-        axios.get("/api/carreras")
-            .then(resp => {
-                setCarreraOptions(resp.data.map(c => ({
-                    value: c.nombre,
-                    label: c.nombre
-                })));
-            })
-            .catch(console.error);
-    }, []);
-
-    useEffect(() => {
-        if (grupos.length > 0) {
-            const fetchAllStudents = async () => {
-                const newAlumnosPorGrupo = {};
-                for (const grupo of grupos) {
-                    const groupString = `${grupo.grado}${grupo.letra}`;
-                    try {
-                        const response = await axios.get(`/api/alumnos/grupo/${groupString}`);
-                        newAlumnosPorGrupo[grupo.id] = response.data;
-                    } catch (error) {
-                        console.error("Error al obtener alumnos para el grupo", grupo, error);
-                        newAlumnosPorGrupo[grupo.id] = [];
-                    }
-                }
-                setAlumnosPorGrupo(newAlumnosPorGrupo);
-            };
-            fetchAllStudents();
         }
     }, [grupos]);
 
@@ -159,13 +129,13 @@ const ListaAlumnos = () => {
         return inputValue;
     };
 
-    const handleCarreraChangeEdit = option => {
+ /*   const handleCarreraChangeEdit = option => {
         setSelectedCarreraEdit(option);
         setAlumnoSeleccionado(prev => ({
             ...prev,
             carrera: option ? option.value : ""
         }));
-    };
+    };  */
 
     const handleTutorChangeSelect = (selectedOption) => {
         setSelectedTutorEdit(selectedOption);
@@ -488,7 +458,6 @@ const ListaAlumnos = () => {
     };
 
     //PARA EL QR
-    const [qrUrl, setQrUrl] = useState(null);
     const [showQrModal, setShowQrModal] = useState(false);
     const [nombreArchivoQR, setNombreArchivoQR] = useState("QR_Alumno");
 
@@ -993,7 +962,7 @@ const ListaAlumnos = () => {
 
                         {/* Selección del tutor en el modal de edición */}
                         <div className="input-container">
-                            <label>Padre:</label>
+                            <label>Padre:(Si quiere cambiarlo o si no tiene asignado)</label>
                             <Select
                                 classNamePrefix="my-select"
                                 value={selectedTutorEdit}

@@ -12,6 +12,7 @@ import { Button } from 'primereact/button';
 import { InputText } from 'primereact/inputtext';
 import { Toast } from 'primereact/toast';
 
+
 const ListaAlumnos = () => {
     const [grupos, setGrupos] = useState([]);
     const [modalGrupo, setModalGrupo] = useState(false);
@@ -45,7 +46,6 @@ const ListaAlumnos = () => {
     const [selectedGroupEdit, setSelectedGroupEdit] = useState(null);
 
     // Carreras para el Select de edición
-    const [carreraOptions, setCarreraOptions] = useState([]);
     const [selectedCarreraEdit, setSelectedCarreraEdit] = useState(null);
 
     // junto a tus useState existentes
@@ -810,6 +810,7 @@ const ListaAlumnos = () => {
                 aria-label="Agregar"
                 className="boton-agregar"
                 onClick={abrirModalGrupo}
+                title="Agregar Grupo"
             />
 
             <Dialog

@@ -53,7 +53,7 @@ const Padre = () => {
                 const response = await axios.get(`http://localhost:5099/api/padres/obtener-hijos-con-grupo/${idPadre}`);
                 setHijos(response.data);
             } catch (error) {
-                console.error("❌ Error al obtener hijos con grupo:", error);
+                console.error(" Error al obtener hijos con grupo:", error);
             }
         };
 
@@ -89,7 +89,7 @@ const Padre = () => {
             // Libera la URL
             window.URL.revokeObjectURL(url);
         } catch (error) {
-            console.error("❌ Error al descargar el PDF:", error);
+            console.error(" Error al descargar el PDF:", error);
             alert("Ocurrió un error al intentar descargar el PDF.");
         }
     };
@@ -106,7 +106,7 @@ const Padre = () => {
             );
             setAsistenciasPorAlumno(prev => ({ ...prev, [alumnoId]: response.data }));
         } catch (error) {
-            console.error("❌ Error al obtener asistencias por rango:", error);
+            console.error(" Error al obtener asistencias por rango:", error);
         }
     };
 
@@ -120,12 +120,22 @@ const Padre = () => {
         // Si aún no tenemos asistencias, las traemos
         if (!asistenciasPorAlumno[alumnoId]) {
             try {
-                const resp = await axios.get(`http://localhost:5099/api/padres/obtener-asistencias-alumno/${alumnoId}`);
+                const hoy = new Date().toISOString().split("T")[0]; // Formato yyyy-MM-dd
+
+                // Guardar como fechas por defecto
+                setFechasPorAlumno(prev => ({ ...prev, [alumnoId]: hoy }));
+                setRangosPorAlumno(prev => ({ ...prev, [alumnoId]: { inicio: hoy, fin: hoy } }));
+
+                // Solicitud con fecha de hoy como rango
+                const resp = await axios.get(
+                    `http://localhost:5099/api/padres/obtener-asistencias-alumno/${alumnoId}?fechaInicio=${hoy}&fechaFin=${hoy}`
+                );
                 setAsistenciasPorAlumno(prev => ({ ...prev, [alumnoId]: resp.data }));
             } catch (err) {
-                console.error("❌ Error al obtener asistencias:", err);
+                console.error(" Error al obtener asistencias:", err);
             }
         }
+
 
         // Inicializamos fecha hoy si hace falta
         if (!fechasPorAlumno[alumnoId]) {
@@ -141,7 +151,7 @@ const Padre = () => {
                 const resp = await axios.get(`http://localhost:5099/api/padres/obtener-reportes-hijo/${alumnoId}`);
                 setReportesPorAlumno(prev => ({ ...prev, [alumnoId]: resp.data }));
             } catch (err) {
-                console.error("❌ Error al obtener reportes:", err);
+                console.error(" Error al obtener reportes:", err);
             }
         }
 
@@ -156,10 +166,34 @@ const Padre = () => {
                     )
                 );
             } catch (err) {
-                console.error("❌ Error al obtener calificaciones:", err);
+                console.error("Error al obtener calificaciones:", err);
             }
         }
     };
+
+    const manejarCambioFecha = (alumnoId, tipo, valor) => {
+        const rangoActual = rangosPorAlumno[alumnoId] || {
+            inicio: fechasPorAlumno[alumnoId],
+            fin: fechasPorAlumno[alumnoId]
+        };
+
+        const nuevoRango = {
+            ...rangoActual,
+            [tipo]: valor
+        };
+
+        setRangosPorAlumno(prev => ({
+            ...prev,
+            [alumnoId]: nuevoRango
+        }));
+
+        // Solo aplica el filtro si ambas fechas están definidas
+        if (nuevoRango.inicio && nuevoRango.fin) {
+            cambiarRangoAsistencia(alumnoId, nuevoRango.inicio, nuevoRango.fin);
+            console.log("📅 Enviando rango:", nuevoRango);  // Confirmación visual
+        }
+    };
+
 
     return (
         <>
@@ -220,27 +254,21 @@ const Padre = () => {
                                             <span>Fecha Inicio:</span>
                                             <input
                                                 type="date"
-                                                value={rangosPorAlumno[hijo.alumnoId]?.inicio || fechasPorAlumno[hijo.alumnoId]}
-                                                onChange={e => {
-                                                    const inicio = e.target.value;
-                                                    const fin = rangosPorAlumno[hijo.alumnoId]?.fin || inicio;
-                                                    cambiarRangoAsistencia(hijo.alumnoId, inicio, fin);
-                                                }}
+                                                value={rangosPorAlumno[hijo.alumnoId]?.inicio || fechasPorAlumno[hijo.alumnoId] || ""}
+                                                onChange={e => manejarCambioFecha(hijo.alumnoId, "inicio", e.target.value)}
                                                 style={{ padding: "5px", width: "100%" }}
                                             />
+
                                         </div>
                                         <div style={{ flex: 1 }}>
                                             <span>Fecha Fin:</span>
                                             <input
                                                 type="date"
-                                                value={rangosPorAlumno[hijo.alumnoId]?.fin || fechasPorAlumno[hijo.alumnoId]}
-                                                onChange={e => {
-                                                    const fin = e.target.value;
-                                                    const inicio = rangosPorAlumno[hijo.alumnoId]?.inicio || fin;
-                                                    cambiarRangoAsistencia(hijo.alumnoId, inicio, fin);
-                                                }}
+                                                value={rangosPorAlumno[hijo.alumnoId]?.fin || fechasPorAlumno[hijo.alumnoId] || ""}
+                                                onChange={e => manejarCambioFecha(hijo.alumnoId, "fin", e.target.value)}
                                                 style={{ padding: "5px", width: "100%" }}
                                             />
+
                                         </div>
                                     </div>
                                 </div>
@@ -258,18 +286,25 @@ const Padre = () => {
                                     <tbody>
                                         {asistenciasPorAlumno[hijo.alumnoId]?.length > 0 ? (
                                             asistenciasPorAlumno[hijo.alumnoId].map((a, idx) => (
-                                                <tr key={idx}>
-                                                    <td>{a.fecha}</td>
+                                                <tr key={idx} className={a.horaEntrada !== "-" ? "fila-asistio" : "fila-falto"}>
+                                                    <td>
+                                                        {a.fecha} {a.horaEntrada !== "-" ? "✅" : "❌"}
+                                                    </td>
                                                     <td>{a.horaEntrada}</td>
                                                     <td>{a.horaSalida}</td>
                                                 </tr>
                                             ))
                                         ) : (
                                             <tr>
-                                                <td colSpan="3">Sin asistencias registradas.</td>
+                                                <td colSpan="3">
+                                                    {rangosPorAlumno[hijo.alumnoId]?.inicio === rangosPorAlumno[hijo.alumnoId]?.fin
+                                                        ? `No hay asistencia registrada el día ${rangosPorAlumno[hijo.alumnoId].inicio}`
+                                                        : "No hay asistencias registradas en el rango seleccionado."}
+                                                </td>
                                             </tr>
                                         )}
                                     </tbody>
+
                                 </table>
 
                                 {/* Reportes de mala conducta */}

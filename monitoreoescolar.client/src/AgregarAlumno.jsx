@@ -337,7 +337,7 @@ const AgregarAlumno = () => {
 
                         {/* Autocompletado para seleccionar padre/tutor */}
                         <div className="agregar-alumno-group">
-                            <label style={{ marginBottom: '10px' }}>👨🏻‍🦰 Seleccionar padre del alumno:</label>
+                            <label style={{ marginBottom: '10px' }}> Seleccionar padre del alumno:</label>
                             <Select
                                 classNamePrefix="my-select"
                                 value={selectedTutor}

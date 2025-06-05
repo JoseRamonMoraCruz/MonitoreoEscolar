@@ -79,21 +79,21 @@
     position: relative;
     background: white;
     border-radius: 10px;
-    width: 90vw; 
-    max-width: 750px; 
-    min-height: unset; 
-    padding: 20px; 
+    width: 100%;
+    max-width: 950px;
+    box-sizing: border-box;
+    padding: 20px 24px; 
+    margin: 6px auto;
     box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
     font-size: 18px;
-    font-weight: normal; 
-    color: #333; 
+    font-weight: normal;
+    color: #333;
     cursor: pointer;
     transition: transform 0.3s ease-in-out;
     display: flex;
     flex-direction: column;
-    align-items: stretch; 
+    align-items: stretch;
     justify-content: flex-start;
-    margin: 6px auto; 
 }
 
     .grupo-card:hover {
@@ -103,8 +103,22 @@
 
     .grupo-card .tabla-wrapper {
         width: 100%;
-        overflow-x: auto; 
+        overflow-x: auto;
     }
+
+/* Encabezado del grupo */
+.grupo-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    padding-left: 4px;
+    padding-right: 4px;
+    color: black;
+    margin-bottom: 10px;
+    font-size: 18px;
+}
+
 
 
 /* Botón para agregar grupo (flotante) */
@@ -275,11 +289,11 @@
 
 /* Icono para eliminar grupo */
 .delete-icon {
-    width: 40px;
-    height: 40px;
-    cursor: pointer;
-    transition: transform 0.2s ease-in-out;
+    width: 36px;
+    height: 36px;
+    flex-shrink: 0;
 }
+
 
 /* CRUD: iconos de editar y eliminar alumno */
 .acciones {

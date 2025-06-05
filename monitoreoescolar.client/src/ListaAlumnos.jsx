@@ -12,6 +12,7 @@ import { Button } from 'primereact/button';
 import { InputText } from 'primereact/inputtext';
 import { Toast } from 'primereact/toast';
 
+
 const ListaAlumnos = () => {
     const [grupos, setGrupos] = useState([]);
     const [modalGrupo, setModalGrupo] = useState(false);

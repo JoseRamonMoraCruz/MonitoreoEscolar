@@ -13,19 +13,21 @@ const SubirCalif = () => {
     const [datos, setDatos] = useState([]);
     const [cargando, setCargando] = useState(false);
     const fileInputRef = useRef(null);
+    
 
     // Obtener materias únicas de los datos cargados
-    const materiasUnicas = useMemo(() => {
-        const materias = new Set();
+    const columnasDinamicas = useMemo(() => {
+        const columnas = new Set();
         datos.forEach(alumno => {
             Object.keys(alumno).forEach(key => {
-                if (!["alumno", "grupo", "parcialUnidad", "periodo", "tipo", "firmado", "asistenciasTotal"].includes(key)) {
-                    materias.add(key);
+                if (!["alumno", "grupo", "periodo", "tipo", "firmado", "asistenciasTotal"].includes(key)) {
+                    columnas.add(key);
                 }
             });
         });
-        return Array.from(materias);
+        return Array.from(columnas).sort();
     }, [datos]);
+
 
     const handleFileSelect = (event) => {
         const file = event.target.files[0];
@@ -44,36 +46,43 @@ const SubirCalif = () => {
         const formData = new FormData();
         formData.append("file", archivo);
         setCargando(true);
-
         try {
-            // 1️ Subir archivo
             const response = await axios.post("/api/calificaciones/subirCalificaciones", formData, {
                 headers: { "Content-Type": "multipart/form-data" }
             });
 
-            mostrarToast("Carga exitosa", response.data.mensaje, "success");
+            const { mensaje, cantidad, omitidas, totalIntentos } = response.data;
 
-            // 2️ Obtener resumen ya procesado desde el backend
+            if (cantidad > 0) {
+                mostrarToast(" Carga completada", mensaje, "success");
+            } else if (omitidas === totalIntentos) {
+                mostrarToast(" Sin cambios", "Todos los datos ya existían. No se actualizó nada.", "info");
+            } else {
+                mostrarToast(" Archivo vacío o con errores", "No se pudo procesar ningún dato del archivo.", "warn");
+            }
+
+
+            // ✅ Actualizar datos aunque no se hayan guardado nuevos
             const resumen = await axios.get("/api/calificaciones/obtenerResumenAgrupado");
-
             setDatos(resumen.data);
 
-            // 3️ Limpiar archivo y formulario
             setArchivo(null);
             setNombreArchivo("");
             fileInputRef.current.value = null;
         } catch (error) {
-            console.error("❌ Error al subir el archivo:", error.response ? error.response.data : error.message);
+            console.error(" Error al subir el archivo:", error.response ? error.response.data : error.message);
 
             const mensajeError = error.response?.data && typeof error.response.data === "string"
                 ? error.response.data
-                : "❌ Error al subir el archivo. Intenta nuevamente.";
+                : " Error al subir el archivo. Intenta nuevamente.";
 
             mostrarToast("Error al subir", mensajeError, "error");
         } finally {
             setCargando(false);
         }
     };
+
+
 
 
     const handleReset = () => {
@@ -150,7 +159,6 @@ const SubirCalif = () => {
 
                         <div className="contenedor-botones">
                             <button className="boton-reiniciar" onClick={handleReset}
-                                title="Reiniciar tabla de calificaciones"
                                 aria-label="Reiniciar tabla de calificaciones"
                             >
                                 <img src={reiniciarIcono} alt="Reiniciar" className="icono-reiniciar" />
@@ -175,13 +183,12 @@ const SubirCalif = () => {
                                 <tr>
                                     <th>Nombre</th>
                                     <th>Grupo</th>
-                                    <th>Parcial / Unidad</th>
                                     <th>Periodo</th>
                                     <th>Tipo Acreditación</th>
                                     <th>¿Firmado?</th>
                                     <th>Total Asistencias</th>
-                                    {materiasUnicas.map((materia, index) => (
-                                        <th key={index}>{materia}</th>
+                                    {columnasDinamicas.map((columna, index) => (
+                                        <th key={index}>{columna}</th>
                                     ))}
                                 </tr>
                             </thead>
@@ -191,19 +198,19 @@ const SubirCalif = () => {
                                         <tr key={index}>
                                             <td>{alumno.alumno}</td>
                                             <td>{alumno.grupo}</td>
-                                            <td>{alumno.parcialUnidad}</td>
                                             <td>{alumno.periodo}</td>
                                             <td>{alumno.tipo}</td>
                                             <td>{alumno.firmado ? "SI FIRMADO" : "NO FIRMADO"}</td>
                                             <td>{alumno.asistenciasTotal}</td>
-                                            {materiasUnicas.map((materia, idx) => (
-                                                <td key={idx}>{alumno[materia] ?? "N/A"}</td>
+                                            {columnasDinamicas.map((columna, idx) => (
+                                                <td key={idx}>{alumno[columna]}</td>
                                             ))}
                                         </tr>
+
                                     ))
                                 ) : (
                                     <tr>
-                                        <td colSpan={7 + materiasUnicas.length}>No hay datos cargados aún.</td>
+                                            <td colSpan={6 + columnasDinamicas.length}>No hay datos cargados aún.</td>
                                     </tr>
                                 )}
                             </tbody>

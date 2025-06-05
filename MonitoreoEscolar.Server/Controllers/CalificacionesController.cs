@@ -35,6 +35,7 @@ namespace MonitoreoEscolar.Server.Controllers
                 ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
 
                 using var stream = new MemoryStream();
+                var correosPendientes = new List<(string correo, string asunto, string mensaje, string nombreTutor)>();
                 await file.CopyToAsync(stream);
                 using var package = new ExcelPackage(stream);
                 var worksheet = package.Workbook.Worksheets[0];
@@ -52,6 +53,8 @@ namespace MonitoreoEscolar.Server.Controllers
 
                 var gruposDict = await _context.Grupos
                     .ToDictionaryAsync(g => $"{g.Grado}{g.Letra}".ToUpper());
+
+                int calificacionesActualizadas = 0;
 
                 var calificacionesGuardadas = new List<Calificacion>();
 
@@ -90,23 +93,35 @@ namespace MonitoreoEscolar.Server.Controllers
                     }
 
                     string parcialTexto = worksheet.Cells[row, 22].Text.Trim(); // Asegúrate que columna 22 sea PARCIAL
-                                                                              
+
                     if (parcial1 > 0)
                     {
-                        await ProcesarParcial(alumno, grupo, asignatura, parcial1, "Parcial 1", periodo, firmado, asistenciasTotal, tipo, calificacionesGuardadas, nombreOriginal);
+                        if (await ProcesarParcial(alumno, grupo, asignatura, parcial1, "Parcial 1", periodo, firmado, asistenciasTotal, tipo, calificacionesGuardadas, nombreOriginal))
+                        {
+                            calificacionesActualizadas++;
+                        }
                     }
 
                     // Procesar Parcial 2
                     if (parcial2 > 0)
                     {
-                        await ProcesarParcial(alumno, grupo, asignatura, parcial2, "Parcial 2", periodo, firmado, asistenciasTotal, tipo, calificacionesGuardadas, nombreOriginal);
+                        if (await ProcesarParcial(alumno, grupo, asignatura, parcial2, "Parcial 2", periodo, firmado, asistenciasTotal, tipo, calificacionesGuardadas, nombreOriginal))
+                        {
+                            calificacionesActualizadas++;
+                        }
                     }
+
 
                     // Procesar Parcial 3
                     if (parcial3 > 0)
-                    {
-                        await ProcesarParcial(alumno, grupo, asignatura, parcial3, "Parcial 3", periodo, firmado, asistenciasTotal, tipo, calificacionesGuardadas, nombreOriginal);
-                    }
+                        if (parcial3 > 0)
+                        {
+                            if (await ProcesarParcial(alumno, grupo, asignatura, parcial3, "Parcial 3", periodo, firmado, asistenciasTotal, tipo, calificacionesGuardadas, nombreOriginal))
+                            {
+                                calificacionesActualizadas++;
+                            }
+                        }
+
 
 
                     if (alumno.TutorUsuario != null && !string.IsNullOrEmpty(alumno.TutorUsuario.Correo))
@@ -118,21 +133,45 @@ namespace MonitoreoEscolar.Server.Controllers
                             del grupo <strong>{grupo.Grado}{grupo.Letra}</strong>.<br/>
                             Ingrese al sistema para ver los detalles.";
 
-                        await EnviarCorreoTutor(alumno.TutorUsuario.Correo, asunto, mensajeCorreo, nombreTutor);
+                        correosPendientes.Add((alumno.TutorUsuario.Correo, asunto, mensajeCorreo, nombreTutor));
                     }
                 }
 
                 _context.Calificaciones.AddRange(calificacionesGuardadas);
                 await _context.SaveChangesAsync();
 
-                if (calificacionesGuardadas.Count == 0)
+                // Validación antes de responder
+                int totalExitosas = calificacionesGuardadas.Count + calificacionesActualizadas;
+
+                if (totalExitosas == 0)
                     return BadRequest("No se subió ninguna calificación. Revisa duplicados o formato.");
+
+
+                // Envío de correos en segundo plano (no bloquea la respuesta)
+                _ = Task.Run(async () =>
+                {
+                    foreach (var (correo, asunto, mensaje, nombreTutor) in correosPendientes)
+                    {
+                        try
+                        {
+                            await EnviarCorreoTutor(correo, asunto, mensaje, nombreTutor);
+                        }
+                        catch (Exception ex)
+                        {
+                            _logger.LogWarning($"Error al enviar correo a {correo}: {ex.Message}");
+                        }
+                    }
+                });
+
+                int totalIntentos = rowCount - 1;
+                int omitidas = totalIntentos - calificacionesGuardadas.Count;
 
                 return Ok(new
                 {
-                    mensaje = $"✅ Calificaciones cargadas correctamente. Total: {calificacionesGuardadas.Count}",
-                    cantidad = calificacionesGuardadas.Count,
-                    calificaciones = calificacionesGuardadas
+                    mensaje = $" Se guardaron {calificacionesGuardadas.Count} nuevas y se actualizaron {calificacionesActualizadas}. Se omitieron {omitidas} por estar duplicadas o tener errores.",
+                    cantidad = totalExitosas,
+                    omitidas,
+                    totalIntentos
                 });
             }
             catch (Exception ex)
@@ -140,9 +179,7 @@ namespace MonitoreoEscolar.Server.Controllers
                 _logger.LogError(ex, "Error al subir calificaciones");
                 return StatusCode(500, $"Error interno: {ex.Message} {ex.InnerException?.Message}");
             }
-        }
-
-
+        } // ← ESTA es la llave final que cierra el método SubirCalificaciones
 
         //  ENDPOINT 2: RESUMEN DE CALIFICACIONES
         [HttpGet("obtenerCalificaciones")]
@@ -200,8 +237,7 @@ namespace MonitoreoEscolar.Server.Controllers
                 .GroupBy(c => new
                 {
                     NombreCompleto = c.Alumno.NombreCompleto,
-                    Grupo = $"{c.Grupo.Grado}{c.Grupo.Letra}",
-                    c.ParcialUnidad
+                    Grupo = $"{c.Grupo.Grado}{c.Grupo.Letra}"
                 })
                 .Select(grupo =>
                 {
@@ -211,7 +247,6 @@ namespace MonitoreoEscolar.Server.Controllers
                     {
                         ["alumno"] = grupo.Key.NombreCompleto,
                         ["grupo"] = grupo.Key.Grupo,
-                        ["parcialUnidad"] = grupo.Key.ParcialUnidad,
                         ["periodo"] = primera.Periodo,
                         ["tipo"] = primera.Tipo,
                         ["firmado"] = primera.Firmado,
@@ -220,7 +255,9 @@ namespace MonitoreoEscolar.Server.Controllers
 
                     foreach (var calif in grupo)
                     {
-                        resultado[calif.NombreAsignatura] = calif.CalificacionValor;
+                        resultado[$"{calif.NombreAsignatura}_P1"] = calif.Parcial1?.ToString() ?? "N/A";
+                        resultado[$"{calif.NombreAsignatura}_P2"] = calif.Parcial2?.ToString() ?? "N/A";
+                        resultado[$"{calif.NombreAsignatura}_P3"] = calif.Parcial3?.ToString() ?? "N/A";
                     }
 
                     return resultado;
@@ -229,6 +266,7 @@ namespace MonitoreoEscolar.Server.Controllers
 
             return Ok(resumen);
         }
+
 
         //  NORMALIZAR SIN ACENTOS Y EN MAYÚSCULAS
         private string Normalizar(string input)
@@ -280,36 +318,28 @@ namespace MonitoreoEscolar.Server.Controllers
             await smtp.DisconnectAsync(true);
         }
 
-        private async Task ProcesarParcial(
-     Alumno alumno,
-     Grupo grupo,
-     string asignatura,
-     int calificacion,
-     string parcialUnidad,
-     string periodo,
-     bool firmado,
-     int asistencias,
-     string tipo,
-     List<Calificacion> listaGuardar,
-     string nombreOriginal)
+        private async Task<bool> ProcesarParcial(
+      Alumno alumno,
+      Grupo grupo,
+      string asignatura,
+      int calificacion,
+      string parcialUnidad,
+      string periodo,
+      bool firmado,
+      int asistencias,
+      string tipo,
+      List<Calificacion> listaGuardar,
+      string nombreOriginal)
         {
             var calificacionExistente = await _context.Calificaciones.FirstOrDefaultAsync(c =>
                 c.AlumnoId == alumno.Id &&
                 c.NombreAsignatura == asignatura &&
-                c.GrupoId == grupo.Id &&
-                c.ParcialUnidad == parcialUnidad
+                c.GrupoId == grupo.Id
             );
 
             if (calificacionExistente != null)
             {
-                // Actualizar la calificación existente
-                calificacionExistente.CalificacionValor = calificacion;
-                calificacionExistente.Periodo = periodo;
-                calificacionExistente.Firmado = firmado;
-                calificacionExistente.AsistenciasTotal = asistencias;
-                calificacionExistente.Tipo = tipo;
-
-                // Actualizar el campo correspondiente al parcial
+                // Actualiza solo el parcial correspondiente
                 if (parcialUnidad == "Parcial 1")
                     calificacionExistente.Parcial1 = calificacion;
                 else if (parcialUnidad == "Parcial 2")
@@ -317,11 +347,18 @@ namespace MonitoreoEscolar.Server.Controllers
                 else if (parcialUnidad == "Parcial 3")
                     calificacionExistente.Parcial3 = calificacion;
 
+                // Actualiza otros datos generales
+                calificacionExistente.CalificacionValor = calificacion;
+                calificacionExistente.Periodo = periodo;
+                calificacionExistente.Firmado = firmado;
+                calificacionExistente.AsistenciasTotal = asistencias;
+                calificacionExistente.Tipo = tipo;
+
                 _context.Calificaciones.Update(calificacionExistente);
+                return true; // ✅ Se actualizó una calificación
             }
             else
             {
-                // Crear una nueva calificación
                 var nueva = new Calificacion
                 {
                     Nombre = nombreOriginal,
@@ -340,7 +377,12 @@ namespace MonitoreoEscolar.Server.Controllers
                 };
 
                 listaGuardar.Add(nueva);
+                return true; // ✅ Se agregó una nueva calificación
             }
+
+            // Si no se hizo nada (opcional)
+            return false;
         }
-    }
+
+}
 }

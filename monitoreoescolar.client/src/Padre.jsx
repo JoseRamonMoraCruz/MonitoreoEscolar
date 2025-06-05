@@ -53,7 +53,7 @@ const Padre = () => {
                 const response = await axios.get(`/api/padres/obtener-hijos-con-grupo/${idPadre}`);
                 setHijos(response.data);
             } catch (error) {
-                console.error("❌ Error al obtener hijos con grupo:", error);
+                console.error(" Error al obtener hijos con grupo:", error);
             }
         };
 
@@ -89,7 +89,7 @@ const Padre = () => {
             // Libera la URL
             window.URL.revokeObjectURL(url);
         } catch (error) {
-            console.error("❌ Error al descargar el PDF:", error);
+            console.error(" Error al descargar el PDF:", error);
             alert("Ocurrió un error al intentar descargar el PDF.");
         }
     };
@@ -106,7 +106,7 @@ const Padre = () => {
             );
             setAsistenciasPorAlumno(prev => ({ ...prev, [alumnoId]: response.data }));
         } catch (error) {
-            console.error("❌ Error al obtener asistencias por rango:", error);
+            console.error(" Error al obtener asistencias por rango:", error);
         }
     };
 
@@ -120,12 +120,22 @@ const Padre = () => {
         // Si aún no tenemos asistencias, las traemos
         if (!asistenciasPorAlumno[alumnoId]) {
             try {
-                const resp = await axios.get(`/api/padres/obtener-asistencias-alumno/${alumnoId}`);
+                const hoy = new Date().toISOString().split("T")[0]; // Formato yyyy-MM-dd
+
+                // Guardar como fechas por defecto
+                setFechasPorAlumno(prev => ({ ...prev, [alumnoId]: hoy }));
+                setRangosPorAlumno(prev => ({ ...prev, [alumnoId]: { inicio: hoy, fin: hoy } }));
+
+                // Solicitud con fecha de hoy como rango
+                const resp = await axios.get(
+                    `/api/padres/obtener-asistencias-alumno/${alumnoId}?fechaInicio=${hoy}&fechaFin=${hoy}`
+                );
                 setAsistenciasPorAlumno(prev => ({ ...prev, [alumnoId]: resp.data }));
             } catch (err) {
-                console.error("❌ Error al obtener asistencias:", err);
+                console.error(" Error al obtener asistencias:", err);
             }
         }
+
 
         // Inicializamos fecha hoy si hace falta
         if (!fechasPorAlumno[alumnoId]) {
@@ -141,7 +151,7 @@ const Padre = () => {
                 const resp = await axios.get(`/api/padres/obtener-reportes-hijo/${alumnoId}`);
                 setReportesPorAlumno(prev => ({ ...prev, [alumnoId]: resp.data }));
             } catch (err) {
-                console.error("❌ Error al obtener reportes:", err);
+                console.error(" Error al obtener reportes:", err);
             }
         }
 
@@ -156,7 +166,7 @@ const Padre = () => {
                     )
                 );
             } catch (err) {
-                console.error("❌ Error al obtener calificaciones:", err);
+                console.error("Error al obtener calificaciones:", err);
             }
         }
     };
@@ -276,18 +286,25 @@ const Padre = () => {
                                     <tbody>
                                         {asistenciasPorAlumno[hijo.alumnoId]?.length > 0 ? (
                                             asistenciasPorAlumno[hijo.alumnoId].map((a, idx) => (
-                                                <tr key={idx}>
-                                                    <td>{a.fecha}</td>
+                                                <tr key={idx} className={a.horaEntrada !== "-" ? "fila-asistio" : "fila-falto"}>
+                                                    <td>
+                                                        {a.fecha} {a.horaEntrada !== "-" ? "✅" : "❌"}
+                                                    </td>
                                                     <td>{a.horaEntrada}</td>
                                                     <td>{a.horaSalida}</td>
                                                 </tr>
                                             ))
                                         ) : (
                                             <tr>
-                                                <td colSpan="3">Sin asistencias registradas.</td>
+                                                <td colSpan="3">
+                                                    {rangosPorAlumno[hijo.alumnoId]?.inicio === rangosPorAlumno[hijo.alumnoId]?.fin
+                                                        ? `No hay asistencia registrada el día ${rangosPorAlumno[hijo.alumnoId].inicio}`
+                                                        : "No hay asistencias registradas en el rango seleccionado."}
+                                                </td>
                                             </tr>
                                         )}
                                     </tbody>
+
                                 </table>
 
                                 {/* Reportes de mala conducta */}

@@ -144,7 +144,6 @@ namespace MonitoreoEscolar.Server.Documents
 
 
                     // Reportes
-                    // Reportes
                     col.Item().Border(1).BorderColor(Colors.Grey.Lighten2).Padding(10).Background(Colors.Grey.Lighten4).Column(inner =>
                     {
                         inner.Spacing(5);

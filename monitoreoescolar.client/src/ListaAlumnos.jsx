@@ -808,6 +808,7 @@ const ListaAlumnos = () => {
                 outlined
                 severity="help"
                 aria-label="Agregar"
+                title="Agregar Grupo"
                 className="boton-agregar"
                 onClick={abrirModalGrupo}
             />

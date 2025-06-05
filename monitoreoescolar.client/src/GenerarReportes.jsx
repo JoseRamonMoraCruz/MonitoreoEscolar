@@ -28,7 +28,7 @@ const GenerarReportes = () => {
 
     const fetchReportes = async () => {
         try {
-            const res = await axios.get("http://localhost:5099/api/reportes");
+            const res = await axios.get("/api/reportes");
             setReportesList(res.data);
         } catch (err) {
             console.error("Error al cargar reportes:", err);
@@ -65,7 +65,7 @@ const GenerarReportes = () => {
     // Guardar cambios
     const handleUpdateReporte = async () => {
         try {
-            await axios.put(`http://localhost:5099/api/reportes/${editingReport.id}`, {
+            await axios.put(`/api/reportes/${editingReport.id}`, {
                 Fecha: new Date(editingReport.fecha).toISOString(),
                 Motivo: editingReport.motivo
             });
@@ -85,7 +85,7 @@ const GenerarReportes = () => {
     // Traer la lista de reportes siempre que abra el modal
     useEffect(() => {
         if (isModalOpen) {
-            axios.get("http://localhost:5099/api/reportes")
+            axios.get("/api/reportes")
                 .then(res => setReportesList(res.data))
                 .catch(err => console.error(err));
         }
@@ -99,7 +99,7 @@ const GenerarReportes = () => {
 
     const deleteReporte = async () => {
         try {
-            await axios.delete(`http://localhost:5099/api/reportes/${reporteIdAEliminar}`);
+            await axios.delete(`/api/reportes/${reporteIdAEliminar}`);
             setReportesList(r => r.filter(x => x.id !== reporteIdAEliminar));
             setShowConfirmDialog(false);
             setReporteIdAEliminar(null);
@@ -133,7 +133,7 @@ const GenerarReportes = () => {
             return;
         }
         try {
-            const response = await axios.get(`http://localhost:5099/api/alumnos/buscar?termino=${inputValue}`);
+            const response = await axios.get(`/api/alumnos/buscar?termino=${inputValue}`);
             const optionsData = response.data.map((alumno) => ({
                 value: alumno.id,
                 label: alumno.nombreCompleto
@@ -177,7 +177,7 @@ const GenerarReportes = () => {
         try {
             setLoadingEnviar(true); // activa spinner
 
-            const response = await axios.post("http://localhost:5099/api/reportes/generar", {
+            const response = await axios.post("/api/reportes/generar", {
                 ...reporte,
                 fecha: toLocalISOString(reporte.fecha)
             });
@@ -202,11 +202,9 @@ const GenerarReportes = () => {
             console.error("Error al generar reporte:", error);
             mostrarToast("Error al generar", "No se pudo generar el reporte.", "error");
         } finally {
-            setLoadingEnviar(false); // desactiva spinner
+            setLoadingEnviar(false); 
         }
     };
-
-
     // 1. Carga inicial de reportes al entrar a la página
     useEffect(() => {
         fetchReportes();

@@ -68,7 +68,7 @@ export default function Registro() {
         };
 
         try {
-            await axios.post("http://localhost:5099/api/usuarios/registro", usuario);
+            await axios.post("/api/usuarios/registro", usuario);
             navigate("/", {
                 state: {
                     mensajeRegistro: `¡Bienvenido ${Nombre}! Tu cuenta fue creada exitosamente como ${tipoUsuario === "padre" ? "padre de familia" : "personal escolar"}.`

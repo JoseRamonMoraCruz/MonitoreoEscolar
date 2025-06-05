@@ -47,14 +47,14 @@ const SubirCalif = () => {
 
         try {
             // 1️ Subir archivo
-            const response = await axios.post("http://localhost:5099/api/calificaciones/subirCalificaciones", formData, {
+            const response = await axios.post("/api/calificaciones/subirCalificaciones", formData, {
                 headers: { "Content-Type": "multipart/form-data" }
             });
 
             mostrarToast("Carga exitosa", response.data.mensaje, "success");
 
             // 2️ Obtener resumen ya procesado desde el backend
-            const resumen = await axios.get("http://localhost:5099/api/calificaciones/obtenerResumenAgrupado");
+            const resumen = await axios.get("/api/calificaciones/obtenerResumenAgrupado");
 
             setDatos(resumen.data);
 

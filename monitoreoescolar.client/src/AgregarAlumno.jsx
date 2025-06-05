@@ -77,7 +77,7 @@ const AgregarAlumno = () => {
     const fetchTutorOptions = async (input) => {
         if (!input || input.length < 2) return setTutorOptions([]);
         try {
-            const response = await axios.get(`http://localhost:5099/api/usuarios/autocompletePadres?termino=${input}`);
+            const response = await axios.get(`/api/usuarios/autocompletePadres?termino=${input}`);
             const optionsData = response.data.map((padre) => ({
                 value: padre.id_Usuario,
                 label: `${padre.nombre} ${padre.apellidoPaterno} ${padre.apellidoMaterno}`
@@ -118,7 +118,7 @@ const AgregarAlumno = () => {
         setLoading(true);
 
         try {
-            const gruposResponse = await axios.get("http://localhost:5099/api/grupos");
+            const gruposResponse = await axios.get("/api/grupos");
             const gruposExistentes = gruposResponse.data;
             const grupoEncontrado = gruposExistentes.find(
                 (g) => `${g.grado}${g.letra}`.toUpperCase() === alumno.Grupo.toUpperCase()
@@ -151,7 +151,7 @@ const AgregarAlumno = () => {
         setNombreArchivoQR(`QR_${nombreFull.replace(/\s+/g, "_")}`);
 
         try {
-            const response = await axios.post("http://localhost:5099/api/alumnos/registro", alumno);
+            const response = await axios.post("/api/alumnos/registro", alumno);
             toast.current.show({
                 severity: 'success',
                 summary: 'Alumno registrado',
@@ -160,7 +160,7 @@ const AgregarAlumno = () => {
             });
 
             const alumnoId = response.data.alumno.id;
-            const qrResponse = await axios.get(`http://localhost:5099/api/alumnos/qr/${alumnoId}`, {
+            const qrResponse = await axios.get(`/api/alumnos/qr/${alumnoId}`, {
                 responseType: "blob"
             });
 
@@ -337,7 +337,7 @@ const AgregarAlumno = () => {
 
                         {/* Autocompletado para seleccionar padre/tutor */}
                         <div className="agregar-alumno-group">
-                            <label style={{ marginBottom: '10px' }}>👨🏻‍🦰 Seleccionar padre del alumno:</label>
+                            <label style={{ marginBottom: '10px' }}> Seleccionar padre del alumno:</label>
                             <Select
                                 classNamePrefix="my-select"
                                 value={selectedTutor}

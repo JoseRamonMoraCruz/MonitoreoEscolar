@@ -112,7 +112,7 @@ function ActualizarPassword() {
                             onClick={async () => {
                                 try {
                                     setLoadingEnviar(true);
-                                    await axios.post('http://localhost:5099/api/usuarios/enviar-codigo', { correo });
+                                    await axios.post('/api/usuarios/enviar-codigo', { correo });
                                     setContador(15);
                                     stepperRef.current.nextCallback();
                                 } catch (err) {
@@ -149,7 +149,7 @@ function ActualizarPassword() {
                                 label="Reenviar Código"
                                 className="update-button"
                                 onClick={async () => {
-                                    await axios.post('http://localhost:5099/api/usuarios/enviar-codigo', { correo });
+                                    await axios.post('/api/usuarios/enviar-codigo', { correo });
                                     setContador(15);
                                 }}
                             />
@@ -165,7 +165,7 @@ function ActualizarPassword() {
                                 onClick={async () => {
                                     try {
                                         setLoadingConfirmar(true);
-                                        await axios.post('http://localhost:5099/api/usuarios/validar-codigo', {
+                                        await axios.post('/api/usuarios/validar-codigo', {
                                             correo,
                                             codigo: codigo.replace(/\s/g, '')
                                         });
@@ -227,7 +227,7 @@ function ActualizarPassword() {
                                 onClick={async () => {
                                     try {
                                         setLoadingActualizar(true);
-                                        await axios.post('http://localhost:5099/api/usuarios/actualizar-password', {
+                                        await axios.post('/api/usuarios/actualizar-password', {
                                             correo,
                                             newPassword
                                         });

@@ -78,7 +78,7 @@ const Menu = () => {
 
         try {
             if (editedUser.newPassword) {
-                await axios.post("http://localhost:5099/api/usuarios/actualizar-password", {
+                await axios.post("/api/usuarios/actualizar-password", {
                     correo: editedUser.correo,
                     NewPassword: editedUser.newPassword
                 });
@@ -93,7 +93,7 @@ const Menu = () => {
                 Telefono: editedUser.telefono
             };
 
-            await axios.put("http://localhost:5099/api/usuarios/actualizar-perfil", payload);
+            await axios.put("/api/usuarios/actualizar-perfil", payload);
 
             localStorage.setItem("nombre", editedUser.nombre);
             localStorage.setItem("apellidoPaterno", editedUser.apellidoPaterno);

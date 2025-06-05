@@ -17,7 +17,7 @@ const Padre = () => {
 
     const navigate = useNavigate();
 
-    const location = useLocation(); 
+    const location = useLocation();
 
     useEffect(() => {
         if (location.state?.mensajeBienvenida && !toastShownRef.current) {
@@ -50,7 +50,7 @@ const Padre = () => {
 
         const obtenerHijosConGrupo = async () => {
             try {
-                const response = await axios.get(`http://localhost:5099/api/padres/obtener-hijos-con-grupo/${idPadre}`);
+                const response = await axios.get(`/api/padres/obtener-hijos-con-grupo/${idPadre}`);
                 setHijos(response.data);
             } catch (error) {
                 console.error("❌ Error al obtener hijos con grupo:", error);
@@ -64,7 +64,7 @@ const Padre = () => {
     const descargarPDF = async (alumnoId, nombreCompleto) => {
         try {
             const response = await axios.get(
-                `http://localhost:5099/api/padres/descargar-reporte/${alumnoId}`,
+                `/api/padres/descargar-reporte/${alumnoId}`,
                 { responseType: "blob" }
             );
 
@@ -102,7 +102,7 @@ const Padre = () => {
         }));
         try {
             const response = await axios.get(
-                `http://localhost:5099/api/padres/obtener-asistencias-alumno/${alumnoId}?fechaInicio=${inicio}&fechaFin=${fin}`
+                `/api/padres/obtener-asistencias-alumno/${alumnoId}?fechaInicio=${inicio}&fechaFin=${fin}`
             );
             setAsistenciasPorAlumno(prev => ({ ...prev, [alumnoId]: response.data }));
         } catch (error) {
@@ -120,7 +120,7 @@ const Padre = () => {
         // Si aún no tenemos asistencias, las traemos
         if (!asistenciasPorAlumno[alumnoId]) {
             try {
-                const resp = await axios.get(`http://localhost:5099/api/padres/obtener-asistencias-alumno/${alumnoId}`);
+                const resp = await axios.get(`/api/padres/obtener-asistencias-alumno/${alumnoId}`);
                 setAsistenciasPorAlumno(prev => ({ ...prev, [alumnoId]: resp.data }));
             } catch (err) {
                 console.error("❌ Error al obtener asistencias:", err);
@@ -138,7 +138,7 @@ const Padre = () => {
         // Si aún no tenemos reportes, los traemos
         if (!reportesPorAlumno[alumnoId]) {
             try {
-                const resp = await axios.get(`http://localhost:5099/api/padres/obtener-reportes-hijo/${alumnoId}`);
+                const resp = await axios.get(`/api/padres/obtener-reportes-hijo/${alumnoId}`);
                 setReportesPorAlumno(prev => ({ ...prev, [alumnoId]: resp.data }));
             } catch (err) {
                 console.error("❌ Error al obtener reportes:", err);
@@ -149,7 +149,7 @@ const Padre = () => {
         const hijo = hijos.find(h => h.alumnoId === alumnoId);
         if (hijo && !hijo.calificaciones) {
             try {
-                const resp = await axios.get(`http://localhost:5099/api/padres/obtener-calificaciones-alumno/${alumnoId}`);
+                const resp = await axios.get(`/api/padres/obtener-calificaciones-alumno/${alumnoId}`);
                 setHijos(prev =>
                     prev.map(h =>
                         h.alumnoId === alumnoId ? { ...h, calificaciones: resp.data } : h
@@ -160,6 +160,30 @@ const Padre = () => {
             }
         }
     };
+
+    const manejarCambioFecha = (alumnoId, tipo, valor) => {
+        const rangoActual = rangosPorAlumno[alumnoId] || {
+            inicio: fechasPorAlumno[alumnoId],
+            fin: fechasPorAlumno[alumnoId]
+        };
+
+        const nuevoRango = {
+            ...rangoActual,
+            [tipo]: valor
+        };
+
+        setRangosPorAlumno(prev => ({
+            ...prev,
+            [alumnoId]: nuevoRango
+        }));
+
+        // Solo aplica el filtro si ambas fechas están definidas
+        if (nuevoRango.inicio && nuevoRango.fin) {
+            cambiarRangoAsistencia(alumnoId, nuevoRango.inicio, nuevoRango.fin);
+            console.log("📅 Enviando rango:", nuevoRango);  // Confirmación visual
+        }
+    };
+
 
     return (
         <>
@@ -220,27 +244,21 @@ const Padre = () => {
                                             <span>Fecha Inicio:</span>
                                             <input
                                                 type="date"
-                                                value={rangosPorAlumno[hijo.alumnoId]?.inicio || fechasPorAlumno[hijo.alumnoId]}
-                                                onChange={e => {
-                                                    const inicio = e.target.value;
-                                                    const fin = rangosPorAlumno[hijo.alumnoId]?.fin || inicio;
-                                                    cambiarRangoAsistencia(hijo.alumnoId, inicio, fin);
-                                                }}
+                                                value={rangosPorAlumno[hijo.alumnoId]?.inicio || fechasPorAlumno[hijo.alumnoId] || ""}
+                                                onChange={e => manejarCambioFecha(hijo.alumnoId, "inicio", e.target.value)}
                                                 style={{ padding: "5px", width: "100%" }}
                                             />
+
                                         </div>
                                         <div style={{ flex: 1 }}>
                                             <span>Fecha Fin:</span>
                                             <input
                                                 type="date"
-                                                value={rangosPorAlumno[hijo.alumnoId]?.fin || fechasPorAlumno[hijo.alumnoId]}
-                                                onChange={e => {
-                                                    const fin = e.target.value;
-                                                    const inicio = rangosPorAlumno[hijo.alumnoId]?.inicio || fin;
-                                                    cambiarRangoAsistencia(hijo.alumnoId, inicio, fin);
-                                                }}
+                                                value={rangosPorAlumno[hijo.alumnoId]?.fin || fechasPorAlumno[hijo.alumnoId] || ""}
+                                                onChange={e => manejarCambioFecha(hijo.alumnoId, "fin", e.target.value)}
                                                 style={{ padding: "5px", width: "100%" }}
                                             />
+
                                         </div>
                                     </div>
                                 </div>

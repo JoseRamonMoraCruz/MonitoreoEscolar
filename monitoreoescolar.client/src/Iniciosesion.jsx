@@ -110,7 +110,7 @@ const Login = () => {
 
                 <div className="separator"></div>
                 <div className="register-link">
-                    <span>No tengo cuenta</span> <Link to="/registro">Registrarse</Link>
+                    <span>No tengo cuenta</span> <Link to="/registro">Registrarse?</Link>
                 </div>
 
                 <div className="forgot-password">

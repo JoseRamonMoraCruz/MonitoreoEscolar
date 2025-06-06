@@ -16,7 +16,7 @@ const Padre = () => {
     const toastShownRef = useRef(false);
 
     const navigate = useNavigate();
-
+    
     const location = useLocation();
 
     useEffect(() => {
@@ -34,10 +34,6 @@ const Padre = () => {
             window.history.replaceState({}, document.title);
         }
     }, [location.state]);
-
-
-
-
 
     // Carga los hijos del padre al montar
     useEffect(() => {

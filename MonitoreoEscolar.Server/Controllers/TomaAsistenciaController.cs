@@ -173,8 +173,10 @@ namespace MonitoreoEscolar.Server.Controllers
             var asistencias = await _context.Asistencias
                 .Include(a => a.Alumno)
                 .Where(a => a.Fecha == hoy &&
-                            a.HoraEntrada != null &&
-                            EF.Functions.DateDiffMinute(a.HoraEntrada.Value, ahora) < 60)
+                            (
+                                (a.HoraEntrada != null && EF.Functions.DateDiffMinute(a.HoraEntrada.Value, ahora) < 60) ||
+                                a.HoraSalida != null // <- si ya tiene salida, mostrarlo aunque hayan pasado horas
+                            ))
                 .ToListAsync();
 
             var resultado = asistencias.Select(a => new
@@ -185,7 +187,7 @@ namespace MonitoreoEscolar.Server.Controllers
                 Grupo = a.Alumno.Grupo,
                 Carrera = a.Alumno.Carrera,
                 Turno = a.Alumno.Turno,
-                Entrada = a.HoraEntrada?.ToString("HH:mm:ss"),
+                Entrada = a.HoraEntrada?.ToString("HH:mm:ss") ?? "--",
                 Salida = a.HoraSalida?.ToString("HH:mm:ss") ?? "--"
             }).ToList();
 

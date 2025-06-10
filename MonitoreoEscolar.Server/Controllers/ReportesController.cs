@@ -30,9 +30,18 @@ namespace MonitoreoEscolar.Server.Controllers
             // Validar que la fecha sea válida y esté en el formato correcto
             reporte.Fecha = DateTime.SpecifyKind(reporte.Fecha, DateTimeKind.Local);
 
+            // Obtener EscuelaId desde headers
+            if (!int.TryParse(Request.Headers["Escuela-Id"], out int escuelaId))
+                return BadRequest("Falta el ID de la escuela en el encabezado.");
+
+            var escuela = await _context.Escuelas.FindAsync(escuelaId);
+            if (escuela == null)
+                return NotFound("Escuela no encontrada para enviar correo.");
+
+
             var alumno = await _context.Alumnos
-                .Include(a => a.TutorUsuario)
-                .FirstOrDefaultAsync(a => a.Id == reporte.AlumnoId);
+             .Include(a => a.TutorUsuario)
+             .FirstOrDefaultAsync(a => a.Id == reporte.AlumnoId && a.EscuelaId == escuelaId);
 
             if (alumno == null)
                 return NotFound(new { mensaje = "Alumno no encontrado para asignar el reporte." });
@@ -59,10 +68,30 @@ namespace MonitoreoEscolar.Server.Controllers
 
                 string asuntoCorreo = "📢 Nuevo Reporte para su hijo(a)";
 
-                await EnviarCorreoTutor(alumno.TutorUsuario.Correo, asuntoCorreo, mensajeCorreo, nombreTutor);
+                await EnviarCorreoTutor(
+                 alumno.TutorUsuario.Correo,
+                 asuntoCorreo,
+                 mensajeCorreo,
+                 nombreTutor,
+                 escuela.CorreoNotificaciones,
+                 escuela.CodigoAppGmail,
+                 escuela.Nombre
+             );
+
             }
 
-            return Ok(new { mensaje = "Reporte generado exitosamente.", reporte });
+            return Ok(new
+            {
+                mensaje = "Reporte generado exitosamente.",
+                reporte = new
+                {
+                    id = reporte.Id,
+                    alumnoId = reporte.AlumnoId,
+                    fecha = reporte.Fecha,
+                    motivo = reporte.Motivo,
+                    responsable = reporte.ResponsableDelReporte
+                }
+            });
         }
 
 
@@ -70,8 +99,12 @@ namespace MonitoreoEscolar.Server.Controllers
         [HttpGet]
         public async Task<IActionResult> ObtenerReportes()
         {
+            if (!int.TryParse(Request.Headers["Escuela-Id"], out int escuelaId))
+                return BadRequest("Falta el ID de la escuela en el encabezado.");
+
             var list = await _context.Reportes
                 .Include(r => r.Alumno)
+                .Where(r => r.Alumno.EscuelaId == escuelaId)
                 .ToListAsync();
 
             var dto = list.Select(r => new {
@@ -126,10 +159,18 @@ namespace MonitoreoEscolar.Server.Controllers
             return Ok(new { mensaje = "Reporte actualizado exitosamente.", reporte = reporteEditado });
 
         }
-        private async Task EnviarCorreoTutor(string correoDestino, string asunto, string mensaje, string nombreTutor)
+        private async Task EnviarCorreoTutor(
+                 string correoDestino,
+                 string asunto,
+                 string mensaje,
+                 string nombreTutor,
+                 string remitenteCorreo,
+                 string claveApp,
+                 string nombreEscuela)
+
         {
             var email = new MimeMessage();
-            email.From.Add(new MailboxAddress("Monitoreo Escolar", "serviciosmonitoreoescolar@gmail.com"));
+            email.From.Add(new MailboxAddress(nombreEscuela, remitenteCorreo));
             email.To.Add(MailboxAddress.Parse(correoDestino));
             email.Subject = asunto;
 
@@ -153,7 +194,7 @@ namespace MonitoreoEscolar.Server.Controllers
 
             using var smtp = new SmtpClient();
             await smtp.ConnectAsync("smtp.gmail.com", 587, SecureSocketOptions.StartTls);
-            await smtp.AuthenticateAsync("serviciosmonitoreoescolar@gmail.com", "dxzarzmqarilrlbz");  
+            await smtp.AuthenticateAsync(remitenteCorreo, claveApp);
             await smtp.SendAsync(email);
             await smtp.DisconnectAsync(true);
         }

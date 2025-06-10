@@ -16,30 +16,45 @@ const Login = () => {
     const toastShownRef = useRef(false);
 
     useEffect(() => {
-        if (location.state?.mensajeRegistro && !toastShownRef.current) {
-            toast.current?.show({
-                severity: 'success',
-                summary: 'Registro exitoso',
-                detail: location.state.mensajeRegistro,
-                life: 3000
-            });
+        if (!toastShownRef.current) {
+            if (location.state?.mensajeRegistro) {
+                toast.current?.show({
+                    severity: 'success',
+                    summary: 'Registro exitoso',
+                    detail: location.state.mensajeRegistro,
+                    life: 3000
+                });
+            } else if (location.state?.mensajeError) {
+                toast.current?.show({
+                    severity: 'warn',
+                    summary: 'Atención',
+                    detail: location.state.mensajeError,
+                    life: 3000
+                });
+            }
 
             toastShownRef.current = true;
-
-            // Limpia el state sin afectar el historial
-            window.history.replaceState({}, document.title);
+            window.history.replaceState({}, document.title); // limpiar estado
         }
     }, [location.state]);
+
 
 
     const handleSubmit = async (e) => {
         e.preventDefault();
 
         try {
+            const codigoEscuela = localStorage.getItem("codigoEscuela");
+
             const response = await axios.post("http://localhost:5099/api/usuarios/login", {
                 correo: email,
                 contrasena: password
+            }, {
+                headers: {
+                    "Codigo-Escuela": codigoEscuela || ""
+                }
             });
+
 
             const usuario = response.data.usuario;
 
@@ -53,13 +68,30 @@ const Login = () => {
             localStorage.setItem('telefono', usuario.telefono);
             localStorage.setItem('tipo_Usuario', usuario.tipo_Usuario);
 
+            if (usuario.escuelaId) {
+                localStorage.setItem("escuelaId", usuario.escuelaId);
+            }
+            if (usuario.codigoEscuela) {
+                localStorage.setItem("codigoEscuela", usuario.codigoEscuela);
+            }
+
             // Esperar a que se muestre el toast antes de redirigir
             if (usuario.tipo_Usuario === "personal") {
-                navigate("/menu", {
-                    state: {
-                        mensajeBienvenida: `¡Bienvenido ${usuario.nombre}! Gracias por iniciar sesión.`
-                    }
-                });
+                if (usuario.escuelaId) {
+                    localStorage.setItem("escuelaId", usuario.escuelaId); // Guardar la escuela si ya está vinculada
+
+                    navigate("/menu", {
+                        state: {
+                            mensajeBienvenida: `¡Bienvenido ${usuario.nombre}! Gracias por iniciar sesión.`
+                        }
+                    });
+                } else {
+                    navigate("/validar-codigo", {
+                        state: {
+                            mensajeError: "Debes ingresar el código de tu escuela antes de continuar."
+                        }
+                    });
+                }
             } else if (usuario.tipo_Usuario === "padre") {
                 localStorage.setItem("idPadre", usuario.id_Usuario);
                 localStorage.setItem("nombrePadre", usuario.nombre);

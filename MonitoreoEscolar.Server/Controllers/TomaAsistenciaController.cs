@@ -31,9 +31,18 @@ namespace MonitoreoEscolar.Server.Controllers
                     ApellidoPaterno = ""
                 });
 
+            // Obtener EscuelaId desde headers
+            if (!int.TryParse(Request.Headers["Escuela-Id"], out int escuelaId))
+                return BadRequest("Falta el ID de la escuela en el encabezado.");
+
+            var escuela = await _context.Escuelas.FindAsync(escuelaId);
+            if (escuela == null)
+                return NotFound("Escuela no encontrada para enviar correo.");
+
+
             var alumno = await _context.Alumnos
-            .Include(a => a.TutorUsuario)
-           .FirstOrDefaultAsync(a => a.Id == dto.AlumnoId);
+             .Include(a => a.TutorUsuario)
+             .FirstOrDefaultAsync(a => a.Id == dto.AlumnoId && a.EscuelaId == escuelaId);
 
 
             if (alumno == null)
@@ -112,8 +121,15 @@ namespace MonitoreoEscolar.Server.Controllers
             if (alumno.TutorUsuario != null && !string.IsNullOrEmpty(alumno.TutorUsuario.Correo))
             {
                 string nombreTutor = $"{alumno.TutorUsuario.Nombre} {alumno.TutorUsuario.ApellidoPaterno} {alumno.TutorUsuario.ApellidoMaterno}";
-                await EnviarCorreoTutor(alumno.TutorUsuario.Correo, asuntoCorreo, mensajeCorreo, nombreTutor);
-
+                await EnviarCorreoTutor(
+                 alumno.TutorUsuario.Correo,
+                 asuntoCorreo,
+                 mensajeCorreo,
+                 nombreTutor,
+                 escuela.CorreoNotificaciones,
+                 escuela.CodigoAppGmail,
+                 escuela.Nombre
+             );
             }
 
             return Ok(new AsistenciaRespuestaDTO
@@ -124,10 +140,10 @@ namespace MonitoreoEscolar.Server.Controllers
             });
         }
 
-        private async Task EnviarCorreoTutor(string correoDestino, string asunto, string mensaje, string nombreTutor)
+        private async Task EnviarCorreoTutor(string correoDestino, string asunto, string mensaje, string nombreTutor, string remitenteCorreo, string claveApp, string nombreEscuela)
         {
             var email = new MimeMessage();
-            email.From.Add(new MailboxAddress("Monitoreo Escolar", "serviciosmonitoreoescolar@gmail.com"));
+            email.From.Add(new MailboxAddress(nombreEscuela, remitenteCorreo));
             email.To.Add(MailboxAddress.Parse(correoDestino));
             email.Subject = asunto;
 
@@ -137,20 +153,17 @@ namespace MonitoreoEscolar.Server.Controllers
         <div style='font-family: Segoe UI, sans-serif; padding: 20px; background-color: #eef2f7;'>
             <div style='max-width: 600px; margin: auto; background-color: white; border-radius: 12px; padding: 30px; box-shadow: 0 4px 12px rgba(0,0,0,0.15);'>
                 <div style='text-align: center;'>
-                    <h2 style='color: #007bff; margin-bottom: 10px;'> Monitoreo Escolar</h2>
+                    <h2 style='color: #007bff; margin-bottom: 10px;'>{nombreEscuela}</h2>
                     <p style='font-size: 15px; color: #555;'>Seguimiento en tiempo real de entradas y salidas escolares.</p>
                 </div>
                 <hr style='margin: 20px 0; border: none; height: 1px; background-color: #ddd;' />
-                
                 <p style='font-size: 16px; color: #333;'>Estimado/a {nombreTutor}</p>
                 <p style='font-size: 15px; color: #444;'>{mensaje}</p>
-
                 <p style='font-size: 10px; color: #888; margin-top: 30px;'>
                     Este correo ha sido enviado automáticamente por el sistema de monitoreo escolar.<br/>
                     Si tiene dudas, comuníquese con la escuela.
                 </p>
-
-                <p style='text-align: center; font-size: 9px; color: #aaa;'>© {DateTime.Now.Year} Monitoreo Escolar</p>
+                <p style='text-align: center; font-size: 9px; color: #aaa;'>© {DateTime.Now.Year} {nombreEscuela}</p>
             </div>
         </div>"
             };
@@ -159,25 +172,39 @@ namespace MonitoreoEscolar.Server.Controllers
 
             using var smtp = new SmtpClient();
             await smtp.ConnectAsync("smtp.gmail.com", 587, SecureSocketOptions.StartTls);
-            await smtp.AuthenticateAsync("serviciosmonitoreoescolar@gmail.com", "dxzarzmqarilrlbz");
+            await smtp.AuthenticateAsync(remitenteCorreo, claveApp);
             await smtp.SendAsync(email);
             await smtp.DisconnectAsync(true);
         }
 
+
         [HttpGet("hoy")]
         public async Task<IActionResult> ObtenerAsistenciasRecientes()
         {
+
+            // 1. Obtener EscuelaId desde el encabezado
+            if (!int.TryParse(Request.Headers["Escuela-Id"], out int escuelaId))
+                return BadRequest("Falta el ID de la escuela en el encabezado.");
+
+            // 2. Buscar datos de la escuela
+            var escuela = await _context.Escuelas.FindAsync(escuelaId);
+            if (escuela == null)
+                return NotFound("Escuela no encontrada para envío de correo.");
+
             var hoy = DateOnly.FromDateTime(DateTime.Now);
             var ahora = DateTime.Now;
 
             var asistencias = await _context.Asistencias
-                .Include(a => a.Alumno)
-                .Where(a => a.Fecha == hoy &&
-                            (
-                                (a.HoraEntrada != null && EF.Functions.DateDiffMinute(a.HoraEntrada.Value, ahora) < 60) ||
-                                a.HoraSalida != null // <- si ya tiene salida, mostrarlo aunque hayan pasado horas
-                            ))
-                .ToListAsync();
+              .Include(a => a.Alumno)
+              .Where(a =>
+                  a.Fecha == hoy &&
+                  a.Alumno.EscuelaId == escuelaId && // ✅ FILTRO POR ESCUELA
+                  (
+                      (a.HoraEntrada != null && EF.Functions.DateDiffMinute(a.HoraEntrada.Value, ahora) < 60) ||
+                      a.HoraSalida != null
+                  )
+              )
+              .ToListAsync();
 
             var resultado = asistencias.Select(a => new
             {

@@ -6,11 +6,27 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace MonitoreoEscolar.Server.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialCreate : Migration
+    public partial class InicialConEscuela : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.CreateTable(
+                name: "Escuelas",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Nombre = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    CodigoAcceso = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    CorreoNotificaciones = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    CodigoAppGmail = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Escuelas", x => x.Id);
+                });
+
             migrationBuilder.CreateTable(
                 name: "Grupos",
                 columns: table => new
@@ -20,11 +36,17 @@ namespace MonitoreoEscolar.Server.Migrations
                     Grado = table.Column<int>(type: "int", nullable: false),
                     Letra = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Carrera = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    NombreDocente = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                    NombreDocente = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    EscuelaId = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Grupos", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Grupos_Escuelas_EscuelaId",
+                        column: x => x.EscuelaId,
+                        principalTable: "Escuelas",
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -41,11 +63,17 @@ namespace MonitoreoEscolar.Server.Migrations
                     Telefono = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Tipo_Usuario = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     CodigoVerificacion = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    FechaExpiracionCodigo = table.Column<DateTime>(type: "datetime2", nullable: true)
+                    FechaExpiracionCodigo = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    EscuelaId = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Usuarios", x => x.Id_Usuario);
+                    table.ForeignKey(
+                        name: "FK_Usuarios_Escuelas_EscuelaId",
+                        column: x => x.EscuelaId,
+                        principalTable: "Escuelas",
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -70,11 +98,17 @@ namespace MonitoreoEscolar.Server.Migrations
                     TutorId = table.Column<int>(type: "int", nullable: true),
                     Domicilio = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     CodigoQR = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    EscuelaId = table.Column<int>(type: "int", nullable: true),
                     GrupoId = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Alumnos", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Alumnos_Escuelas_EscuelaId",
+                        column: x => x.EscuelaId,
+                        principalTable: "Escuelas",
+                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_Alumnos_Grupos_GrupoId",
                         column: x => x.GrupoId,
@@ -170,6 +204,11 @@ namespace MonitoreoEscolar.Server.Migrations
                 });
 
             migrationBuilder.CreateIndex(
+                name: "IX_Alumnos_EscuelaId",
+                table: "Alumnos",
+                column: "EscuelaId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Alumnos_GrupoId",
                 table: "Alumnos",
                 column: "GrupoId");
@@ -195,9 +234,19 @@ namespace MonitoreoEscolar.Server.Migrations
                 column: "GrupoId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Grupos_EscuelaId",
+                table: "Grupos",
+                column: "EscuelaId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Reportes_AlumnoId",
                 table: "Reportes",
                 column: "AlumnoId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Usuarios_EscuelaId",
+                table: "Usuarios",
+                column: "EscuelaId");
         }
 
         /// <inheritdoc />
@@ -220,6 +269,9 @@ namespace MonitoreoEscolar.Server.Migrations
 
             migrationBuilder.DropTable(
                 name: "Usuarios");
+
+            migrationBuilder.DropTable(
+                name: "Escuelas");
         }
     }
 }

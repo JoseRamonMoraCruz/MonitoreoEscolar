@@ -1,4 +1,24 @@
-﻿.container {
+﻿:root {
+    --fondo-claro: #f2f2f2;
+    --fondo-oscuro: #1d1d1d;
+}
+
+body.tema-oscuro .container,
+body.tema-oscuro .dashboard-layout,
+body.tema-oscuro .register-container {
+    background: linear-gradient(135deg, #1d1d1d, #2a2a2a) !important;
+    color: white;
+}
+
+body.tema-claro .container,
+body.tema-claro .dashboard-layout,
+body.tema-claro .register-container {
+    background: linear-gradient(135deg, #89f7fe, #66a6ff);
+    color: black;
+}
+
+
+.container {
     display: flex;
     justify-content: center;
     align-items: center;

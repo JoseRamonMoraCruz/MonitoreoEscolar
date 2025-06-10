@@ -1,9 +1,11 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MonitoreoEscolar.Server.Data;
+using MonitoreoEscolar.Server.DTOs;
+using MonitoreoEscolar.Server.Models;
+using QRCoder;
 using System.Globalization;
 using System.Text;
-using QRCoder;
 
 namespace MonitoreoEscolar.Server.Controllers
 {
@@ -21,7 +23,7 @@ namespace MonitoreoEscolar.Server.Controllers
 
         // REGISTRAR ALUMNO 
         [HttpPost("registro")]
-        public async Task<IActionResult> RegistrarAlumno([FromBody] Alumno request)
+        public async Task<IActionResult> RegistrarAlumno([FromBody] RegistroAlumnoRequest request)
         {
             try
             {
@@ -31,12 +33,10 @@ namespace MonitoreoEscolar.Server.Controllers
                 if (string.IsNullOrWhiteSpace(request.Nombre) || string.IsNullOrWhiteSpace(request.ApellidoPaterno) || string.IsNullOrWhiteSpace(request.ApellidoMaterno))
                     return BadRequest(new { mensaje = "El Nombre y los dos Apellidos son obligatorios." });
 
-
-                // Validar si ya existe al alumno si ya tiene esa curp
+                // Validar CURP duplicada
                 var existeCurp = await _context.Alumnos.AnyAsync(a => a.CURP == request.CURP.Trim().ToUpper());
                 if (existeCurp)
                     return BadRequest(new { mensaje = "Ya existe un alumno con esa CURP registrada." });
-
 
                 var nombreCompleto = $"{request.Nombre.Trim()} {request.ApellidoPaterno.Trim()} {request.ApellidoMaterno.Trim()}".Trim();
                 var nombreNormalizado = RemoveDiacritics(nombreCompleto.ToLower());
@@ -58,19 +58,20 @@ namespace MonitoreoEscolar.Server.Controllers
                     Turno = request.Turno?.Trim(),
                     Generacion = request.Generacion?.Trim(),
                     Ciclo = request.Ciclo?.Trim(),
-                    CodigoQR = "" // temporal
+                    CodigoQR = "",
+                    EscuelaId = request.EscuelaId
                 };
 
+
                 _context.Alumnos.Add(alumno);
-await _context.SaveChangesAsync(); // Aquí se genera el ID
+                await _context.SaveChangesAsync();
 
-// Asignar ahora el código QR usando el ID
-alumno.CodigoQR = alumno.Id.ToString();
-await _context.SaveChangesAsync();
+                alumno.CodigoQR = alumno.Id.ToString();
+                await _context.SaveChangesAsync();
 
-Console.WriteLine("CÓDIGO QR GENERADO: " + alumno.CodigoQR);
+                Console.WriteLine("CÓDIGO QR GENERADO: " + alumno.CodigoQR);
 
-return Ok(new { mensaje = "Alumno registrado exitosamente", alumno });
+                return Ok(new { mensaje = "Alumno registrado exitosamente", alumno });
             }
             catch (Exception ex)
             {
@@ -78,27 +79,26 @@ return Ok(new { mensaje = "Alumno registrado exitosamente", alumno });
             }
         }
 
+
         // ESTE LO QUE HACE ES GENERAR UN QR CON EL CODIGO QR DEL ALUMNO
         [HttpGet("qr/{alumnoId}")]
-        public async Task<IActionResult> ObtenerQRAlumno(int alumnoId)
+        public async Task<IActionResult> ObtenerQRAlumno(int alumnoId, [FromQuery] int escuelaId)
         {
-            var alumno = await _context.Alumnos.FindAsync(alumnoId);
+            var alumno = await _context.Alumnos.FirstOrDefaultAsync(a => a.Id == alumnoId && a.EscuelaId == escuelaId);
             if (alumno == null)
                 return NotFound("Alumno no encontrado.");
 
             using var qrGenerator = new QRCodeGenerator();
-
-            // Cambia el contenido del QR: ahora será el Id del alumno
             var qrData = qrGenerator.CreateQrCode(alumno.Id.ToString(), QRCodeGenerator.ECCLevel.Q);
-
             var pngQrCode = new PngByteQRCode(qrData);
             byte[] qrCodeAsPng = pngQrCode.GetGraphic(20);
 
             return File(qrCodeAsPng, "image/png");
         }
 
+
         [HttpGet("buscar")]
-        public async Task<IActionResult> BuscarAlumnos([FromQuery] string termino)
+        public async Task<IActionResult> BuscarAlumnos([FromQuery] string termino, [FromQuery] int escuelaId)
         {
             if (string.IsNullOrWhiteSpace(termino))
                 return BadRequest(new { mensaje = "El término de búsqueda no puede estar vacío." });
@@ -107,11 +107,13 @@ return Ok(new { mensaje = "Alumno registrado exitosamente", alumno });
 
             var alumnos = await _context.Alumnos
                 .Where(a =>
-                    a.NombreCompleto.ToLower().Contains(lowerTerm)
-                    // Si Carrera es null se convierte en cadena vacía antes de ToLower()
-                    || (a.Carrera ?? string.Empty).ToLower().Contains(lowerTerm)
+                    a.EscuelaId == escuelaId && (
+                        a.NombreCompleto.ToLower().Contains(lowerTerm) ||
+                        (a.Carrera ?? string.Empty).ToLower().Contains(lowerTerm)
+                    )
                 )
-                .Select(a => new {
+                .Select(a => new
+                {
                     a.Id,
                     a.NombreCompleto,
                     a.Carrera
@@ -123,13 +125,13 @@ return Ok(new { mensaje = "Alumno registrado exitosamente", alumno });
 
         //  OBTENER ALUMNOS DE UN GRUPO ESPECÍFICO (Sin cambios)
         [HttpGet("grupo/{grupoStr}")]
-        public async Task<IActionResult> ObtenerAlumnosPorGrupo(string grupoStr)
+        public async Task<IActionResult> ObtenerAlumnosPorGrupo(string grupoStr, [FromQuery] int escuelaId)
         {
             try
             {
                 var alumnos = await _context.Alumnos
                     .Include(a => a.TutorUsuario)
-                    .Where(a => a.Grupo == grupoStr)
+                   .Where(a => a.Grupo == grupoStr && a.EscuelaId == escuelaId)
                     .OrderBy(a => a.NombreCompleto)
                     .Select(a => new
                     {
@@ -167,9 +169,9 @@ return Ok(new { mensaje = "Alumno registrado exitosamente", alumno });
 
         //  ELIMINAR ALUMNO
         [HttpDelete("eliminar/{id}")]
-        public async Task<IActionResult> EliminarAlumno(int id)
+        public async Task<IActionResult> EliminarAlumno(int id, [FromQuery] int escuelaId)
         {
-            var alumno = await _context.Alumnos.FindAsync(id);
+            var alumno = await _context.Alumnos.FirstOrDefaultAsync(a => a.Id == id && a.EscuelaId == escuelaId);
             if (alumno == null) return NotFound("Alumno no encontrado.");
 
             _context.Alumnos.Remove(alumno);
@@ -204,7 +206,7 @@ return Ok(new { mensaje = "Alumno registrado exitosamente", alumno });
         {
             try
             {
-                var alumnoExistente = await _context.Alumnos.FindAsync(id);
+                var alumnoExistente = await _context.Alumnos.FirstOrDefaultAsync(a => a.Id == id && a.EscuelaId == alumnoEditado.EscuelaId);
 
                 if (alumnoExistente == null)
                     return NotFound(new { mensaje = "Alumno no encontrado." });

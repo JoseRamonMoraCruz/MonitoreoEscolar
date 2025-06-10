@@ -6,6 +6,9 @@ import { TabMenu } from "primereact/tabmenu";
 import "./Menu.css";
 import axios from "axios";
 import { Toast } from "primereact/toast";
+import { InputText } from 'primereact/inputtext';
+import { Divider } from 'primereact/divider';
+import { cambiarTema } from './themeSwitcher';
 
 
 const Menu = () => {
@@ -21,12 +24,22 @@ const Menu = () => {
     });
     // State to control the visibility of the sidebar
     const [visibleSidebar, setVisibleSidebar] = useState(false);
+    const [codigoEscuela, setCodigoEscuela] = useState(localStorage.getItem("codigoEscuela") || "No asignado");
 
     // Toast reference for notifications
     const toast = useRef(null);
     const location = useLocation();
 
+    // justo dentro del componente Menu:
+    const [modoOscuro, setModoOscuro] = useState(
+        localStorage.getItem('temaPreferido')?.includes('dark')
+    );
 
+    const toggleTema = () => {
+        const nuevoTema = modoOscuro ? 'lara-light-blue' : 'lara-dark-indigo';
+        cambiarTema(nuevoTema);
+        setModoOscuro(!modoOscuro);
+    };
     useEffect(() => {
         setEditedUser({
             id_Usuario: localStorage.getItem("idUsuario") || "",
@@ -38,7 +51,10 @@ const Menu = () => {
             newPassword: "",
             confirmPassword: ""
         });
+
+        setCodigoEscuela(localStorage.getItem("codigoEscuela") || "No asignado");
     }, []);
+
 
     const handleInputChange = e => {
         const { name, value } = e.target;
@@ -122,7 +138,10 @@ const Menu = () => {
         {
             label: 'Perfil',
             template: () => (
-                <div className="perfil-tab" onClick={() => setVisibleSidebar(true)}>
+                <div className="perfil-tab" onClick={() => {
+                    setCodigoEscuela(localStorage.getItem("codigoEscuela") || "No asignado");
+                    setVisibleSidebar(true);
+                }}>
                     <div className="perfil-icono-circular">
                         <i className="pi pi-user perfil-icono-interno"></i>
                     </div>
@@ -143,6 +162,13 @@ const Menu = () => {
                     <li><Link to="/toma-de-asistencia">Toma de Asistencias</Link></li>
                     <li><Link to="/agregar-alumno">Agregar Alumno</Link></li>
                     <li><Link to="/lista-alumnos">Lista de Grupos</Link></li>
+                    <Button
+                        label={modoOscuro ? "" : ""}
+                        icon={modoOscuro ? "pi pi-sun" : "pi pi-moon"}
+                        severity="secondary"
+                        onClick={toggleTema}
+                        className="ml-2"
+                    />
                 </ul>
             </nav>
 
@@ -152,59 +178,92 @@ const Menu = () => {
                     <span className="text-xl font-bold">Editar Perfil</span>
                 </h2>
 
-                <form onSubmit={handleSubmit}>
-                    {["nombre", "apellidoPaterno", "apellidoMaterno", "correo", "telefono"].map(campo => (
-                        <div className="perfil-field-group" key={campo}>
-                            <label>{campo.charAt(0).toUpperCase() + campo.slice(1)}:</label>
-                            <input
-                                name={campo}
-                                value={editedUser[campo]}
-                                onChange={handleInputChange}
-                                required
-                                type={campo === "correo" ? "email" : "text"}
-                            />
-                        </div>
-                    ))}
-                    <div className="perfil-field-group">
-                        <label>Nueva contraseña:</label>
-                        <input
-                            type="password"
-                            name="newPassword"
-                            value={editedUser.newPassword}
-                            onChange={handleInputChange}
-                            placeholder="Opcional"
-                        />
-                    </div>
-                    <div className="perfil-field-group">
-                        <label>Confirmar contraseña:</label>
-                        <input
-                            type="password"
-                            name="confirmPassword"
-                            value={editedUser.confirmPassword}
-                            onChange={handleInputChange}
-                            placeholder="Opcional"
-                        />
-                    </div>
-                    <Button
-                        type="submit"
-                        label="Actualizar"
-                        icon="pi pi-save"
-                        severity="success"
-                        raised
-                        className="w-full mb-3"
-                    />
-                </form>
-
-                <div className="cerrar-sesion-container">
-                    <Button
-                        icon="pi pi-sign-out"
-                        label="Cerrar Sesión"
-                        severity="danger"
-                        outlined
-                        className="w-full"
-                        onClick={() => window.location.href = "/"}
-                    />
+                <div className="flex align-items-center gap-2 mb-4">
+                    <span className="text-sm text-700">Código Escuela:</span>
+                    <span className="font-bold text-primary">{codigoEscuela}</span>
+                    <Button icon="pi pi-copy" rounded text severity="secondary" onClick={() => {
+                        navigator.clipboard.writeText(localStorage.getItem("codigoEscuela") || "");
+                        toast.current?.show({
+                            severity: "info",
+                            summary: "Copiado",
+                            detail: "Código de escuela copiado al portapapeles",
+                            life: 2000
+                        });
+                    }} />
                 </div>
+
+                <form onSubmit={handleSubmit} className="p-fluid">
+                    <Divider align="left">
+                        <span className="text-lg font-medium text-900">
+                            <i className="pi pi-user-edit" style={{ marginRight: '6px' }}></i>
+                            Información Personal
+                        </span>
+                    </Divider>
+
+                    <div className="field">
+                        <label htmlFor="nombre">Nombre</label>
+                        <InputText id="nombre" name="nombre" value={editedUser.nombre} onChange={handleInputChange} />
+                    </div>
+
+                    <div className="field">
+                        <label htmlFor="apellidoPaterno">Apellido Paterno</label>
+                        <InputText id="apellidoPaterno" name="apellidoPaterno" value={editedUser.apellidoPaterno} onChange={handleInputChange} />
+                    </div>
+
+                    <div className="field">
+                        <label htmlFor="apellidoMaterno">Apellido Materno</label>
+                        <InputText id="apellidoMaterno" name="apellidoMaterno" value={editedUser.apellidoMaterno} onChange={handleInputChange} />
+                    </div>
+
+                    <Divider align="left">
+                        <span className="text-lg font-medium text-900">
+                            <i className="pi pi-envelope" style={{ marginRight: '6px' }}></i>
+                            Contacto
+                        </span>
+                    </Divider>
+
+                    <div className="field">
+                        <label htmlFor="correo">Correo Electrónico</label>
+                        <InputText id="correo" name="correo" value={editedUser.correo} onChange={handleInputChange} type="email" />
+                    </div>
+
+                    <div className="field">
+                        <label htmlFor="telefono">Teléfono</label>
+                        <InputText id="telefono" name="telefono" value={editedUser.telefono} onChange={handleInputChange} />
+                    </div>
+
+                    <Divider align="left">
+                        <span className="text-lg font-medium text-900">
+                            <i className="pi pi-lock" style={{ marginRight: '6px' }}></i>
+                            Cambiar Contraseña (opcional)
+                        </span>
+                    </Divider>
+
+                    <div className="field">
+                        <label htmlFor="newPassword">Nueva Contraseña</label>
+                        <InputText id="newPassword" name="newPassword" value={editedUser.newPassword} onChange={handleInputChange} type="password" />
+                    </div>
+
+                    <div className="field">
+                        <label htmlFor="confirmPassword">Confirmar Contraseña</label>
+                        <InputText id="confirmPassword" name="confirmPassword" value={editedUser.confirmPassword} onChange={handleInputChange} type="password" />
+                    </div>
+
+                    <div className="flex flex-column gap-2 mt-4">
+                        <Button type="submit" label="Actualizar Perfil" icon="pi pi-save" severity="success" className="w-full" />
+                        <Button
+                            label="Cerrar Sesión"
+                            icon="pi pi-sign-out"
+                            severity="danger"
+                            outlined
+                            className="w-full"
+                            onClick={() => {
+                                localStorage.clear(); // Limpia todo, incluyendo escuelaId y codigoEscuela
+                                window.location.href = "/"; // Redirige al inicio
+                            }}
+                        />
+                    </div>
+                </form>
             </Sidebar>
         </>
     );

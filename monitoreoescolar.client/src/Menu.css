@@ -264,3 +264,28 @@
 .custom-tabmenu .p-tabmenu-nav {
     border-bottom: none !important;
 }
+.perfil-seccion-titulo {
+    font-weight: bold;
+    font-size: 15px;
+    color: #3f51b5;
+    margin: 25px 0 10px 0;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.p-sidebar .field label {
+    font-weight: 600;
+    margin-bottom: 4px;
+    color: #333;
+}
+
+.p-sidebar .field input {
+    border-radius: 6px;
+    border: 1px solid #ccc;
+}
+
+.perfil-sidebar .p-button {
+    font-weight: 600;
+    font-size: 14px;
+}

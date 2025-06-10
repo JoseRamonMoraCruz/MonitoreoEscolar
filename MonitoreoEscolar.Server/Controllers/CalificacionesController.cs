@@ -32,7 +32,12 @@ namespace MonitoreoEscolar.Server.Controllers
 
             try
             {
-                ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
+                if (!int.TryParse(Request.Headers["Escuela-Id"], out int escuelaId))
+                    return BadRequest("Falta el ID de la escuela en el encabezado.");
+
+                var escuela = await _context.Escuelas.FindAsync(escuelaId);
+                if (escuela == null)
+                    return NotFound("Escuela no encontrada para enviar correos.");
 
                 using var stream = new MemoryStream();
                 var correosPendientes = new List<(string correo, string asunto, string mensaje, string nombreTutor)>();
@@ -154,7 +159,7 @@ namespace MonitoreoEscolar.Server.Controllers
                     {
                         try
                         {
-                            await EnviarCorreoTutor(correo, asunto, mensaje, nombreTutor);
+                            await EnviarCorreoTutor(correo, asunto, mensaje, nombreTutor, escuela.CorreoNotificaciones, escuela.CodigoAppGmail, escuela.Nombre);
                         }
                         catch (Exception ex)
                         {
@@ -287,10 +292,18 @@ namespace MonitoreoEscolar.Server.Controllers
 
             return System.Text.RegularExpressions.Regex.Replace(sb.ToString().ToUpper(), @"\s+", " ").Trim();
         }
-        private async Task EnviarCorreoTutor(string correoDestino, string asunto, string mensaje, string nombreTutor)
+        private async Task EnviarCorreoTutor(
+             string correoDestino,
+             string asunto,
+             string mensaje,
+             string nombreTutor,
+             string remitenteCorreo,
+             string claveApp,
+             string nombreEscuela)
+
         {
             var email = new MimeMessage();
-            email.From.Add(new MailboxAddress("Monitoreo Escolar", "serviciosmonitoreoescolar@gmail.com"));
+            email.From.Add(new MailboxAddress(nombreEscuela, remitenteCorreo));
             email.To.Add(MailboxAddress.Parse(correoDestino));
             email.Subject = asunto;
 
@@ -313,23 +326,23 @@ namespace MonitoreoEscolar.Server.Controllers
 
             using var smtp = new SmtpClient();
             await smtp.ConnectAsync("smtp.gmail.com", 587, SecureSocketOptions.StartTls);
-            await smtp.AuthenticateAsync("serviciosmonitoreoescolar@gmail.com", "dxzarzmqarilrlbz"); 
+            await smtp.AuthenticateAsync(remitenteCorreo, claveApp);
             await smtp.SendAsync(email);
             await smtp.DisconnectAsync(true);
         }
 
         private async Task<bool> ProcesarParcial(
-      Alumno alumno,
-      Grupo grupo,
-      string asignatura,
-      int calificacion,
-      string parcialUnidad,
-      string periodo,
-      bool firmado,
-      int asistencias,
-      string tipo,
-      List<Calificacion> listaGuardar,
-      string nombreOriginal)
+          Alumno alumno,
+          Grupo grupo,
+          string asignatura,
+          int calificacion,
+          string parcialUnidad,
+          string periodo,
+          bool firmado,
+          int asistencias,
+          string tipo,
+          List<Calificacion> listaGuardar,
+          string nombreOriginal)
         {
             var calificacionExistente = await _context.Calificaciones.FirstOrDefaultAsync(c =>
                 c.AlumnoId == alumno.Id &&

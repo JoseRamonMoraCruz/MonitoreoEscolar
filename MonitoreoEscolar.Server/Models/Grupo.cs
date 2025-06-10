@@ -1,5 +1,6 @@
 ﻿using MonitoreoEscolar.Server.Models;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 public class Grupo
 {
@@ -21,4 +22,10 @@ public class Grupo
     public string NombreDocente { get; set; } = string.Empty;
 
     public List<Alumno>? Alumnos { get; set; }
+
+    public int? EscuelaId { get; set; }
+
+    [ForeignKey("EscuelaId")]
+    public Escuela? Escuela { get; set; }
+
 }

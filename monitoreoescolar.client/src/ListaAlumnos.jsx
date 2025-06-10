@@ -48,6 +48,8 @@ const ListaAlumnos = () => {
     // Carreras para el Select de edición
     const [selectedCarreraEdit, setSelectedCarreraEdit] = useState(null);
 
+    const escuelaId = localStorage.getItem("escuelaId");
+
     // junto a tus useState existentes
     const [qrCompositeUrl, setQrCompositeUrl] = useState(null);
     const [nombreCompletoQR, setNombreCompletoQR] = useState("");
@@ -75,7 +77,7 @@ const ListaAlumnos = () => {
         if (grupos.length > 0) {
             const opciones = grupos.map(g => ({
                 value: `${g.grado}${g.letra}`,
-                label: `${g.grado}${g.letra}`
+                label: `${g.grado}${g.letra} - ${g.nombreDocente ?? "Sin docente"}`
             }));
             setGroupOptions(opciones);
         }
@@ -88,7 +90,7 @@ const ListaAlumnos = () => {
                 for (const grupo of grupos) {
                     const groupString = `${grupo.grado}${grupo.letra}`;
                     try {
-                        const response = await axios.get(`http://localhost:5099/api/alumnos/grupo/${groupString}`);
+                        const response = await axios.get(`http://localhost:5099/api/alumnos/grupo/${groupString}?escuelaId=${escuelaId}`);
                         newAlumnosPorGrupo[grupo.id] = response.data;
                     } catch (error) {
                         console.error("Error al obtener alumnos para el grupo", grupo, error);
@@ -161,7 +163,9 @@ const ListaAlumnos = () => {
     };
     const obtenerGrupos = async () => {
         try {
-            const response = await axios.get("http://localhost:5099/api/grupos");
+            const escuelaId = localStorage.getItem("escuelaId"); 
+
+            const response = await axios.get(`http://localhost:5099/api/grupos?escuelaId=${escuelaId}`);
             const gruposOrdenados = response.data.sort((a, b) => {
                 const gradeA = parseInt(a.grado, 10);
                 const gradeB = parseInt(b.grado, 10);
@@ -188,8 +192,11 @@ const ListaAlumnos = () => {
             grupo: grupoStr,
             carrera: alumno.carrera ?? "",
             numeroControl: alumno.numeroControl ?? "",
-            curp: alumno.curp ?? ""
-
+            curp: alumno.curp ?? "",
+            turno: alumno.turno ?? "",
+            generacion: alumno.generacion ?? "",
+            ciclo: alumno.ciclo ?? "",
+            plantel: alumno.plantel ?? ""
         });
 
         // 2) Inicializa cada Select con su opción correspondiente
@@ -253,11 +260,13 @@ const ListaAlumnos = () => {
 
             const alumnoParaActualizar = {
                 ...alumnoSinTutor,
-                Grupo: alumno.grupo
+                Grupo: alumno.grupo,
+                EscuelaId: parseInt(escuelaId) // 👈 obligatorio para que el backend lo encuentre
             };
+
             // 4) Llamada al API
             const response = await axios.put(
-                `http://localhost:5099/api/alumnos/editar/${alumno.id}`,
+                `http://localhost:5099/api/alumnos/editar/${alumno.id}?escuelaId=${escuelaId}`,
                 alumnoParaActualizar
             );
             mostrarToast("Alumno actualizado", response.data.mensaje, "success");
@@ -290,7 +299,11 @@ const ListaAlumnos = () => {
             return;
         }
         try {
-            await axios.post("http://localhost:5099/api/grupos/agregar", nuevoGrupo);
+            await axios.post("http://localhost:5099/api/grupos/agregar", {
+                ...nuevoGrupo,
+                escuelaId: parseInt(escuelaId)
+            });
+
             mostrarToast("Grupo agregado", "Grupo agregado correctamente.", "success");
             obtenerGrupos();
             cerrarModalGrupo();
@@ -312,7 +325,7 @@ const ListaAlumnos = () => {
             return;
         }
         try {
-            const response = await axios.get(`http://localhost:5099/api/alumnos/grupo/${groupString}`);
+            const response = await axios.get(`http://localhost:5099/api/alumnos/grupo/${groupString}?escuelaId=${escuelaId}`);
             setAlumnosGrupo(response.data);
             setExpandedGroup(grupo);
         } catch (error) {
@@ -336,7 +349,7 @@ const ListaAlumnos = () => {
     const eliminarGrupo = async () => {
         if (!grupoSeleccionado) return;
         try {
-            await axios.delete(`http://localhost:5099/api/grupos/eliminar/${grupoSeleccionado.id}`);
+            await axios.delete(`http://localhost:5099/api/grupos/eliminar/${grupoSeleccionado.id}?escuelaId=${escuelaId}`);
             mostrarToast("Grupo eliminado", "Grupo eliminado exitosamente.", "success");
             setGrupos(grupos.filter((g) => g.id !== grupoSeleccionado.id));
             if (expandedGroup && expandedGroup.id === grupoSeleccionado.id) {
@@ -364,7 +377,7 @@ const ListaAlumnos = () => {
     const eliminarAlumno = async () => {
         if (!alumnoSeleccionado) return;
         try {
-            await axios.delete(`http://localhost:5099/api/alumnos/eliminar/${alumnoSeleccionado.id}`);
+            await axios.delete(`http://localhost:5099/api/alumnos/eliminar/${alumnoSeleccionado.id}?escuelaId=${escuelaId}`);
             mostrarToast("Alumno eliminado", "El alumno fue eliminado correctamente.", "success");
             setAlumnosGrupo(alumnosGrupo.filter((al) => al.id !== alumnoSeleccionado.id));
             cerrarModalEliminarAlumno();
@@ -426,7 +439,7 @@ const ListaAlumnos = () => {
         }
         try {
             const response = await axios.put(
-                `http://localhost:5099/api/grupos/editar/${grupoDocenteEditado.id}`,
+                `http://localhost:5099/api/grupos/editar/${grupoDocenteEditado.id}?escuelaId=${escuelaId}`,
                 grupoDocenteEditado
             );
             mostrarToast("Grupo actualizado", response.data.mensaje, "success");
@@ -450,7 +463,9 @@ const ListaAlumnos = () => {
 
         try {
             // Llamada al nuevo endpoint para eliminar el docente
-            const response = await axios.put(`http://localhost:5099/api/grupos/eliminarDocente/${grupoDocenteAEliminar.id}`);
+            const response = await axios.put(
+                `http://localhost:5099/api/grupos/eliminarDocente/${grupoDocenteAEliminar.id}?escuelaId=${escuelaId}`
+            );
             mostrarToast("Docente eliminado", response.data.mensaje, "success");
             obtenerGrupos();
             cerrarMenuGrupo();
@@ -475,9 +490,9 @@ const ListaAlumnos = () => {
             setNombreArchivoQR(`QR_${fullName.replace(/\s+/g, "_")}`);
 
             // 2) Descarga el blob PNG original
-            const response = await axios.get(`http://localhost:5099/api/alumnos/qr/${alumnoId}`, {
+            const response = await axios.get(`http://localhost:5099/api/alumnos/qr/${alumnoId}?escuelaId=${escuelaId}`, {
                 responseType: "blob",
-            });
+            });;
             const rawBlob = new Blob([response.data], { type: "image/png" });
             const rawUrl = URL.createObjectURL(rawBlob);
 

@@ -106,8 +106,42 @@ namespace MonitoreoEscolar.Server.Controllers
             {
                 return Unauthorized(new { mensaje = " Usuario o contraseña incorrectos" });
             }
+            // Después de verificar que es personal
+            if (usuario.Tipo_Usuario == "personal")
+            {
+                // Si aún no está vinculado, buscamos el código desde el localStorage (enviado por el frontend)
+                var codigoEscuela = HttpContext.Request.Headers["Codigo-Escuela"].FirstOrDefault();
 
-            return Ok(new { mensaje = "Inicio de sesión exitoso", usuario });
+                if (!string.IsNullOrWhiteSpace(codigoEscuela) && usuario.EscuelaId == null)
+                {
+                    var escuela = await _context.Escuelas.FirstOrDefaultAsync(e => e.CodigoAcceso == codigoEscuela);
+                    if (escuela != null)
+                    {
+                        usuario.EscuelaId = escuela.Id;
+                        await _context.SaveChangesAsync();
+                    }
+                }
+            }
+
+
+            return Ok(new
+            {
+                mensaje = "Inicio de sesión exitoso",
+                usuario = new
+                {
+                    usuario.Id_Usuario,
+                    usuario.Nombre,
+                    usuario.ApellidoPaterno,
+                    usuario.ApellidoMaterno,
+                    usuario.Correo,
+                    usuario.Telefono,
+                    usuario.Tipo_Usuario,
+                    usuario.EscuelaId,
+                    CodigoEscuela = usuario.EscuelaId != null
+              ? _context.Escuelas.Where(e => e.Id == usuario.EscuelaId).Select(e => e.CodigoAcceso).FirstOrDefault()
+              : null
+                }
+            });
         }
         /*
          Inicio de la seccion de contraseñas olvidadas

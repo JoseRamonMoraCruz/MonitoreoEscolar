@@ -48,7 +48,10 @@ const SubirCalif = () => {
         setCargando(true);
         try {
             const response = await axios.post("http://localhost:5099/api/calificaciones/subirCalificaciones", formData, {
-                headers: { "Content-Type": "multipart/form-data" }
+                headers: {
+                    "Content-Type": "multipart/form-data",
+                    "Escuela-Id": localStorage.getItem("escuelaId")
+                }
             });
 
             const { mensaje, cantidad, omitidas, totalIntentos } = response.data;

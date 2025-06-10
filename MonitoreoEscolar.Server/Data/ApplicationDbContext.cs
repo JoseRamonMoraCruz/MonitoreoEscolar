@@ -16,7 +16,7 @@ namespace MonitoreoEscolar.Server.Data
         public DbSet<Calificacion> Calificaciones { get; set; }
         public DbSet<Reporte> Reportes { get; set; }
         public DbSet<Asistencia> Asistencias { get; set; }
-
+        public DbSet<Escuela> Escuelas { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

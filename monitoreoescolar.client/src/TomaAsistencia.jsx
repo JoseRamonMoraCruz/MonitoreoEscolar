@@ -19,7 +19,11 @@ const TomaAsistencia = () => {
 
     const obtenerAsistenciasDelDia = async () => {
         try {
-            const response = await axios.get("http://localhost:5099/api/tomaasistencia/hoy");
+            const response = await axios.get("http://localhost:5099/api/tomaasistencia/hoy", {
+                headers: {
+                    "Escuela-Id": localStorage.getItem("escuelaId")
+                }
+            });
             console.log("📊 Asistencias cargadas:", response.data);
             setAlumnos(response.data);
         } catch (error) {
@@ -39,9 +43,17 @@ const TomaAsistencia = () => {
         console.log(" Código recibido del QR:", codigo);
 
         try {
-            const response = await axios.post("http://localhost:5099/api/tomaasistencia/registrar", {
-                alumnoId: codigo
-            });
+            const response = await axios.post(
+                "http://localhost:5099/api/tomaasistencia/registrar",
+                { alumnoId: codigo },
+                {
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Escuela-Id": localStorage.getItem("escuelaId")
+                    }
+                }
+            );
+
 
             const { mensaje, nombre, apellidoPaterno } = response.data;
             mostrarToast(` ${mensaje}: ${nombre} ${apellidoPaterno}`);

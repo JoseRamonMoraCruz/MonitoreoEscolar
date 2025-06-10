@@ -56,6 +56,9 @@ namespace MonitoreoEscolar.Server.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int?>("EscuelaId")
+                        .HasColumnType("int");
+
                     b.Property<string>("Generacion")
                         .HasColumnType("nvarchar(max)");
 
@@ -92,6 +95,8 @@ namespace MonitoreoEscolar.Server.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("EscuelaId");
+
                     b.HasIndex("GrupoId");
 
                     b.HasIndex("TutorId");
@@ -110,6 +115,9 @@ namespace MonitoreoEscolar.Server.Migrations
                     b.Property<string>("Carrera")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int?>("EscuelaId")
+                        .HasColumnType("int");
+
                     b.Property<int>("Grado")
                         .HasColumnType("int");
 
@@ -122,6 +130,8 @@ namespace MonitoreoEscolar.Server.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("EscuelaId");
 
                     b.ToTable("Grupos");
                 });
@@ -212,6 +222,35 @@ namespace MonitoreoEscolar.Server.Migrations
                     b.ToTable("Calificaciones");
                 });
 
+            modelBuilder.Entity("MonitoreoEscolar.Server.Models.Escuela", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("CodigoAcceso")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("CodigoAppGmail")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("CorreoNotificaciones")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Nombre")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Escuelas");
+                });
+
             modelBuilder.Entity("MonitoreoEscolar.Server.Models.Reporte", b =>
                 {
                     b.Property<int>("Id")
@@ -268,6 +307,9 @@ namespace MonitoreoEscolar.Server.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int?>("EscuelaId")
+                        .HasColumnType("int");
+
                     b.Property<DateTime?>("FechaExpiracionCodigo")
                         .HasColumnType("datetime2");
 
@@ -285,11 +327,17 @@ namespace MonitoreoEscolar.Server.Migrations
 
                     b.HasKey("Id_Usuario");
 
+                    b.HasIndex("EscuelaId");
+
                     b.ToTable("Usuarios");
                 });
 
             modelBuilder.Entity("Alumno", b =>
                 {
+                    b.HasOne("MonitoreoEscolar.Server.Models.Escuela", "Escuela")
+                        .WithMany("Alumnos")
+                        .HasForeignKey("EscuelaId");
+
                     b.HasOne("Grupo", null)
                         .WithMany("Alumnos")
                         .HasForeignKey("GrupoId");
@@ -299,7 +347,18 @@ namespace MonitoreoEscolar.Server.Migrations
                         .HasForeignKey("TutorId")
                         .OnDelete(DeleteBehavior.SetNull);
 
+                    b.Navigation("Escuela");
+
                     b.Navigation("TutorUsuario");
+                });
+
+            modelBuilder.Entity("Grupo", b =>
+                {
+                    b.HasOne("MonitoreoEscolar.Server.Models.Escuela", "Escuela")
+                        .WithMany("Grupos")
+                        .HasForeignKey("EscuelaId");
+
+                    b.Navigation("Escuela");
                 });
 
             modelBuilder.Entity("MonitoreoEscolar.Server.Models.Asistencia", b =>
@@ -342,9 +401,27 @@ namespace MonitoreoEscolar.Server.Migrations
                     b.Navigation("Alumno");
                 });
 
+            modelBuilder.Entity("MonitoreoEscolar.Server.Models.Usuario", b =>
+                {
+                    b.HasOne("MonitoreoEscolar.Server.Models.Escuela", "Escuela")
+                        .WithMany("Usuarios")
+                        .HasForeignKey("EscuelaId");
+
+                    b.Navigation("Escuela");
+                });
+
             modelBuilder.Entity("Grupo", b =>
                 {
                     b.Navigation("Alumnos");
+                });
+
+            modelBuilder.Entity("MonitoreoEscolar.Server.Models.Escuela", b =>
+                {
+                    b.Navigation("Alumnos");
+
+                    b.Navigation("Grupos");
+
+                    b.Navigation("Usuarios");
                 });
 
             modelBuilder.Entity("MonitoreoEscolar.Server.Models.Usuario", b =>

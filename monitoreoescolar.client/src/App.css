@@ -2,11 +2,21 @@
     display: flex;
     flex-direction: column;
     min-height: 100vh;
-    background: linear-gradient(135deg, #89f7fe, #66a6ff);
+    transition: background 0.3s ease;
 }
+
 
 .main-content {
     flex: 1;
     padding: 0;
     overflow-y: auto;
+}
+body.tema-oscuro .dashboard-layout {
+    background: linear-gradient(135deg, #1d1d1d, #2a2a2a) !important;
+    color: white;
+}
+
+body.tema-claro .dashboard-layout {
+    background: linear-gradient(135deg, #89f7fe, #66a6ff);
+    color: black;
 }

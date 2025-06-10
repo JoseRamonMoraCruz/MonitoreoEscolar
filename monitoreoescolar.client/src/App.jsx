@@ -9,6 +9,8 @@ import Padre from "./Padre";
 import ActualizarPassword from './ActualizarPassword';
 import ListaAlumnos from "./ListaAlumnos";
 import TomaAsistencia from "./TomaAsistencia";
+import ValidarCodigo from "./ValidarCodigo";
+import GenerarCodigo from './GenerarCodigo'
 
 
 function App() {
@@ -20,6 +22,8 @@ function App() {
                 <Route path="/registro" element={<Registro />} />
                 <Route path="/padre" element={<Padre />} />
                 <Route path="/actualizar-password" element={<ActualizarPassword />} />
+                <Route path="/validar-codigo" element={<ValidarCodigo />} />
+                <Route path="/generar-codigo" element={<GenerarCodigo />} />
 
                 {/*  Rutas privadas con el menú persistente */}
                 <Route path="/*" element={<DashboardLayout />} />

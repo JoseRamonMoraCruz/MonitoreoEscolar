@@ -28,7 +28,11 @@ const GenerarReportes = () => {
 
     const fetchReportes = async () => {
         try {
-            const res = await axios.get("http://localhost:5099/api/reportes");
+            const res = await axios.get("http://localhost:5099/api/reportes", {
+                headers: {
+                    "Escuela-Id": localStorage.getItem("escuelaId")
+                }
+            });
             setReportesList(res.data);
         } catch (err) {
             console.error("Error al cargar reportes:", err);
@@ -68,6 +72,10 @@ const GenerarReportes = () => {
             await axios.put(`http://localhost:5099/api/reportes/${editingReport.id}`, {
                 Fecha: new Date(editingReport.fecha).toISOString(),
                 Motivo: editingReport.motivo
+            }, {
+                headers: {
+                    "Escuela-Id": localStorage.getItem("escuelaId")
+                }
             });
 
             await fetchReportes(); // vuelve a cargar lista desde el backend
@@ -85,9 +93,7 @@ const GenerarReportes = () => {
     // Traer la lista de reportes siempre que abra el modal
     useEffect(() => {
         if (isModalOpen) {
-            axios.get("http://localhost:5099/api/reportes")
-                .then(res => setReportesList(res.data))
-                .catch(err => console.error(err));
+            fetchReportes(); 
         }
     }, [isModalOpen]);
 
@@ -99,7 +105,12 @@ const GenerarReportes = () => {
 
     const deleteReporte = async () => {
         try {
-            await axios.delete(`http://localhost:5099/api/reportes/${reporteIdAEliminar}`);
+            await axios.delete(`http://localhost:5099/api/reportes/${reporteIdAEliminar}`, {
+                headers: {
+                    "Escuela-Id": localStorage.getItem("escuelaId")
+                }
+            });
+
             setReportesList(r => r.filter(x => x.id !== reporteIdAEliminar));
             setShowConfirmDialog(false);
             setReporteIdAEliminar(null);
@@ -133,7 +144,15 @@ const GenerarReportes = () => {
             return;
         }
         try {
-            const response = await axios.get(`http://localhost:5099/api/alumnos/buscar?termino=${inputValue}`);
+            const escuelaId = localStorage.getItem("escuelaId");
+
+            const response = await axios.get("http://localhost:5099/api/alumnos/buscar", {
+                params: {
+                    termino: inputValue,
+                    escuelaId: escuelaId
+                }
+            });
+
             const optionsData = response.data.map((alumno) => ({
                 value: alumno.id,
                 label: alumno.nombreCompleto
@@ -143,6 +162,7 @@ const GenerarReportes = () => {
             console.error("Error al buscar alumnos:", error);
         }
     };
+
     // Maneja la selección de un alumno
     const handleChangeSelect = (selectedOption) => {
         setSelectedAlumno(selectedOption);
@@ -177,10 +197,19 @@ const GenerarReportes = () => {
         try {
             setLoadingEnviar(true); // activa spinner
 
-            const response = await axios.post("http://localhost:5099/api/reportes/generar", {
-                ...reporte,
-                fecha: toLocalISOString(reporte.fecha)
-            });
+            const response = await axios.post(
+                "http://localhost:5099/api/reportes/generar",
+                {
+                    ...reporte,
+                    fecha: toLocalISOString(reporte.fecha)
+                },
+                {
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Escuela-Id": localStorage.getItem("escuelaId")
+                    }
+                }
+            );
 
             mostrarToast("Reporte generado", response.data.mensaje, "success");
             await fetchReportes(); // actualiza la lista
@@ -190,7 +219,7 @@ const GenerarReportes = () => {
                 alumnoId: null,
                 fecha: "",
                 motivo: "",
-                ResponsableDelReporte: [
+                responsableDelReporte: [
                     localStorage.getItem("nombre"),
                     localStorage.getItem("apellidoPaterno"),
                     localStorage.getItem("apellidoMaterno")

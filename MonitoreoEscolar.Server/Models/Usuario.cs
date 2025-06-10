@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
 
 namespace MonitoreoEscolar.Server.Models
@@ -23,7 +24,7 @@ namespace MonitoreoEscolar.Server.Models
 
         [Required]
         [EmailAddress]
-        public string Correo { get; set; } = string.Empty; //hola
+        public string Correo { get; set; } = string.Empty; 
 
         [Required]
         public string Telefono { get; set; } = string.Empty;
@@ -36,5 +37,11 @@ namespace MonitoreoEscolar.Server.Models
 
         [JsonIgnore]
         public ICollection<Alumno> Alumnos { get; set; } = new List<Alumno>();
+
+        public int? EscuelaId { get; set; }
+
+        [ForeignKey("EscuelaId")]
+        public Escuela? Escuela { get; set; }
+
     }
 }

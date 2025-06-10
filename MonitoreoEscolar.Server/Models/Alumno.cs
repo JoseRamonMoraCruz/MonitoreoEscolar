@@ -45,4 +45,10 @@ public class Alumno
 
     public string CodigoQR { get; set; } = string.Empty;
 
+    //referncia a la escuela
+    public int? EscuelaId { get; set; }
+
+    [ForeignKey("EscuelaId")]
+    public Escuela? Escuela { get; set; }
+
 }

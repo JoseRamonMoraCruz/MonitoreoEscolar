@@ -7,5 +7,6 @@
         public string Letra { get; set; }
         public string? Carrera { get; set; }
         public string? NombreDocente { get; set; }
+        public int EscuelaId { get; set; }
     }
 }

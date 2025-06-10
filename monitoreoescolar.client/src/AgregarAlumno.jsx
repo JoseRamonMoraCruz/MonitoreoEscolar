@@ -118,11 +118,13 @@ const AgregarAlumno = () => {
         setLoading(true);
 
         try {
-            const gruposResponse = await axios.get("http://localhost:5099/api/grupos");
+            const escuelaId = parseInt(localStorage.getItem("escuelaId")); // ✅ obtener ID de la escuela
+            const gruposResponse = await axios.get(`http://localhost:5099/api/grupos?escuelaId=${escuelaId}`);
             const gruposExistentes = gruposResponse.data;
             const grupoEncontrado = gruposExistentes.find(
                 (g) => `${g.grado}${g.letra}`.toUpperCase() === alumno.Grupo.toUpperCase()
             );
+
 
             if (!grupoEncontrado) {
                 toast.current.show({
@@ -150,6 +152,8 @@ const AgregarAlumno = () => {
         setNombreCompletoQR(nombreFull);
         setNombreArchivoQR(`QR_${nombreFull.replace(/\s+/g, "_")}`);
 
+        alumno.EscuelaId = parseInt(localStorage.getItem("escuelaId"));
+
         try {
             const response = await axios.post("http://localhost:5099/api/alumnos/registro", alumno);
             toast.current.show({
@@ -160,7 +164,8 @@ const AgregarAlumno = () => {
             });
 
             const alumnoId = response.data.alumno.id;
-            const qrResponse = await axios.get(`http://localhost:5099/api/alumnos/qr/${alumnoId}`, {
+            const escuelaId = parseInt(localStorage.getItem("escuelaId"));
+            const qrResponse = await axios.get(`http://localhost:5099/api/alumnos/qr/${alumnoId}?escuelaId=${escuelaId}`, {
                 responseType: "blob"
             });
 

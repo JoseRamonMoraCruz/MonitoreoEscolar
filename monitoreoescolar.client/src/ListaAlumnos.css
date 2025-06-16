@@ -11,7 +11,7 @@
 /* Contenido interno */
 .lista-content {
     width: 100%;
-    max-width: 800px;
+    max-width: 1300px; /* o el mismo valor que uses en .grupo-card */
     margin: 0 auto;
 }
 
@@ -75,14 +75,15 @@
     margin: 0 auto;
 }
 
+
 .grupo-card {
     position: relative;
     background: white;
     border-radius: 10px;
-    width: 100%;
-    max-width: 950px;
+    width: calc(100% - 40px); /* margen horizontal */
+    max-width: 1200px;
     box-sizing: border-box;
-    padding: 20px 24px; 
+    padding: 20px 24px;
     margin: 6px auto;
     box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
     font-size: 18px;

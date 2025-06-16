@@ -5,6 +5,7 @@ import EscanerQR from "./EscanerQR";
 import "./TomaAsistencia.css";
 import { Dialog } from 'primereact/dialog';
 import { Toast } from 'primereact/toast'; 
+import { Avatar } from 'primereact/avatar';
 
 
 const TomaAsistencia = () => {
@@ -34,6 +35,22 @@ const TomaAsistencia = () => {
     const abrirModalQR = () => {
         setMostrarQR(true);
     };
+
+    const obtenerColorAleatorio = () => {
+        const colores = [
+            "#f44336", // rojo
+            "#3f51b5", // azul
+            "#4caf50", // verde
+            "#ff9800", // naranja
+            "#9c27b0", // morado
+            "#009688", // turquesa
+            "#795548", // café
+            "#2196f3"  // azul claro
+        ];
+        const indice = Math.floor(Math.random() * colores.length);
+        return colores[indice];
+    };
+
 
     const cerrarModalQR = () => {
         setMostrarQR(false);
@@ -88,36 +105,79 @@ const TomaAsistencia = () => {
         <div className="toma-asistencia-container">
             <Toast ref={toast} />
 
-            {/* Tabla */}
-            <div className="tabla-asistencia-container">
-                <table className="tabla-asistencia">
-                    <thead>
-                        <tr>
-                            <th>Nombre</th>
-                            <th>Apellido Paterno</th>
-                            <th>Apellido Materno</th>
-                            <th>Grupo</th>
-                            <th>Carrera</th>
-                            <th>Turno</th>
-                            <th>Hora de Entrada</th>
-                            <th>Hora de Salida</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {alumnos.map((a, index) => (
-                            <tr key={index}>
-                                <td>{a.nombre}</td>
-                                <td>{a.apellidoPaterno}</td>
-                                <td>{a.apellidoMaterno}</td>
-                                <td>{a.grupo}</td>
-                                <td>{a.carrera}</td>
-                                <td>{a.turno}</td>
-                                <td>{a.entrada}</td>
-                                <td>{a.salida}</td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
+            {/* Tarjetas de asistencia estilo moderno */}
+            <div className="grid grid-nogutter gap-4 mt-4" style={{ paddingInline: "1rem" }}>
+                {alumnos.map((a, index) => {
+                    const obtenerIniciales = (nombre) => {
+                        if (!nombre) return "";
+                        const partes = nombre.trim().split(" ");
+                        if (partes.length === 1) return partes[0][0].toUpperCase();
+                        return (partes[0][0] + partes[1][0]).toUpperCase();
+                    };
+
+                    const iniciales = obtenerIniciales(a.nombre);
+
+                    return (
+                        <div key={index} className="col-12">
+                            <div className="asistencia-box">
+                                <div className="asistencia-left">
+                                    <Avatar
+                                        label={iniciales}
+                                        shape="circle"
+                                        size="xlarge"
+                                        style={{
+                                            backgroundColor: obtenerColorAleatorio(),
+                                            color: "#fff",
+                                            fontWeight: "bold",
+                                            width: "60px",
+                                            height: "60px",
+                                            fontSize: "22px"
+                                        }}
+                                    />
+                                    <div className="asistencia-info">
+                                        <div className="asistencia-nombre">{a.nombre} {a.apellidoPaterno} {a.apellidoMaterno}</div>
+                                        <small>
+                                            <strong>Grupo:</strong> {a.grupo} &nbsp;&nbsp;
+                                            <strong>Carrera:</strong> {a.carrera} &nbsp;&nbsp;
+                                            <strong>Turno:</strong> {a.turno}
+                                        </small>
+                                    </div>
+                                </div>
+
+                                <div className="asistencia-linea"></div>
+
+                                <div className="asistencia-right">
+                                    <div className="asistencia-horas">
+                                        <span>Hora Entrada</span>
+                                        <span>Hora Salida</span>
+                                    </div>
+                                    <div className="asistencia-tiempos">
+                                        <span>
+                                            {a.entrada && a.entrada !== "--"
+                                                ? new Date(`1970-01-01T${a.entrada}`).toLocaleTimeString("es-MX", {
+                                                    hour: "2-digit",
+                                                    minute: "2-digit",
+                                                    second: "2-digit",
+                                                    hour12: true
+                                                })
+                                                : "--"}
+                                        </span>
+                                        <span>
+                                            {a.salida && a.salida !== "--"
+                                                ? new Date(`1970-01-01T${a.salida}`).toLocaleTimeString("es-MX", {
+                                                    hour: "2-digit",
+                                                    minute: "2-digit",
+                                                    second: "2-digit",
+                                                    hour12: true
+                                                })
+                                                : "--"}
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    );
+                })}
             </div>
 
             <div className="botones-accion-container">

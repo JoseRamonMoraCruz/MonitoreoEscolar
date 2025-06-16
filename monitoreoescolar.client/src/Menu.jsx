@@ -9,6 +9,9 @@ import { Toast } from "primereact/toast";
 import { InputText } from 'primereact/inputtext';
 import { Divider } from 'primereact/divider';
 import { cambiarTema } from './themeSwitcher';
+import { SpeedDial } from 'primereact/speeddial';
+import { Dialog } from 'primereact/dialog';
+
 
 
 const Menu = () => {
@@ -30,6 +33,7 @@ const Menu = () => {
     const toast = useRef(null);
     const location = useLocation();
 
+
     // justo dentro del componente Menu:
     const [modoOscuro, setModoOscuro] = useState(
         localStorage.getItem('temaPreferido')?.includes('dark')
@@ -40,6 +44,7 @@ const Menu = () => {
         cambiarTema(nuevoTema);
         setModoOscuro(!modoOscuro);
     };
+
     useEffect(() => {
         setEditedUser({
             id_Usuario: localStorage.getItem("idUsuario") || "",
@@ -62,6 +67,57 @@ const Menu = () => {
     };
 
     const toastShownRef = useRef(false);
+
+    const [modoEdicion, setModoEdicion] = useState(false);
+    const [mostrarConfirmDialog, setMostrarConfirmDialog] = useState(false);
+    const [mostrarModalDespedida, setMostrarModalDespedida] = useState(false);
+
+    const speeddialItems = [
+        {
+            label: 'Editar cuenta',
+            icon: 'pi pi-user-edit',
+            command: () => {
+                setModoEdicion(true);
+                toast.current?.show({
+                    severity: 'info',
+                    summary: 'Modo edición activado',
+                    detail: 'Ya puedes modificar tu información.',
+                    life: 2000
+                });
+            }
+        },
+
+        {
+            label: 'Eliminar cuenta',
+            icon: 'pi pi-trash',
+            command: () => {
+                setMostrarConfirmDialog(true);
+            }
+        }
+,
+        {
+            label: 'Cerrar sesión',
+            icon: 'pi pi-sign-out',
+            command: () => {
+                localStorage.clear();
+                window.location.href = "/";
+            }
+        }
+    ];
+    const cargarDatosDesdeStorage = () => {
+        setEditedUser({
+            id_Usuario: localStorage.getItem("idUsuario") || "",
+            nombre: localStorage.getItem("nombre") || "",
+            apellidoPaterno: localStorage.getItem("apellidoPaterno") || "",
+            apellidoMaterno: localStorage.getItem("apellidoMaterno") || "",
+            correo: localStorage.getItem("correo") || "",
+            telefono: localStorage.getItem("telefono") || "",
+            newPassword: "",
+            confirmPassword: ""
+        });
+
+        setCodigoEscuela(localStorage.getItem("codigoEscuela") || "No asignado");
+    };
 
     useEffect(() => {
         if (location.state?.mensajeBienvenida && !toastShownRef.current) {
@@ -118,6 +174,7 @@ const Menu = () => {
             localStorage.setItem("telefono", editedUser.telefono);
 
             setVisibleSidebar(false);
+            setModoEdicion(false);
             toast.current?.show({
                 severity: "success",
                 summary: "Perfil actualizado",
@@ -138,10 +195,13 @@ const Menu = () => {
         {
             label: 'Perfil',
             template: () => (
-                <div className="perfil-tab" onClick={() => {
-                    setCodigoEscuela(localStorage.getItem("codigoEscuela") || "No asignado");
-                    setVisibleSidebar(true);
-                }}>
+                <div className="perfil-tab"
+                    onClick={() => {
+                        cargarDatosDesdeStorage();
+                        setModoEdicion(false);
+                        setVisibleSidebar(true);
+                    }}
+                    >
                     <div className="perfil-icono-circular">
                         <i className="pi pi-user perfil-icono-interno"></i>
                     </div>
@@ -157,18 +217,18 @@ const Menu = () => {
             <nav className="menu">
                 <TabMenu model={items} className="custom-tabmenu" />
                 <ul className="menu-links">
-                    <li><Link to="/subir-calif">Subir Calificaciones</Link></li>
-                    <li><Link to="/generar-reportes">Reporte de Conducta</Link></li>
-                    <li><Link to="/toma-de-asistencia">Toma de Asistencias</Link></li>
-                    <li><Link to="/agregar-alumno">Agregar Alumno</Link></li>
                     <li><Link to="/lista-alumnos">Lista de Grupos</Link></li>
-                    <Button
-                        label={modoOscuro ? "" : ""}
-                        icon={modoOscuro ? "pi pi-sun" : "pi pi-moon"}
-                        severity="secondary"
-                        onClick={toggleTema}
-                        className="ml-2"
-                    />
+                    <li><Link to="/agregar-alumno">Agregar Alumno</Link></li>
+                    <li><Link to="/subir-calif">Subir Calificaciones</Link></li>
+                    <li><Link to="/toma-de-asistencia">Toma de Asistencias</Link></li>
+                    <li><Link to="/generar-reportes">Reporte de Conducta</Link></li>
+                    {/*<Button*/}
+                    {/*    label={modoOscuro ? "" : ""}*/}
+                    {/*    icon={modoOscuro ? "pi pi-sun" : "pi pi-moon"}*/}
+                    {/*    severity="secondary"*/}
+                    {/*    onClick={toggleTema}*/}
+                    {/*    className="ml-2"*/}
+                    {/*/>*/}
                 </ul>
             </nav>
 
@@ -181,7 +241,8 @@ const Menu = () => {
                 <div className="flex align-items-center gap-2 mb-4">
                     <span className="text-sm text-700">Código Escuela:</span>
                     <span className="font-bold text-primary">{codigoEscuela}</span>
-                    <Button icon="pi pi-copy" rounded text severity="secondary" onClick={() => {
+                    <Button icon="pi pi-copy" rounded text severity="secondary"
+                        onClick={() => {
                         navigator.clipboard.writeText(localStorage.getItem("codigoEscuela") || "");
                         toast.current?.show({
                             severity: "info",
@@ -202,17 +263,17 @@ const Menu = () => {
 
                     <div className="field">
                         <label htmlFor="nombre">Nombre</label>
-                        <InputText id="nombre" name="nombre" value={editedUser.nombre} onChange={handleInputChange} />
+                        <InputText id="nombre" name="nombre" value={editedUser.nombre} onChange={handleInputChange} disabled={!modoEdicion} />
                     </div>
 
                     <div className="field">
                         <label htmlFor="apellidoPaterno">Apellido Paterno</label>
-                        <InputText id="apellidoPaterno" name="apellidoPaterno" value={editedUser.apellidoPaterno} onChange={handleInputChange} />
+                        <InputText id="apellidoPaterno" name="apellidoPaterno" value={editedUser.apellidoPaterno} onChange={handleInputChange} disabled={!modoEdicion} />
                     </div>
 
                     <div className="field">
                         <label htmlFor="apellidoMaterno">Apellido Materno</label>
-                        <InputText id="apellidoMaterno" name="apellidoMaterno" value={editedUser.apellidoMaterno} onChange={handleInputChange} />
+                        <InputText id="apellidoMaterno" name="apellidoMaterno" value={editedUser.apellidoMaterno} onChange={handleInputChange} disabled={!modoEdicion} />
                     </div>
 
                     <Divider align="left">
@@ -224,12 +285,12 @@ const Menu = () => {
 
                     <div className="field">
                         <label htmlFor="correo">Correo Electrónico</label>
-                        <InputText id="correo" name="correo" value={editedUser.correo} onChange={handleInputChange} type="email" />
+                        <InputText id="correo" name="correo" value={editedUser.correo} onChange={handleInputChange} type="email" disabled={!modoEdicion} />
                     </div>
 
                     <div className="field">
                         <label htmlFor="telefono">Teléfono</label>
-                        <InputText id="telefono" name="telefono" value={editedUser.telefono} onChange={handleInputChange} />
+                        <InputText id="telefono" name="telefono" value={editedUser.telefono} onChange={handleInputChange} disabled={!modoEdicion} />
                     </div>
 
                     <Divider align="left">
@@ -241,30 +302,107 @@ const Menu = () => {
 
                     <div className="field">
                         <label htmlFor="newPassword">Nueva Contraseña</label>
-                        <InputText id="newPassword" name="newPassword" value={editedUser.newPassword} onChange={handleInputChange} type="password" />
+                        <InputText id="newPassword" name="newPassword" value={editedUser.newPassword} onChange={handleInputChange} type="password" disabled={!modoEdicion} />
                     </div>
 
                     <div className="field">
                         <label htmlFor="confirmPassword">Confirmar Contraseña</label>
-                        <InputText id="confirmPassword" name="confirmPassword" value={editedUser.confirmPassword} onChange={handleInputChange} type="password" />
+                        <InputText id="confirmPassword" name="confirmPassword" value={editedUser.confirmPassword} onChange={handleInputChange} type="password" disabled={!modoEdicion} />
                     </div>
 
                     <div className="flex flex-column gap-2 mt-4">
-                        <Button type="submit" label="Actualizar Perfil" icon="pi pi-save" severity="success" className="w-full" />
+                        <Button type="submit" label="Actualizar Perfil" icon="pi pi-save" severity="success" className="w-full" disabled={!modoEdicion} />
+                    </div>
+
+                </form>
+                <SpeedDial
+                    model={speeddialItems}
+                    type="semi-circle"
+                    radius={80}
+                    direction="up"
+                    buttonClassName="p-button-rounded p-button-info"
+                    style={{
+                        position: 'absolute',
+                        bottom: '20px',
+                        left: '50%',
+                        transform: 'translateX(-50%)',
+                        zIndex: 1000
+                    }}
+                />
+
+            </Sidebar>
+            <Dialog
+                header="Confirmar eliminación"
+                visible={mostrarConfirmDialog}
+                onHide={() => setMostrarConfirmDialog(false)}
+                style={{ width: '90vw', maxWidth: '420px' }}
+                footer={
+                    <>
                         <Button
-                            label="Cerrar Sesión"
-                            icon="pi pi-sign-out"
+                            label="Cancelar"
+                            icon="pi pi-times"
+                            onClick={() => setMostrarConfirmDialog(false)}
+                            className="p-button-text"
+                        />
+                        <Button
+                            label="Eliminar"
+                            icon="pi pi-trash"
                             severity="danger"
-                            outlined
-                            className="w-full"
-                            onClick={() => {
-                                localStorage.clear(); // Limpia todo, incluyendo escuelaId y codigoEscuela
-                                window.location.href = "/"; // Redirige al inicio
+                            onClick={async () => {
+                                try {
+                                    const userId = localStorage.getItem("idUsuario");
+                                    await axios.delete(`http://localhost:5099/api/usuarios/eliminar/${userId}`);
+
+                                    localStorage.clear();
+                                    setMostrarConfirmDialog(false);
+                                    setMostrarModalDespedida(true);
+                                } catch {
+                                    toast.current?.show({
+                                        severity: "error",
+                                        summary: "Error",
+                                        detail: "No se pudo eliminar la cuenta.",
+                                        life: 3000
+                                    });
+                                }
                             }}
                         />
-                    </div>
-                </form>
-            </Sidebar>
+                    </>
+                }
+            >
+                <div className="flex flex-column align-items-center justify-content-center text-center">
+                    <i className="pi pi-exclamation-triangle" style={{ fontSize: '3rem', color: '#f44336' }}></i>
+                    <p className="mt-3" style={{ fontSize: '1rem' }}>
+                        ¿Estás seguro de que deseas <strong>eliminar tu cuenta</strong>?<br />
+                        Esta acción no se puede deshacer.
+                    </p>
+                </div>
+            </Dialog>
+            <Dialog
+                header="¡Hasta pronto!"
+                visible={mostrarModalDespedida}
+                onHide={() => { }}
+                closable={false}
+                style={{ width: '80vw', maxWidth: '420px' }}
+                footer={
+                    <Button
+                        label="Aceptar"
+                        icon="pi pi-check"
+                        onClick={() => {
+                            setMostrarModalDespedida(false);
+                            window.location.href = "/";
+                        }}
+                        autoFocus
+                    />
+                }
+            >
+                <div className="flex flex-column align-items-center justify-content-center text-center">
+                    <i className="pi pi-smile" style={{ fontSize: '3rem', color: '#4caf50' }}></i>
+                    <p className="mt-3" style={{ fontSize: '1rem' }}>
+                        Tu cuenta se eliminó con éxito.<br />
+                        ¡Gracias por usar nuestra plataforma!
+                    </p>
+                </div>
+            </Dialog>
         </>
     );
 };

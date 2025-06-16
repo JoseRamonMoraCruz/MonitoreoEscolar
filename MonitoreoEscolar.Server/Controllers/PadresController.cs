@@ -72,32 +72,51 @@ namespace MonitoreoEscolar.Server.Controllers
             if (!calificaciones.Any())
                 return Ok(new List<object>());
 
-            // Extraer número desde "Parcial 1", "Parcial 2", etc.
-            var parcialMasReciente = calificaciones
-                .Select(c =>
-                {
-                    var match = System.Text.RegularExpressions.Regex.Match(c.ParcialUnidad ?? "", @"\d+");
-                    return match.Success ? int.Parse(match.Value) : 0;
-                })
-                .Max();
+            // Obtener las calificaciones con el parcial que tenga valor (1, 2 o 3)
+            var resultados = calificaciones
+         .Select(c =>
+         {
+             if (c.Parcial3.HasValue)
+             {
+                 return new
+                 {
+                     Materia = c.NombreAsignatura,
+                     Calificacion = c.Parcial3,
+                     Parcial = "Parcial 3"
+                 };
+             }
+             else if (c.Parcial2.HasValue)
+             {
+                 return new
+                 {
+                     Materia = c.NombreAsignatura,
+                     Calificacion = c.Parcial2,
+                     Parcial = "Parcial 2"
+                 };
+             }
+             else if (c.Parcial1.HasValue)
+             {
+                 return new
+                 {
+                     Materia = c.NombreAsignatura,
+                     Calificacion = c.Parcial1,
+                     Parcial = "Parcial 1"
+                 };
+             }
+             else
+             {
+                 return new
+                 {
+                     Materia = c.NombreAsignatura,
+                     Calificacion = (int?)null,
+                     Parcial = "Sin parcial"
+                 };
+                 }
+             })
+             .Where(x => x.Calificacion != null)
+             .ToList();
 
-            // Filtrar calificaciones por ese parcial
-            var filtradas = calificaciones
-                .Where(c =>
-                {
-                    var match = System.Text.RegularExpressions.Regex.Match(c.ParcialUnidad ?? "", @"\d+");
-                    return match.Success && int.Parse(match.Value) == parcialMasReciente;
-                })
-                .Select(c => new
-                {
-                    Materia = c.NombreAsignatura,
-                    Calificacion = c.CalificacionValor,
-                    Grupo = "Sin grupo",
-                    Parcial = c.ParcialUnidad
-                })
-                .ToList();
-
-            return Ok(filtradas);
+            return Ok(resultados);
         }
 
         // ENDPOINT PARA OBTENER ASISTENCIAS DE UN ALUMNO

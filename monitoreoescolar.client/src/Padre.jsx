@@ -288,7 +288,7 @@ const Padre = () => {
                                             asistenciasPorAlumno[hijo.alumnoId].map((a, idx) => (
                                                 <tr key={idx} className={a.horaEntrada !== "-" ? "fila-asistio" : "fila-falto"}>
                                                     <td>
-                                                        {a.fecha} {a.horaEntrada !== "-" ? "✅" : "❌"} 
+                                                        {a.fecha} {a.horaEntrada !== "-" ? "" : ""} 
                                                     </td>
                                                     <td>{a.horaEntrada}</td>
                                                     <td>{a.horaSalida}</td>

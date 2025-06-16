@@ -1,10 +1,11 @@
 ﻿import { useState, useRef } from "react";
 import axios from "axios";
+import './Registro.css';
 import { useNavigate } from "react-router-dom";
 import familiaIcon from "./assets/familia.png"; 
 import escuelaIcon from "./assets/edificio-escolar.png"; 
 import AtrasIcon from './assets/flecha-hacia-atras.png'; 
-import { Toast } from 'primereact/toast'; 
+import { Toast } from 'primereact/toast';
 
 
 export default function Registro() {
@@ -42,18 +43,6 @@ export default function Registro() {
             });
             return;
         }
-
-         const MASTER_PASS = "EscolarPerson123";  
-        if (tipoUsuario === "personal" && contrasena !== MASTER_PASS) {
-            toast.current?.show({
-                severity: 'error',
-                summary: 'Acceso denegado',
-                detail: '❌ Contraseña de acceso para personal inválida.',
-                life: 3000
-            });
-            return;
-        }
-
 
         setLoading(true);
 

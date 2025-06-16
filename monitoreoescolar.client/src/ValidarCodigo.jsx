@@ -10,8 +10,6 @@ const ValidarCodigo = () => {
     const [codigo, setCodigo] = useState('');
     const [error, setError] = useState('');
     const navigate = useNavigate();
-
-    // Verificar si ya tiene código
     useEffect(() => {
         const escuelaId = localStorage.getItem("escuelaId");
         if (escuelaId) {
@@ -23,7 +21,10 @@ const ValidarCodigo = () => {
         try {
             setError('');
             const response = await axios.post("http://localhost:5099/api/escuela/validar-codigo", codigo, {
-                headers: { 'Content-Type': 'application/json' }
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Usuario-Id': localStorage.getItem("idUsuario")
+                }
             });
 
             const escuela = response.data;
@@ -37,8 +38,6 @@ const ValidarCodigo = () => {
             setError(`Código inválido. Detalles: ${err.message}`);
         }
     };
-
-
     return (
         <div className="update-container-wrapper">
             <div className="update-box">
@@ -77,5 +76,4 @@ const ValidarCodigo = () => {
         </div>
     );
 };
-
 export default ValidarCodigo;

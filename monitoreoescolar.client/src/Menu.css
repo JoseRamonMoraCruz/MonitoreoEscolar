@@ -289,3 +289,7 @@
     font-weight: 600;
     font-size: 14px;
 }
+.perfil-sidebar {
+    padding-bottom: 100px; /* Para que no choque el botón circular */
+    position: relative;
+}

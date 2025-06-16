@@ -2,7 +2,6 @@
 using Microsoft.EntityFrameworkCore;
 using MonitoreoEscolar.Server.Data;
 using MonitoreoEscolar.Server.DTOs;
-using MonitoreoEscolar.Server.Models;
 using QRCoder;
 using System.Globalization;
 using System.Text;

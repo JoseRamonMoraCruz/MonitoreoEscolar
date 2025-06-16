@@ -61,16 +61,6 @@ namespace MonitoreoEscolar.Server.Controllers
                 return BadRequest(new { mensaje = " El correo ya está registrado." });
             }
 
-            // Sólo el Personal Escolar debe conocer la clave maestra para registrarse:
-            if (request.Tipo_Usuario == "personal")
-            {
-                var masterPass = "EscolarPerson123";
-                if (request.Contrasena != masterPass)
-                {
-                    return BadRequest(new { mensaje = "Contraseña de acceso para personal inválida." });
-                }
-            }
-
             var nuevoUsuario = new Usuario
             {
                 Nombre = NormalizarCadena(request.Nombre),
@@ -109,12 +99,13 @@ namespace MonitoreoEscolar.Server.Controllers
             // Después de verificar que es personal
             if (usuario.Tipo_Usuario == "personal")
             {
-                // Si aún no está vinculado, buscamos el código desde el localStorage (enviado por el frontend)
-                var codigoEscuela = HttpContext.Request.Headers["Codigo-Escuela"].FirstOrDefault();
+                var codigoEscuela = HttpContext.Request.Headers["Codigo-Escuela"].FirstOrDefault()?.Trim().ToLower();
 
                 if (!string.IsNullOrWhiteSpace(codigoEscuela) && usuario.EscuelaId == null)
                 {
-                    var escuela = await _context.Escuelas.FirstOrDefaultAsync(e => e.CodigoAcceso == codigoEscuela);
+                    var escuela = await _context.Escuelas
+                        .FirstOrDefaultAsync(e => e.CodigoAcceso.ToLower() == codigoEscuela);
+
                     if (escuela != null)
                     {
                         usuario.EscuelaId = escuela.Id;
@@ -122,7 +113,6 @@ namespace MonitoreoEscolar.Server.Controllers
                     }
                 }
             }
-
 
             return Ok(new
             {
@@ -344,6 +334,24 @@ namespace MonitoreoEscolar.Server.Controllers
 
             return Ok(new { mensaje = "Perfil actualizado exitosamente." });
         }
+
+        // ELIMINAR USUARIO POR ID
+        [HttpDelete("eliminar/{id}")]
+        public async Task<IActionResult> EliminarUsuario(int id)
+        {
+            var usuario = await _context.Usuarios.FindAsync(id);
+
+            if (usuario == null)
+            {
+                return NotFound(new { mensaje = "Usuario no encontrado." });
+            }
+
+            _context.Usuarios.Remove(usuario);
+            await _context.SaveChangesAsync();
+
+            return Ok(new { mensaje = "Usuario eliminado correctamente." });
+        }
+
 
         // Y ESTE OBTIENE LOS DATOS DEL USUARIO LOGEADO PARA ACTUALIZARLOS
         [HttpGet("usuario-logueado")]

@@ -27,7 +27,7 @@ namespace MonitoreoEscolar.Server.Controllers
                 return BadRequest(new { mensaje = "El código ya está en uso por otra escuela." });
             }
 
-            // 🧪 Validaciones adicionales
+            //  Validaciones adicionales
             if (string.IsNullOrWhiteSpace(request.CodigoAppGmail))
             {
                 return BadRequest(new { mensaje = "El código de aplicación no puede estar vacío." });
@@ -82,6 +82,18 @@ namespace MonitoreoEscolar.Server.Controllers
             if (escuela == null)
             {
                 return NotFound(new { mensaje = "Código inválido o no registrado." });
+            }
+
+            // Obtener el usuario desde el encabezado "Usuario-Id"
+            var usuarioIdHeader = HttpContext.Request.Headers["Usuario-Id"].FirstOrDefault();
+            if (int.TryParse(usuarioIdHeader, out int usuarioId))
+            {
+                var usuario = await _context.Usuarios.FirstOrDefaultAsync(u => u.Id_Usuario == usuarioId);
+                if (usuario != null && usuario.EscuelaId == null)
+                {
+                    usuario.EscuelaId = escuela.Id;
+                    await _context.SaveChangesAsync();
+                }
             }
 
             return Ok(new

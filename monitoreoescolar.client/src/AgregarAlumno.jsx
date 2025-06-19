@@ -349,7 +349,7 @@ const AgregarAlumno = () => {
                             />
                         </div>
 
-                        {/* Domicilio */}
+                        {/* Domicilioo */}
                         <div className="agregar-alumno-group">
                             <label>Domicilio:</label>
                             <FloatLabel>

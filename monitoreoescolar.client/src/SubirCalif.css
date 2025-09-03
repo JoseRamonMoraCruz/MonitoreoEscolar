@@ -1,75 +1,343 @@
-﻿:root {
-    background-color: #9AD3FE;
-}
-
-.page-container {
+﻿/*  Contenedor principal */
+.contenedor-subir {
     display: flex;
     flex-direction: column;
-    height: 100vh;
-    width: 100vw;
-}
-
-/* ✅ Contenedor centrado */
-.container {
-    flex: 1;
-    display: flex;
     justify-content: center;
     align-items: center;
+    padding: 20px;
+    overflow: hidden;
 }
 
-/* ✅ Caja principal */
-.content-box {
-    background-color: #384147;
+/*  Caja principal */
+.caja-subir {
+    background-color: #2d3e50;
     padding: 30px;
     border-radius: 15px;
-    box-shadow: 10px 10px 20px rgba(0, 0, 0, 1);
+    box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.5);
     text-align: center;
-    width: 500px;
+    width: 95vw;
+    max-width: 1400px;
     color: white;
+    position: relative;
+    overflow-x: auto;
 }
 
-/* ✅ Estilo del encabezado */
-.title {
-    font-size: 24px;
+/*  Estilo del título */
+.titulo-subir {
+    font-size: 22px;
     font-weight: bold;
-    margin-bottom: 400px; /* 🔹 Aumenta la separación del título */
-}
-
-/* ✅ Contenedor de botones con más espacio */
-.button-container {
+    margin-bottom: 15px;
     display: flex;
-    justify-content: space-between;
-    margin-top: 400px; /* 🔹 Aumenta la separación entre el contenido y los botones */
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
 }
 
-/* ✅ Estilo de los botones */
-.btn {
-    padding: 12px 20px;
-    font-size: 16px;
-    font-weight: bold;
+/*  Contenedor superior */
+.contenedor-superior {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    margin-bottom: 15px;
+}
+
+/*  Sección de selección de archivo */
+.contenedor-archivo {
+    display: flex;
+    align-items: center;
+    background-color: #d3d3d3;
+    padding: 6px 12px;
+    border-radius: 10px;
+    flex: 1;
+    gap: 10px;
+    justify-content: space-between;
+}
+
+/*  Botón elegir archivo */
+.boton-seleccionar {
+    background: #5A189A;
     border: none;
+    padding: 6px 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 15px;
+    color: white;
+    transition: 0.3s;
+}
+
+.nombre-archivo {
+    text-align: left;
+    color: black;
+    font-weight: bold;
+    flex-grow: 1;
+}
+
+/*  Contenedor de los botones */
+.contenedor-botones {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+/*  Botón para reiniciar (como imagen) */
+.boton-reiniciar {
+    background: none;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    padding: 0;
+    margin: 0;
+    margin-left: 15px;
+}
+
+    .boton-reiniciar img {
+        width: 30px;
+        height: 30px;
+        transition: transform 0.2s;
+    }
+
+        .boton-reiniciar img:hover {
+            transform: scale(1.1);
+        }
+
+/*  Botón para subir los datos */
+.boton-subir {
+    background-color: #6B46C1;
+    border: none;
+    padding: 8px 16px;
+    color: white;
+    font-weight: bold;
     border-radius: 10px;
     cursor: pointer;
-    transition: background-color 0.3s ease-in-out;
-    width: 45%;
+    box-shadow: 0px 0px 12px rgba(107, 70, 193, 0.9);
+    transition: transform 0.2s;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
 }
 
-/* Botón de "Elegir Archivo" */
-.choose-file {
-    background-color: #8800ff;
-    color: white;
-}
-
-    .choose-file:hover {
-        background-color: #6a00cc;
+    .boton-subir:hover {
+        transform: scale(1.05);
     }
 
-/* Botón de "Cargar Datos" */
-.upload-data {
-    background-color: #0066ff;
-    color: white;
+    .boton-subir:disabled {
+        background-color: gray;
+        cursor: not-allowed;
+        box-shadow: none;
+    }
+
+/*  Contenedor de la tabla con desplazamiento */
+.contenedor-tabla {
+    max-height: 500px;
+    overflow-y: auto;
+    overflow-x: auto;
+    margin-top: 10px;
+    border-radius: 10px;
+    width: 100%;
+    padding-bottom: 10px;
 }
 
-    .upload-data:hover {
-        background-color: #004fcc;
+/*  Tabla con los datos */
+.tabla-subir {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+    color: black;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.2);
+}
+
+    .tabla-subir th,
+    .tabla-subir td {
+        padding: 10px;
+        border-bottom: 1px solid #ddd;
+        text-align: center;
     }
+
+    .tabla-subir th {
+        background: #8D99AE;
+        color: white;
+    }
+
+    .tabla-subir tr:hover {
+        background: #f1f1f1;
+    }
+
+/*  Mensaje si no hay datos */
+.mensaje-vacio {
+    margin-top: 15px;
+    padding: 10px;
+    background: #FFD700;
+    color: black;
+    font-weight: bold;
+    border-radius: 5px;
+}
+
+/* =================================
+   MEDIA QUERIES
+   ================================= */
+
+/* --- Tablet y pantallas medianas --- */
+@media (max-width: 768px) {
+    .contenedor-superior {
+        flex-direction: column;
+        gap: 12px;
+        align-items: stretch;
+    }
+
+    .contenedor-archivo,
+    .contenedor-botones {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .contenedor-archivo {
+        padding: 8px 10px;
+    }
+
+    .boton-subir {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .titulo-subir {
+        font-size: 20px;
+    }
+}
+
+/* --- Móvil y pantallas pequeñas --- */
+@media (max-width: 480px) {
+    .caja-subir {
+        padding: 20px;
+    }
+
+    .titulo-subir {
+        font-size: 18px;
+        margin-bottom: 12px;
+    }
+
+    .contenedor-archivo {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+    }
+
+    .boton-seleccionar {
+        padding: 6px 10px;
+        font-size: 14px;
+    }
+
+    .contenedor-botones {
+        flex-direction: column;
+        gap: 8px;
+        margin-top: 10px;
+    }
+
+    .boton-subir {
+        padding: 10px;
+        font-size: 14px;
+    }
+
+    .contenedor-tabla {
+        max-height: 300px;
+    }
+
+    .tabla-subir th,
+    .tabla-subir td {
+        padding: 6px;
+        font-size: 12px;
+    }
+}
+
+
+/* Botón PrimeReact personalizado para elegir archivo */
+.boton-elegir-prime {
+    font-weight: bold;
+    color: #0288d1 !important;
+    border: 2px solid #0288d1 !important;
+    border-radius: 8px !important;
+    padding: 8px 16px !important;
+    background: transparent !important;
+    transition: all 0.3s ease-in-out;
+}
+
+    .boton-elegir-prime:hover {
+        background-color: #0288d1 !important;
+        color: white !important;
+    }
+
+    /*Estilo del boton subir calificaciones*/
+.boton-subir-prime {
+    font-weight: bold;
+    border-radius: 10px;
+    padding: 8px 16px;
+    box-shadow: 0px 0px 12px rgba(2, 136, 209, 0.9);
+    transition: transform 0.2s;
+}
+
+    .boton-subir-prime:hover {
+        transform: scale(1.05);
+    }
+
+    .boton-subir-prime:disabled {
+        background-color: gray !important;
+        border-color: gray !important;
+        color: white !important;
+        box-shadow: none !important;
+    }
+/*TOAST de mensajes*/
+.toast-mensaje {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    color: white;
+    padding: 12px 24px;
+    border-radius: 30px;
+    font-size: 16px;
+    font-weight: 500;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    z-index: 9999;
+    opacity: 0;
+    animation: fadeInOut 2.5s ease-in-out forwards;
+}
+
+    .toast-mensaje.success {
+        background-color: #4CAF50;
+    }
+
+    .toast-mensaje.error {
+        background-color: #f44336;
+    }
+
+    .toast-mensaje::before {
+        content: attr(data-icon);
+        font-weight: bold;
+        margin-right: 10px;
+        font-size: 18px;
+    }
+
+@keyframes fadeInOut {
+    0% {
+        opacity: 0;
+        transform: translateX(-50%) translateY(-10px);
+    }
+
+    10% {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+    }
+
+    80% {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+    }
+
+    100% {
+        opacity: 0;
+        transform: translateX(-50%) translateY(-10px);
+    }
+}

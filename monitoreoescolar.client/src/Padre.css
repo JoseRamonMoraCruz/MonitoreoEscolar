@@ -1,14 +1,13 @@
-﻿:root {
-    background-color: #CCE9FF;
-}
-
-html, body {
-    height: 100%;
+﻿html, body {
+    min-height: 100vh;
     margin: 0;
-    font-family: Arial, sans-serif;
+    padding: 0;
+    font-family: 'Poppins', sans-serif;
+    background: linear-gradient(135deg, #89f7fe, #66a6ff);
+    box-sizing: border-box;
+    overflow-x: hidden;
 }
 
-/* Línea negra tipo menú en la parte superior */
 .menu-bar {
     width: 100%;
     height: 50px;
@@ -23,17 +22,15 @@ html, body {
     padding-right: 20px;
 }
 
-/* Eliminar viñetas del menú */
 .menu-list {
     list-style: none;
     padding: 0;
     margin: 0;
 }
 
-/* Estilos del link "Cerrar Sesión" */
 .logout-link {
-    color: white; 
-    text-decoration: none; 
+    color: white;
+    text-decoration: none;
     font-size: 16px;
     font-weight: bold;
     padding: 10px 15px;
@@ -41,53 +38,71 @@ html, body {
     transition: background 0.3s ease-in-out;
 }
 
-    /* Cambio de color al pasar el mouse */
     .logout-link:hover {
-        background: #ff4d4d; 
+        background: #ff4d4d;
         color: white;
     }
 
-
 .padre-container {
-    max-width: 900px;
-    margin: 80px auto 40px;
-    padding: 25px;
-    background-color: #015698;
-    border-radius: 12px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
-    border: 1px solid #E0E0E0;
-}
-
-.titulo-seccion {
-    font-size: 24px;
-    font-weight: bold;
-    color: white;
-    margin-bottom: 20px;
+    max-width: 1000px;
+    margin: 80px auto;
+    padding: 20px;
 }
 
 .seccion {
-    background-color: white;
-    padding: 20px;
-    border-radius: 12px;
-    margin: 5px 30px;
-    width: calc(100% - 60px);
-    box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.05);
-    border: 1px solid #E5E7EB;
+    margin-bottom: 25px;
 }
 
-    .seccion h2 {
-        text-align: left;
-        font-size: 18px;
-        font-weight: bold;
-        color: #374151;
-        padding-bottom: 10px;
-        margin-bottom: 15px;
+/* Nueva tarjeta moderna */
+.card-alumno {
+    background: linear-gradient(90deg, #ffffff, #c3b6ff, #3426c3);
+    border-radius: 20px;
+    padding: 30px 40px;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+    cursor: pointer;
+    transition: transform 0.3s ease;
+}
+
+    .card-alumno:hover {
+        transform: scale(1.02);
     }
 
-/* Estilos de la tabla */
+    .card-alumno .grupo {
+        font-size: 16px; 
+        color: #000;
+        margin-top: 10px; 
+    }
+
+    .card-alumno .nombre {
+        font-size: 30px; 
+        font-weight: bold; 
+        color: #000;
+    }
+
+
+/* Contenido expandido */
+.contenido-expandido {
+    margin-top: 15px;
+    padding: 20px;
+    background-color: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    animation: fadeDown 0.3s ease-in-out;
+}
+
+@keyframes fadeDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Tabla */
 .styled-table {
     width: 100%;
     border-collapse: collapse;
@@ -98,34 +113,59 @@ html, body {
 }
 
     .styled-table th {
-        background-color: #F9FAFB;
-        color: #6B7280;
+        background-color: #f5f5f5;
+        color: #555;
         font-weight: bold;
-        text-align: left;
         padding: 12px;
-        border-bottom: 2px solid #E5E7EB;
+        text-align: left;
     }
 
     .styled-table td {
         padding: 12px;
-        text-align: left;
-        border-bottom: 1px solid #E5E7EB;
+        border-bottom: 1px solid #eee;
     }
 
-    .styled-table tr:last-child td {
-        font-weight: bold;
-        background-color: #F9FAFB;
-        border-top: 2px solid #E5E7EB;
+.boton-descargar {
+    margin-top: 20px;
+    background-color: #1D4ED8;
+    color: white;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 5px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+    .boton-descargar:hover {
+        background-color: #2563EB;
     }
 
-    .styled-table tr:hover {
-        background-color: #F3F4F6;
-    }
+/* Personaliza el toast de bienvenida */
+/*.p-toast .p-toast-message.p-toast-message-success {
+    background: #54277b;
+    color: white;
+    font-weight: bold;
+    font-size: 1.1rem;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
 
-/* Pie de tabla */
-.table-footer {
-    text-align: center;
-    font-size: 14px;
-    color: #6B7280;
-    margin-top: 10px;
+.p-toast .p-toast-message .p-toast-summary {
+    font-weight: bold;
+}
+
+.p-toast .p-toast-message .p-toast-detail {
+    color: white;
+}*/
+.fila-asistio {
+    background-color: #e0ffe0;
+    font-weight: bold;
+    color: #205020;
+}
+
+.fila-falto {
+    background-color: #ffe0e0;
+    font-weight: bold;
+    color: #802020;
 }

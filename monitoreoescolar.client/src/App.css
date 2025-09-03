@@ -1,12 +1,22 @@
-﻿.dashboard-container {
+﻿.dashboard-layout {
     display: flex;
     flex-direction: column;
-    height: 100vh;
+    min-height: 100vh;
+    transition: background 0.3s ease;
 }
 
-.content {
+
+.main-content {
     flex: 1;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    padding: 0;
+    overflow-y: auto;
+}
+body.tema-oscuro .dashboard-layout {
+    background: linear-gradient(135deg, #1d1d1d, #2a2a2a) !important;
+    color: white;
+}
+
+body.tema-claro .dashboard-layout {
+    background: linear-gradient(135deg, #89f7fe, #66a6ff);
+    color: black;
 }

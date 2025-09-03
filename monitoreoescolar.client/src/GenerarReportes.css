@@ -1,83 +1,455 @@
-﻿.generar-reportes-container {
+﻿/* Centrado general */
+.generar-reportes-container {
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 100vh;
-    width: 100vw;
-    background-color: #B3D9FF; /* Fondo */
+    min-height: calc(100vh - 75px);
+    background: linear-gradient(135deg, #89f7fe, #66a6ff);
+    padding: 40px 20px;
 }
 
 .generar-reportes-content {
-    background-color: #384147;
-    padding: 30px;
-    border-radius: 15px;
-    box-shadow: 10px 10px 20px rgba(0, 0, 0, 1);
-    color: white;
-    width: 550px; /* Ancho ajustado */
-    text-align: left;
+    background-color: #2d3e50;
+    padding: 40px;
+    border-radius: 12px;
+    box-shadow: 10px 10px 30px rgba(0, 0, 0, 1);
+    width: 90%;
+    max-width: 850px;
+    color: #333;
 }
 
-/* ✅ Título */
 .generar-reportes-title {
     font-size: 22px;
-    font-weight: bold;
-    margin-bottom: 15px;
+    font-weight: 600;
+    text-align: center;
+    margin-bottom: 30px;
 }
 
-/* ✅ Formulario */
-.generar-reportes-form {
+.generar-reportes-row {
     display: flex;
-    flex-direction: column;
-    gap: 10px;
+    gap: 20px;
+    flex-wrap: wrap;
 }
 
-/* ✅ Contenedor de cada input alineado */
+/* Campos individuales */
 .generar-reportes-group {
     display: flex;
     flex-direction: column;
-    align-items: flex-start;
-    text-align: left;
-    margin-bottom: 10px;
+    flex: 1;
+    margin-bottom: 20px;
 }
 
     .generar-reportes-group label {
-        font-weight: bold;
-        font-size: 16px;
-        color: #F4E4BA; /* Color del texto */
-        margin-bottom: 5px;
+        font-weight: 600;
+        margin-bottom: 8px;
+        color: white;
     }
 
-    /* ✅ Inputs y Textarea */
     .generar-reportes-group input,
     .generar-reportes-group textarea {
-        width: 100%;
-        padding: 10px;
+        padding: 12px;
         border-radius: 8px;
-        border: none;
-        background-color: #D9D9D9;
-        font-size: 16px;
+        border: 1px solid #ccc;
+        font-size: 15px;
+        font-family: inherit;
+    }
+
+    .generar-reportes-group textarea {
+        resize: none;
+        height: 120px;
+    }
+
+/* Contenedor del botón */
+.generar-reportes-btn-container {
+    display: flex;
+    justify-content: center;
+    margin-top: 10px;
+}
+
+/* Botón verde centrado */
+.generar-reportes-btn {
+    background-color: #00c17b;
+    color: white;
+    font-weight: 600;
+    border: none;
+    border-radius: 8px;
+    padding: 12px 30px;
+    font-size: 16px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transition: background-color 0.2s ease-in-out;
+}
+
+    .generar-reportes-btn:hover {
+        background-color: #00975f;
+    }
+
+/* Ver Reportes Button */
+.ver-reportes-btn {
+    background: #005f73;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 6px;
+    cursor: pointer;
+    margin-bottom: 20px;
+}
+
+/* ==================== REACT-SELECT (my-select) ==================== */
+
+/* Contenedor principal del input de react-select */
+.my-select__control {
+    background-color: #D9D9D9 !important;
+    border-radius: 8px !important;
+    min-height: 45px !important;
+    border: none !important;
+    box-shadow: none !important;
+    font-size: 16px;
+}
+
+.my-select__control--is-focused {
+    outline: none !important;
+    border: 2px solid #8800ff !important;
+}
+
+.my-select__value-container {
+    padding: 0 10px;
+}
+
+.my-select__placeholder {
+    color: #666 !important;
+}
+
+.my-select__single-value {
+    color: #333 !important;
+    font-size: 16px;
+}
+
+.my-select__menu {
+    background-color: #fff !important;
+    border-radius: 8px !important;
+    margin-top: 2px !important;
+    z-index: 9999 !important;
+}
+
+.my-select__option {
+    color: #333 !important;
+    font-size: 16px !important;
+    background-color: #fff !important;
+    padding: 10px !important;
+    cursor: pointer;
+}
+
+.my-select__option--is-focused {
+    background-color: #f0f0f0 !important;
+    color: #333 !important;
+}
+
+.my-select__option--is-selected {
+    background-color: #ddd !important;
+    color: #333 !important;
+}
+
+/* Modal de listado de reportes */
+.reportes-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0,0,0,0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+}
+
+.reportes-modal-content {
+    background: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    width: 90%;
+    max-width: 600px;
+    max-height: 80vh;
+    overflow-y: auto;
+    position: relative;
+}
+
+/* Cerrar modal */
+.modal-close {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    font-size: 1.5rem;
+    cursor: pointer;
+}
+
+/* Tabla de reportes */
+.reportes-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+}
+
+    .reportes-table th,
+    .reportes-table td {
+        border: 1px solid #ccc;
+        padding: 8px;
+        text-align: left;
+    }
+
+    .reportes-table th {
+        background: #e0e0e0;
+    }
+
+/* Inputs y textarea dentro del modal de edición */
+.reportes-modal-content input,
+.reportes-modal-content textarea {
+    width: 100%;
+    margin-bottom: 12px;
+    padding: 8px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    font-size: 14px;
+}
+/* Alinea horizontalmente los botones de acción */
+.reportes-table td {
+    vertical-align: top; /* Alinea todo arriba */
+    height: 100%;
+}
+
+    .reportes-table td:last-child {
+        text-align: center;
+        vertical-align: top;
+        padding: 8px;
+        white-space: nowrap;
+    }
+       
+/* Tablet / pantallas medianas (<= 992px) */
+@media (max-width: 992px) {
+    .generar-reportes-content {
+        padding: 30px;
+        max-width: 700px;
+    }
+
+    .generar-reportes-row {
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .generar-reportes-btn {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .generar-reportes-btn-container {
+        margin-top: 20px;
+    }
+}
+
+/* Phablet / pantallas pequeñas (<= 768px) */
+@media (max-width: 768px) {
+    .generar-reportes-container {
+        padding: 30px 15px;
+        min-height: auto;
+    }
+
+    .generar-reportes-content {
+        padding: 25px;
+        width: 100%;
+    }
+
+    .generar-reportes-title {
+        font-size: 20px;
+        margin-bottom: 25px;
+    }
+
+    .generar-reportes-group {
+        width: 100%;
+    }
+
+        .generar-reportes-group input,
+        .generar-reportes-group textarea {
+            font-size: 14px;
+            padding: 10px;
+        }
+
+    .generar-reportes-btn {
+        padding: 10px 20px;
+        font-size: 15px;
+    }
+
+    .ver-reportes-btn {
+        width: 100%;
+        padding: 10px 0;
+        margin-bottom: 15px;
+    }
+}
+
+/* Móvil (<= 480px) */
+@media (max-width: 480px) {
+    .generar-reportes-content {
+        padding: 20px;
+        border-radius: 8px;
+    }
+
+    .generar-reportes-title {
+        font-size: 18px;
+        margin-bottom: 20px;
+    }
+
+    .generar-reportes-row {
+        gap: 10px;
+    }
+
+    .generar-reportes-group label {
+        font-size: 14px;
+    }
+
+    .generar-reportes-group input,
+    .generar-reportes-group textarea {
+        padding: 8px;
+        font-size: 13px;
     }
 
     .generar-reportes-group textarea {
         height: 100px;
-        resize: none;
     }
 
-/* ✅ Botón de generar alineado */
-.generar-reportes-btn {
-    padding: 12px;
-    font-size: 16px;
-    font-weight: bold;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    background-color: #8800ff;
-    color: white;
-    transition: background-color 0.3s ease-in-out;
-    width: 130px;
-    align-self: flex-end;
+    .generar-reportes-btn {
+        padding: 8px 16px;
+        font-size: 14px;
+    }
+
+    .ver-reportes-btn {
+        font-size: 14px;
+        padding: 8px 0;
+    }
+
+    /* Ajusta el select de react-select para que no desborde */
+    .my-select__control {
+        font-size: 14px !important;
+        min-height: 40px !important;
+    }
+
+    .my-select__option {
+        font-size: 14px !important;
+        padding: 8px !important;
+    }
 }
 
-    .generar-reportes-btn:hover {
-        background-color: #6a00cc;
+/* ================= CUSTOM PRIME CALENDAR FIX ================= */
+.calendar-wrapper .custom-calendar {
+    width: 100%;
+}
+
+/* Quita estilos rotos en el icono */
+.calendar-wrapper .p-button {
+    background-color: transparent;
+    border: none;
+    padding: 0 8px;
+    border-radius: 0 8px 8px 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+    .calendar-wrapper .p-button .p-button-icon {
+        font-size: 1.2rem;
+        color: #8800ff;
+    }
+
+/* Ajuste del input */
+.calendar-wrapper .p-inputtext {
+    padding: 10px;
+    border-radius: 8px;
+    font-size: 16px;
+    width: 100%;
+    border: 1px solid #ccc;
+    background-color: white;
+    color: #000;
+}
+
+/* El popup de calendario */
+.calendar-wrapper .p-datepicker {
+    border-radius: 10px;
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+    padding: 1rem;
+    font-size: 14px;
+    background-color: #fff;
+    color: #000;
+}
+
+    /* Restaurar botones del header y hora */
+    .calendar-wrapper .p-datepicker .p-datepicker-header .p-button,
+    .calendar-wrapper .p-timepicker .p-button {
+        all: unset;
+        background-color: #e0e0e0;
+        color: #000;
+        font-weight: bold;
+        padding: 6px 10px;
+        margin: 2px;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: background-color 0.2s;
+    }
+
+        .calendar-wrapper .p-datepicker .p-datepicker-header .p-button:hover,
+        .calendar-wrapper .p-timepicker .p-button:hover {
+            background-color: #ccc;
+        }
+/*TABLA ESTILOS SIMPLES*/
+.p-datatable .p-datatable-thead > tr > th {
+    background-color: #e3e8f7;
+    font-weight: 600;
+    color: #333;
+    border-radius: 6px 6px 0 0;
+}
+
+.p-datatable .p-datatable-tbody > tr > td {
+    background-color: #f9f9f9;
+}
+
+/* Estilos para que el textarea con FloatLabel se vea más grande y moderno */
+.p-float-label textarea {
+    padding: 16px;
+    font-size: 16px;
+    border-radius: 10px;
+    min-height: 120px;
+    resize: none;
+    width: 100%;
+    box-shadow: 0 0 0 2px transparent;
+    transition: box-shadow 0.2s ease;
+}
+
+    /* Efecto al hacer focus */
+    .p-float-label textarea:focus {
+        box-shadow: 0 0 0 2px #66a6ff;
+        border-color: #66a6ff;
+    }
+
+/* Color del label */
+.p-float-label label {
+    color: gray;
+    font-weight: 500;
+    font-size: 15px;
+    transition: all 0.2s ease;
+}
+
+/* Ajuste más fino para el botón del calendario */
+.calendar-wrapper .p-calendar .p-button {
+    height: 100%;
+    padding: 0 10px;
+    border-radius: 0 8px 8px 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+    .calendar-wrapper .p-calendar .p-button .p-button-icon {
+        font-size: 1.1rem;
+        color: white;
     }

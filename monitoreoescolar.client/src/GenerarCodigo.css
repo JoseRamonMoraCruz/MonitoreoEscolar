@@ -1,0 +1,22 @@
+﻿.botones-final {
+    display: flex;
+    justify-content: space-between; /* 🔥 botones separados horizontalmente */
+    gap: 16px;
+    margin-top: 2rem;
+    flex-wrap: wrap;
+}
+
+.espacio-boton {
+    flex: 1 1 45%;
+    max-width: 220px;
+}
+
+.boton-atras,
+.boton-finalizar {
+    width: 100%;
+    transition: transform 0.2s ease;
+}
+
+    .boton-finalizar:hover {
+        transform: scale(1.03);
+    }

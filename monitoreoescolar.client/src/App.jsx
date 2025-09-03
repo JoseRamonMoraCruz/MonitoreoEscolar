@@ -5,8 +5,13 @@ import SubirCalif from "./SubirCalif";
 import GenerarReportes from "./GenerarReportes";
 import Menu from "./Menu";
 import AgregarAlumno from "./AgregarAlumno";
-import Notificaciones from "./Notificaciones";
 import Padre from "./Padre";
+import ActualizarPassword from './ActualizarPassword';
+import ListaAlumnos from "./ListaAlumnos";
+import TomaAsistencia from "./TomaAsistencia";
+import ValidarCodigo from "./ValidarCodigo";
+import GenerarCodigo from './GenerarCodigo'
+
 
 function App() {
     return (
@@ -16,6 +21,9 @@ function App() {
                 <Route path="/" element={<Login />} />
                 <Route path="/registro" element={<Registro />} />
                 <Route path="/padre" element={<Padre />} />
+                <Route path="/actualizar-password" element={<ActualizarPassword />} />
+                <Route path="/validar-codigo" element={<ValidarCodigo />} />
+                <Route path="/generar-codigo" element={<GenerarCodigo />} />
 
                 {/*  Rutas privadas con el menú persistente */}
                 <Route path="/*" element={<DashboardLayout />} />
@@ -27,18 +35,22 @@ function App() {
 //Funcion para que el menu sea visible en todas las pestañas
 function DashboardLayout() {
     return (
-        <div className="dashboard-container">
-            <Menu /> {/* ✅ Asegura que el menú siempre esté presente */}
-            <div className="content">
+        <div className="dashboard-layout">
+            <Menu />
+            <div className="main-content">
                 <Routes>
                     <Route path="/subir-calif" element={<SubirCalif />} />
                     <Route path="/generar-reportes" element={<GenerarReportes />} />
+                    <Route path="/toma-de-asistencia" element={<TomaAsistencia />} />
                     <Route path="/agregar-alumno" element={<AgregarAlumno />} />
-                    <Route path="/notificaciones" element={<Notificaciones />} />
+                    <Route path="/lista-alumnos" element={<ListaAlumnos />} />
+                    <Route path="/TomaDeAsistencia" element={<TomaAsistencia />} />
                 </Routes>
             </div>
         </div>
     );
 }
+
+
 
 export default App;

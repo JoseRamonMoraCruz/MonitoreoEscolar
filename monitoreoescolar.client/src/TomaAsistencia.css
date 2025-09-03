@@ -1,0 +1,255 @@
+﻿@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap');
+
+.toma-asistencia-container {
+    height: 100vh;
+    background: linear-gradient(to bottom right, #89f7fe, #66a6ff);
+    font-family: 'Segoe UI', sans-serif;
+    position: relative;
+}
+
+
+
+/* Botón QR */
+.boton-qr {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    background: linear-gradient(to right, #4facfe, #00f2fe);
+    border: none;
+    border-radius: 50%;
+    width: 70px;
+    height: 70px;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+    cursor: pointer;
+    transition: transform 0.2s ease-in-out;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 999;
+}
+
+.boton-qr:hover {
+    transform: scale(1.1);
+}
+
+.boton-qr img {
+    width: 32px;
+    height: 32px;
+}
+
+
+    .btn-cerrar-flotante:hover {
+        color: #f44336;
+    }
+    /*Mensaje de aviso */
+
+.toast-mensaje {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    color: white;
+    padding: 12px 24px;
+    border-radius: 30px;
+    font-size: 16px;
+    font-weight: 500;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    z-index: 9999;
+    opacity: 0;
+    animation: fadeInOut 2.5s ease-in-out forwards;
+}
+
+    .toast-mensaje.success {
+        background-color: #4CAF50;
+    }
+
+    .toast-mensaje.error {
+        background-color: #f44336;
+    }
+
+    .toast-mensaje::before {
+        content: attr(data-icon);
+        font-weight: bold;
+        margin-right: 10px;
+        font-size: 18px;
+    }
+
+@keyframes fadeInOut {
+    0% {
+        opacity: 0;
+        transform: translateX(-50%) translateY(-10px);
+    }
+
+    10% {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+    }
+
+    80% {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+    }
+
+    100% {
+        opacity: 0;
+        transform: translateX(-50%) translateY(-10px);
+    }
+}
+
+
+.botones-accion-container {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 15px;
+    margin: 20px 0;
+}
+    /*ESTILOS RESPONSIVOS*/
+@media (max-width: 768px) {
+    .tabla-asistencia-container {
+        width: 100%;
+        padding: 10px;
+        border-radius: 0;
+        margin-top: 20px;
+    }
+
+    .tabla-asistencia th,
+    .tabla-asistencia td {
+        padding: 10px 8px;
+        font-size: 13px;
+    }
+
+    .botones-accion-container {
+        flex-direction: column;
+        align-items: flex-end;
+        gap: 10px;
+        margin-right: 20px;
+    }
+
+    .boton-qr {
+        width: 55px;
+        height: 55px;
+        bottom: 20px;
+    }
+
+    .boton-qr {
+        right: 20px;
+    }
+        .boton-qr img{
+            width: 24px;
+            height: 24px;
+        }
+
+    .modal-qr-content {
+        width: 95%;
+        padding: 15px;
+    }
+
+    .btn-cerrar-flotante {
+        font-size: 20px;
+    }
+
+    .toast-mensaje {
+        font-size: 14px;
+        padding: 10px 20px;
+    }
+}
+
+/* ==== TARJETAS DE ASISTENCIA MODERNAS ==== */
+.asistencia-box {
+    width: 95%;
+    max-width: 1200px;
+    margin: 30px auto;
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+    padding: 25px 30px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-family: 'Poppins', sans-serif;
+}
+
+
+.asistencia-left {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    flex: 1;
+}
+
+.asistencia-info {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.asistencia-nombre {
+    font-size: 34px;
+    font-weight: 700;
+    color: #000000;
+}
+
+.asistencia-info small {
+    color: #8f8888;
+    font-size: 16px;
+    font-weight: 400;
+}
+
+.asistencia-right {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+    gap: 10px;
+    padding-left: 20px;
+    font-family: 'Poppins', sans-serif;
+}
+
+.asistencia-horas,
+.asistencia-tiempos {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    column-gap: 60px;
+    width: 100%;
+}
+
+.asistencia-horas {
+    font-weight: 600;
+    color: #000;
+    font-size: 15px;
+}
+
+.asistencia-tiempos {
+    font-size: 15px;
+    color: #000;
+}
+
+
+.asistencia-linea {
+    width: 2px;
+    height: 60px;
+    background: #ddd;
+    margin: 0 20px;
+}
+
+/* Grid container padding */
+.grid {
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+}
+
+/* ==== RESPONSIVO ==== */
+@media (max-width: 768px) {
+    .card-asistencia {
+        padding: 16px;
+    }
+
+    .card-nombre {
+        font-size: 1rem;
+    }
+
+    .card-datos {
+        font-size: 0.85rem;
+    }
+}

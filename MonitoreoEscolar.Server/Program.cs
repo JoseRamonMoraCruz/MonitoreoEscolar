@@ -1,8 +1,16 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using MonitoreoEscolar.Server.Data;
+using MonitoreoEscolar.Server.Services;
+using QuestPDF;
+using QuestPDF.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
 
+QuestPDF.Settings.License = LicenseType.Community;
+
+//PARA DESCARGAR PDF
+builder.Services
+    .AddScoped<IReportePDFGenerator, ReportePDFGenerator>();
 
 //  Configurar la conexión a SQL Server desde appsettings.json con logs detallados
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
@@ -10,7 +18,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
     {
         sqlServerOptions.EnableRetryOnFailure(); // Maneja errores de conexión
     })
-    .EnableSensitiveDataLogging() //  Logs detallados
+    .EnableSensitiveDataLogging() // Logs detallados
 );
 
 //  Agregar política CORS para permitir conexiones desde el frontend
@@ -24,15 +32,27 @@ builder.Services.AddCors(options =>
               .AllowCredentials());
 });
 
+//  Agregar controladores y herramientas de documentación (Swagger)
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+/**************************************************************/
+//BORRAR EN CASO DE QUE NO FUNCIONE
+builder.Services.AddControllersWithViews();
+builder.Services.AddLogging(logging =>
+{
+    logging.ClearProviders();
+    logging.AddConsole();
+});
+/**************************************************************/
 
 var app = builder.Build();
 
 app.UseDefaultFiles();
 app.UseStaticFiles();
 
+//  Habilitar Swagger solo en desarrollo
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -45,41 +65,43 @@ using (var scope = app.Services.CreateScope())
     var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
     try
     {
-        Console.WriteLine("🔍 Intentando conectar a SQL Server...");
+        Console.WriteLine(" Intentando conectar a SQL Server...");
 
         var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
-        Console.WriteLine($"🔗 Cadena de conexión utilizada: {connectionString}");
+        Console.WriteLine($" Cadena de conexión utilizada: {connectionString}");
 
         if (context.Database.CanConnect())
         {
             Console.ForegroundColor = ConsoleColor.Green;
-            Console.WriteLine("✅ Conexión exitosa a SQL Server.");
+            Console.WriteLine(" Conexión exitosa a SQL Server.");
+            Console.ResetColor();
         }
         else
         {
             Console.ForegroundColor = ConsoleColor.Red;
-            Console.WriteLine("❌ No se pudo conectar a SQL Server.");
+            Console.WriteLine(" No se pudo conectar a SQL Server.");
+            Console.ResetColor();
         }
     }
     catch (Exception ex)
     {
         Console.ForegroundColor = ConsoleColor.Red;
-        Console.WriteLine($"❌ ERROR de conexión a SQL Server: {ex.Message}");
+        Console.WriteLine($" ERROR de conexión a SQL Server: {ex.Message}");
 
         if (ex.InnerException != null)
         {
-            Console.WriteLine($"➡️ Detalles internos: {ex.InnerException.Message}");
+            Console.WriteLine($" Detalles internos: {ex.InnerException.Message}");
         }
 
-        Console.WriteLine($"🔍 StackTrace: {ex.StackTrace}"); // Muestra más detalles técnicos
+        Console.WriteLine($" StackTrace: {ex.StackTrace}");
         Console.ResetColor();
     }
 }
 
-//  Agregar CORS antes de Authorization
+//  Agregar Middleware antes de ejecutar la API
 app.UseCors(corsPolicyName);
+app.UseHttpsRedirection();
 app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
-

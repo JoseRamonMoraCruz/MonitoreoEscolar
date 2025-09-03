@@ -1,22 +1,31 @@
-﻿:root {
-    background: linear-gradient(to bottom, #C0E4FF, #9AD3FE);
-}
-
+﻿/* =============================
+   RESET & FONDO BASE
+   ============================= */
 html, body {
     height: 100%;
     margin: 0;
+    background: linear-gradient(135deg, #89f7fe, #66a6ff);
+    font-family: 'Poppins', sans-serif;
 }
 
+/* =============================
+   WRAPPER DEL LOGIN
+   ============================= */
 .login-container-wrapper {
     display: flex;
     justify-content: center;
     align-items: center;
     height: 100vh;
     width: 100vw;
+    background: linear-gradient(135deg, #89f7fe, #66a6ff);
 }
 
+/* =============================
+   CAJA DE LOGIN
+   ============================= */
 .login-box {
     max-width: 450px;
+    width: 90%;
     padding: 30px;
     background-color: #2E2E38;
     border-radius: 20px;
@@ -24,25 +33,25 @@ html, body {
     flex-direction: column;
     align-items: center;
     gap: 15px;
-    width: 90%;
-    box-shadow: 10px 10px 30px rgba(0, 0, 0, 0.5);
+    box-shadow: 10px 10px 30px rgba(0, 0, 0, 1);
     text-align: center;
 }
 
-/* Imagen del birrete */
+/* ICONO */
 .birrete-icon {
     width: 70px;
     height: 70px;
     margin-bottom: 10px;
 }
 
+/* TITULO */
 h2 {
     color: white;
     font-size: 26px;
     margin-bottom: 10px;
 }
 
-/* Inputs */
+/* INPUTS */
 .login-input {
     width: 100%;
     max-width: 350px;
@@ -58,7 +67,7 @@ h2 {
     border: none;
 }
 
-/* Botón */
+/* BOTÓN */
 .login-button {
     width: 100%;
     max-width: 350px;
@@ -78,7 +87,7 @@ h2 {
         background-color: #4025A7;
     }
 
-/* Línea divisoria */
+/* DIVISOR */
 .separator {
     width: 100%;
     max-width: 350px;
@@ -87,7 +96,7 @@ h2 {
     opacity: 0.5;
 }
 
-/* Enlace de registro */
+/* ENLACE DE REGISTRO */
 .register-link {
     display: flex;
     justify-content: center;
@@ -105,3 +114,107 @@ h2 {
         .register-link a:hover {
             text-decoration: underline;
         }
+
+/* OLVIDÓ CONTRASEÑA */
+.forgot-password {
+    font-size: 14px;
+    color: white;
+    margin-top: 10px;
+}
+
+    .forgot-password a {
+        color: white;
+        font-weight: bold;
+        text-decoration: none;
+    }
+
+        .forgot-password a:hover {
+            text-decoration: underline;
+        }
+
+/* =============================
+   RESPONSIVE: TABLET (≤ 768px)
+   ============================= */
+@media (max-width: 768px) {
+    .login-box {
+        width: 95%;
+        max-width: 400px;
+        padding: 25px;
+        gap: 12px;
+    }
+
+    .birrete-icon {
+        width: 60px;
+        height: 60px;
+    }
+
+    h2 {
+        font-size: 24px;
+    }
+
+    .login-input {
+        max-width: 100%;
+        padding: 12px;
+        font-size: 16px;
+    }
+
+    .login-button {
+        max-width: 100%;
+        padding: 14px;
+        font-size: 16px;
+    }
+
+    .separator {
+        max-width: 100%;
+    }
+
+    .register-link,
+    .forgot-password {
+        font-size: 13px;
+    }
+}
+
+/* =============================
+   RESPONSIVE: MÓVIL (≤ 480px)
+   ============================= */
+@media (max-width: 480px) {
+    .login-box {
+        width: 100%;
+        max-width: 320px;
+        padding: 20px;
+        gap: 10px;
+    }
+
+    .birrete-icon {
+        width: 50px;
+        height: 50px;
+        margin-bottom: 8px;
+    }
+
+    h2 {
+        font-size: 22px;
+        margin-bottom: 8px;
+    }
+
+    .login-input {
+        padding: 10px;
+        font-size: 14px;
+        margin: 5px auto;
+    }
+
+    .login-button {
+        padding: 12px;
+        font-size: 14px;
+        margin-top: 12px;
+    }
+
+    .separator {
+        margin: 12px 0;
+    }
+
+    .register-link,
+    .forgot-password {
+        font-size: 12px;
+        gap: 8px;
+    }
+}

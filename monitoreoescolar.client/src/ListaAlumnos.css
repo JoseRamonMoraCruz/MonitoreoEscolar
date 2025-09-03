@@ -1,0 +1,773 @@
+﻿/* Contenedor principal */
+.lista-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 20px;
+    background: linear-gradient(135deg, #89f7fe, #66a6ff); 
+}
+
+/* Contenido interno */
+.lista-content {
+    width: 100%;
+    max-width: 1300px; /* o el mismo valor que uses en .grupo-card */
+    margin: 0 auto;
+}
+
+/* Encabezado */
+.lista-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 15px;
+}
+
+/* Estilo del título */
+.lista-title {
+    font-size: 26px;
+    font-weight: bold;
+    margin-bottom: 15px;
+    text-align: left;
+    width: 100%;
+    color: black;
+}
+
+/* Contenedor de la barra de búsqueda */
+.lista-search-container {
+    display: flex;
+    align-items: center;
+    background-color: white;
+    border-radius: 30px;
+    padding: 8px;
+    width: 100%;
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+    border: 3px solid #007bff;
+    margin-bottom: 20px;
+}
+
+    .lista-search-container input {
+        border: none;
+        width: 100%;
+        font-size: 16px;
+        outline: none;
+        padding: 10px;
+        border-radius: 20px;
+        text-align: center;
+        font-weight: bold;
+    }
+
+/* Botón de búsqueda */
+.lista-search-button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 20px;
+}
+
+/* Contenedor de grupos */
+.grupos-container {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    align-items: center;
+    width: 100%;
+    margin: 0 auto;
+}
+
+
+.grupo-card {
+    position: relative;
+    background: white;
+    border-radius: 10px;
+    width: calc(100% - 40px); /* margen horizontal */
+    max-width: 1200px;
+    box-sizing: border-box;
+    padding: 20px 24px;
+    margin: 6px auto;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+    font-size: 18px;
+    font-weight: normal;
+    color: #333;
+    cursor: pointer;
+    transition: transform 0.3s ease-in-out;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: flex-start;
+}
+
+    .grupo-card:hover {
+        transform: scale(1.01);
+        box-shadow: 0px 6px 14px rgba(0, 0, 0, 0.25);
+    }
+
+    .grupo-card .tabla-wrapper {
+        width: 100%;
+        overflow-x: auto;
+    }
+
+/* Encabezado del grupo */
+.grupo-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    padding-left: 4px;
+    padding-right: 4px;
+    color: black;
+    margin-bottom: 10px;
+    font-size: 18px;
+}
+
+
+
+/* Botón para agregar grupo (flotante) */
+.boton-agregar {
+    position: fixed;
+    bottom: 25px;
+    right: 25px;
+    z-index: 1500;
+    width: 55px;
+    height: 55px;
+    background-color: #007bff;
+    color: white;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: transform 0.2s ease-in-out;
+}
+
+    .boton-agregar:hover {
+        transform: scale(1.1);
+        background-color: #0056b3;
+    }
+
+/* MODAL */
+/* Fondo semitransparente */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    backdrop-filter: blur(3px);
+}
+
+/* Contenido del modal */
+.modal-content {
+    background: white;
+    padding: 25px;
+    border-radius: 12px;
+    width: 420px;
+    text-align: center;
+    position: relative;
+    box-shadow: 0px 5px 20px rgba(0, 0, 0, 0.3);
+    animation: fadeIn 0.3s ease-in-out;
+    color: black;
+}
+
+/* Botón de cerrar (X) en modales */
+.close-button {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    background: none;
+    border: none;
+    font-size: 22px;
+    cursor: pointer;
+    color: #ff4d4d;
+    font-weight: bold;
+    transition: transform 0.2s ease-in-out;
+}
+
+    .close-button:hover {
+        transform: scale(1.2);
+    }
+
+/* Título del modal */
+.modal-title {
+    color: black;
+    font-size: 24px;
+    margin-bottom: 10px;
+}
+
+/* Contenedor de los select */
+.select-container {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 15px;
+}
+
+    .select-container select {
+        width: 100%;
+        padding: 8px;
+        font-size: 16px;
+    }
+
+/* Botón de guardar */
+.save-button {
+    background: green;
+    color: white;
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+    .save-button:hover {
+        background: darkgreen;
+    }
+
+    /* Tabla de alumnos */
+.tabla-alumnos {
+    width: auto%;
+    border-collapse: collapse;
+    font-size: 15px;
+    table-layout: auto;
+    background-color: white;
+    border-radius: 10px;
+    overflow: hidden;
+    margin-top: 0 auto;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+        .tabla-alumnos th {
+            background-color: #f5f5f5;
+            color: #555;
+            font-weight: bold;
+            padding: 12px;
+            text-align: left;
+        }
+
+    .tabla-alumnos td {
+        padding: 10px;
+        border-bottom: 1px solid #eee;
+        color: black;
+        white-space: nowrap;
+        transition: background-color 0.3s ease-in-out;
+    }
+        .tabla-alumnos tr:hover {
+            background-color: #f0f8ff;
+        }
+
+/* Contenedor para la sección expandida del grupo */
+.grupo-details {
+    margin-top: 10px;
+    background-color: #fff;
+    border-radius: 10px;
+    padding: 15px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.grupo-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: black;
+    margin-bottom: 10px;
+    font-size: 18px;
+    width: 100%;
+}
+
+.grupo-card .grupo {
+    font-size: 30px;
+}
+
+.grupo-card .docente {
+    font-size: 16px;
+}
+
+/* Icono para eliminar grupo */
+.delete-icon {
+    width: 36px;
+    height: 36px;
+    flex-shrink: 0;
+}
+
+
+/* CRUD: iconos de editar y eliminar alumno */
+.acciones {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    align-items: center;
+}
+
+.accion-icon {
+    width: 36px;
+    height: 36px;
+    cursor: pointer;
+    transition: transform 0.2s ease-in-out;
+}
+
+    /* Efecto hover para iconos (editar, eliminar alumno y borrar grupo) */
+    .accion-icon:hover,
+    .delete-icon:hover {
+        transform: scale(1.1);
+    }
+
+/* Estilos específicos para iconos */
+.editar {
+    padding: 5px;
+    border-radius: 50%;
+}
+
+.eliminar {
+    padding: 5px;
+    border-radius: 50%;
+}
+
+/* Animación para modales */
+@keyframes fadeIn {
+    from {
+        transform: scale(0.8);
+        opacity: 0;
+    }
+
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+/* Contenedor de botones en modales */
+.modal-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    margin-top: 20px;
+}
+
+/* Botones de confirmar y cancelar */
+.confirm-button,
+.cancel-button {
+    border: none;
+    cursor: pointer;
+    padding: 12px;
+    border-radius: 15px;
+    font-size: 16px;
+    font-weight: bold;
+    width: 80px;
+    height: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.2s ease-in-out;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.confirm-button {
+    background: #28a745;
+}
+
+    .confirm-button img {
+        width: 40px;
+        height: 40px;
+    }
+
+.cancel-button {
+    background: #dc3545;
+}
+
+    .cancel-button img {
+        width: 40px;
+        height: 40px;
+    }
+
+    .confirm-button:hover,
+    .cancel-button:hover {
+        transform: scale(1.1);
+    }
+
+/* MODAL DE EDICIÓN */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    backdrop-filter: blur(4px);
+}
+
+.modal-content {
+    background: white;
+    padding: 25px;
+    border-radius: 12px;
+    width: 450px;
+    text-align: center;
+    position: relative;
+    box-shadow: 0px 5px 20px rgba(0, 0, 0, 0.3);
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+.modal-title {
+    color: black;
+    font-size: 24px;
+    margin-bottom: 10px;
+}
+
+label {
+    font-weight: bold;
+    display: block;
+    margin-top: 10px;
+    text-align: left;
+}
+
+input {
+    width: 100%;
+    padding: 8px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    margin-bottom: 10px;
+}
+
+.save-button {
+    background: #28a745;
+    color: white;
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    margin-top: 10px;
+    transition: background 0.3s;
+}
+
+    .save-button:hover {
+        background: darkgreen;
+    }
+
+.close-button {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    background: none;
+    border: none;
+    font-size: 22px;
+    cursor: pointer;
+    color: #ff4d4d;
+    font-weight: bold;
+    transition: transform 0.2s ease-in-out;
+}
+
+    .close-button:hover {
+        transform: scale(1.2);
+    }
+
+/* Animación de entrada */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.8);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* Estilos para WhatsApp junto al nombre del padre */
+.padre-whatsapp {
+    font-weight: 600;
+    font-size: 16px;
+    color: #000;
+    white-space: nowrap;
+    line-height: 1; 
+    vertical-align: middle; 
+}
+
+    .padre-whatsapp img {
+        width: 22px; 
+        height: 22px; 
+        margin-right: 6px;
+        vertical-align: middle;
+        cursor: pointer;
+        transition: transform 0.2s ease-in-out;
+    }
+
+        .padre-whatsapp img:hover {
+            transform: scale(1.15);
+        }
+/*Seccion para el menu*/
+.menu-editar-grupo {
+    position: absolute;
+    background-color: #fff;
+    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.3);
+    border-radius: 5px;
+    padding: 5px 10px;
+    z-index: 1100;
+    right: 10px;
+    top: 30px;
+}
+
+.opcion-menu {
+    cursor: pointer;
+    margin: 0;
+    padding: 5px 0;
+}
+
+    .opcion-menu.eliminar {
+        color: red;
+    }
+
+    /*se añaden estos estilos para el  modal de editar alumno*/
+/* ✏️ Modal de edición: fondo y centrado con scroll si hace falta */
+.modal-editar-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.6);
+    display: flex;
+    align-items: flex-start; 
+    justify-content: center;
+    padding-top: 40px; 
+    overflow-y: auto; 
+    z-index: 2000;
+    backdrop-filter: blur(3px);
+}
+
+/* ✏️ Contenido: tamaño máximo y scroll interno */
+.modal-editar-content {
+    background: white;
+    border-radius: 12px;
+    width: 420px;
+    max-height: 80vh; 
+    padding: 25px;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+    position: relative;
+    overflow-y: auto; 
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+    /* Título */
+    .modal-editar-content .modal-title {
+        font-size: 24px;
+        margin-bottom: 15px;
+        text-align: center;
+    }
+    .modal-editar-content .input-container {
+        margin-bottom: 12px;
+    }
+/*Estilos del alumno con su QR*/
+.alumno-con-qr {
+    display: flex;
+    align-items: center; 
+    gap: 8px;
+    white-space: nowrap;
+    font-weight: 600;
+    font-size: 16px;
+    color: #000;
+    line-height: 1; 
+    vertical-align: middle;
+    padding: 10px;
+}
+
+
+.icono-qr {
+    width: 22px;
+    height: 22px;
+    cursor: pointer;
+    transition: transform 0.2s ease-in-out;
+    vertical-align: middle;
+}
+
+    .icono-qr:hover {
+        transform: scale(1.15);
+    }
+.tabla-alumnos td {
+    vertical-align: middle;
+}
+
+.alumno-flex {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    line-height: 1.2;
+    font-size: 16px;
+    font-weight: 600;
+    color: #000;
+}
+
+/*RESPONSIVO*/
+@media (max-width: 768px) {
+    .lista-container {
+        padding: 10px;
+    }
+
+    .grupo-card {
+        padding: 10px;
+        font-size: 14px;
+    }
+
+    .tabla-alumnos {
+        font-size: 13px;
+        min-width: 900px; 
+    }
+
+    .tabla-wrapper {
+        overflow-x: auto;
+    }
+
+    .boton-agregar {
+        width: 50px;
+        height: 50px;
+        bottom: 15px;
+        right: 15px;
+    }
+
+        .boton-agregar img {
+            width: 20px;
+            height: 20px;
+        }
+
+    .modal-editar-content {
+        width: 95%;
+        padding: 15px;
+    }
+
+    .modal-content {
+        width: 90%;
+        padding: 20px;
+    }
+
+    .alumno-con-qr, .padre-whatsapp {
+        font-size: 13px;
+    }
+
+    .accion-icon,
+    .delete-icon {
+        width: 28px;
+        height: 28px;
+    }
+
+}
+/* ======== QR COMPUESTO (QR + Nombre) ======== */
+.modal-qr-content h3 {
+    margin-bottom: 12px;
+    color: #333;
+    font-size: 18px;
+}
+
+/* Imagen QR dentro del modal */
+.modal-qr-content .qr-image {
+    width: 200px;
+    height: 200px;
+    object-fit: contain;
+    margin: 0 auto;
+}
+
+/* Botón descargar */
+.modal-qr-content .qr-download-btn {
+    display: inline-block;
+    background: #8800ff;
+    color: #fff;
+    padding: 10px 16px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: bold;
+    margin-top: 12px;
+    transition: background-color 0.3s ease-in-out;
+}
+
+    .modal-qr-content .qr-download-btn:hover {
+        background: #6a00cc;
+    }
+
+.modal-qr-content .qr-nombre {
+    margin-top: 12px;
+    font-size: 16px;
+    font-weight: 600;
+    color: #333;
+    word-wrap: break-word;
+    max-width: 100%;
+    text-align: center;
+}
+
+.busqueda-alumnos-prime-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    background-color: white;
+    border-radius: 40px;
+    padding: 10px 20px;
+    margin: 20px auto;
+    width: 100%;
+    max-width: 700px;
+    border: 3px solid #007bff;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.busqueda-alumnos-prime-input {
+    flex: 1;
+    font-size: 16px;
+    padding: 12px;
+    border: none !important; /* ← Quita la línea gris */
+    outline: none;
+    border-radius: 30px;
+    background-color: transparent;
+    text-align: center;
+    font-weight: 500;
+}
+    .busqueda-alumnos-prime-input:focus {
+        outline: none !important;
+        box-shadow: none !important;
+        border: none !important;
+    }
+    /* Solo aplica al buscador */
+    .busqueda-alumnos-prime-input:focus {
+        outline: none !important;
+        border: none !important;
+        box-shadow: none !important;
+    }
+
+.busqueda-alumnos-prime-btn {
+    width: 40px;
+    height: 40px;
+    font-size: 18px;
+    background-color: #007bff;
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Estilo bonito con borde morado para todos los InputText de PrimeReact */
+.p-inputtext {
+    border: 2px solid #cccccc;
+    border-radius: 6px;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    box-shadow: none;
+}
+
+    .p-inputtext:focus {
+        border-color: #8800ff;
+        box-shadow: 0 0 0 3px rgba(136, 0, 255, 0.2);
+        outline: none;
+    }
+select {
+    appearance: auto !important;
+    -webkit-appearance: auto !important;
+    -moz-appearance: auto !important;
+}
